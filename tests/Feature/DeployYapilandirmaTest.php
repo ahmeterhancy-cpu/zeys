@@ -115,10 +115,7 @@ class DeployYapilandirmaTest extends TestCase
         $this->assertFileExists(base_path('deploy/cpanel/app.htaccess'));
         $this->assertFileExists(base_path('deploy/cpanel/index.php'));
         $this->assertFileExists(base_path('.env.production.example'));
-
-        // NOT: DEPLOY.md henüz yazılmadı. Proje canlıya çıkmaya hazır
-        // değil; deploy belgesi, vitrin eksikleri kapandıktan sonra
-        // yazılacak. Bkz. DURUM.md
+        $this->assertFileExists(base_path('DEPLOY.md'));
     }
 
     public function test_uygulama_klasoru_htaccess_erisimi_kapatiyor(): void
