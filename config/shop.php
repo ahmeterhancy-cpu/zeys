@@ -19,10 +19,16 @@ return [
     'para_birimi' => 'TRY',
     'para_simgesi' => '₺',
 
-    // Kargo: tek ucret + ucretsiz esigi (kurus cinsinden saklanir)
+    /*
+     * Kargo: tek ucret + ucretsiz esigi.
+     *
+     * Para her yerde TL cinsinden decimal(10,2) tutulur — varyant fiyati,
+     * siparis toplami ve burasi ayni birimde olmak ZORUNDA. Kurus/TL
+     * karisimi sessiz 100 kat hatalara yol acar.
+     */
     'kargo' => [
-        'ucret' => (int) env('SHOP_KARGO_UCRET', 9900),
-        'ucretsiz_esigi' => (int) env('SHOP_KARGO_UCRETSIZ_ESIGI', 150000),
+        'ucret' => (float) env('SHOP_KARGO_UCRET', 99.00),
+        'ucretsiz_esigi' => (float) env('SHOP_KARGO_UCRETSIZ_ESIGI', 1500.00),
         'firma' => env('SHOP_KARGO_FIRMA', ''),
     ],
 
