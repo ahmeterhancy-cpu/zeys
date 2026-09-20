@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\LegalDocument;
 use App\Models\Order;
 use App\Services\Cart;
@@ -14,13 +15,24 @@ use RuntimeException;
 
 class CheckoutController extends Controller
 {
-    public function form(Cart $cart)
+    public function form(Request $request, Cart $cart)
     {
         if ($cart->isEmpty()) {
             return redirect()->route('cart.index');
         }
 
+        /*
+         * Giris yapmis musterinin varsayilan adresi forma dolduruluyor.
+         * Misafir alisverisi degismiyor; adres yoksa form bos acilir.
+         */
+        $kayitliAdres = $request->user()
+            ? Address::where('user_id', $request->user()->id)
+                ->orderByDesc('is_default')
+                ->first()
+            : null;
+
         return view('vitrin.odeme', [
+            'kayitliAdres' => $kayitliAdres,
             'satirlar' => $cart->lines(),
             'araToplam' => $cart->subtotal(),
             'indirim' => $cart->discount(),

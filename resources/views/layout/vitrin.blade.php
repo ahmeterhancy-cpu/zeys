@@ -48,6 +48,12 @@
             </a>
 
             <div class="ust-sag">
+                @auth
+                    <a href="{{ route('account.index') }}" class="sepet-bag">Hesabım</a>
+                @else
+                    <a href="{{ route('login') }}" class="sepet-bag">Giriş</a>
+                @endauth
+
                 <a href="{{ url('/sepet') }}" class="sepet-bag">
                     Sepet
                     @if ($sepetAdedi > 0)
@@ -82,6 +88,7 @@
                         <li><a href="{{ url('/koleksiyonlar') }}">Koleksiyonlar</a></li>
                         <li><a href="{{ url('/sepet') }}">Sepetim</a></li>
                         <li><a href="{{ url('/siparis-sorgula') }}">Sipariş Sorgula</a></li>
+                        <li><a href="{{ route('account.index') }}">Hesabım</a></li>
                     </ul>
                 </div>
 

@@ -897,3 +897,117 @@
     border-color: var(--gold);
     color: var(--gold-ink);
 }
+
+/* --- Hesap --- */
+
+.hesap-sayfa { padding-block: 40px 20px; }
+
+.hesap-basi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.hesap-basi h1 {
+    font-size: clamp(28px, 3.8vw, 40px);
+    margin: 0;
+}
+
+.hesap-eposta {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--ink-faint);
+}
+
+.hesap-menu {
+    display: flex;
+    gap: 22px;
+    margin: 22px 0 30px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+}
+
+.hesap-menu a {
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-bottom: 10px;
+    border-bottom: 1px solid transparent;
+    margin-bottom: -13px;
+}
+
+.hesap-menu a:hover { color: var(--ink-soft); }
+
+.hesap-menu-aktif {
+    color: var(--ink) !important;
+    border-bottom-color: var(--gold) !important;
+}
+
+.hesap-siparis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 10px;
+    transition: border-color 0.16s, background 0.16s;
+}
+
+.hesap-siparis:hover {
+    border-color: var(--gold);
+    background: var(--gold-wash);
+}
+
+.hesap-siparis-no {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+}
+
+.hesap-siparis-tarih {
+    margin: 3px 0 0;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.hesap-siparis-sag {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.hesap-siparis-tutar { font-size: 15px; white-space: nowrap; }
+
+.adres-karti {
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+}
+
+.adres-baslik {
+    margin: 0 0 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+}
+
+.adres-karti address {
+    font-style: normal;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-top: 8px;
+}

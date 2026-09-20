@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -61,3 +63,25 @@ Route::post('/odeme', [CheckoutController::class, 'store'])->name('checkout.stor
  * degil, cunku config onbellegi ortam degiskenini degistirebiliyor.
  */
 Route::post('/odeme/benzetim', PaymentSimulationController::class)->name('payment.simulate');
+
+/*
+ * Musteri hesabi. ZORUNLU DEGIL — misafir alisverisi calismaya devam
+ * ediyor; hesap yalnizca siparis gecmisini ve adres defterini
+ * kolaylastiriyor.
+ */
+Route::middleware('guest')->group(function () {
+    Route::get('/giris', [AuthController::class, 'loginForm'])->name('login');
+    Route::post('/giris', [AuthController::class, 'login']);
+    Route::get('/kayit', [AuthController::class, 'registerForm'])->name('register');
+    Route::post('/kayit', [AuthController::class, 'register']);
+});
+
+Route::post('/cikis', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->prefix('hesap')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('account.index');
+    Route::get('/siparis/{number}', [AccountController::class, 'order'])->name('account.order');
+    Route::get('/adresler', [AccountController::class, 'addresses'])->name('account.addresses');
+    Route::post('/adresler', [AccountController::class, 'storeAddress'])->name('account.address.store');
+    Route::delete('/adresler/{address}', [AccountController::class, 'destroyAddress'])->name('account.address.destroy');
+});

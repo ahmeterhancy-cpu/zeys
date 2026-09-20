@@ -9,6 +9,13 @@
         <h2>Ödeme</h2>
     </div>
 
+    @guest
+        <p class="uyari">
+            Hesabınız varsa <a href="{{ route('login') }}">giriş yapın</a>,
+            adres bilgileriniz otomatik dolsun. Hesap açmadan da devam edebilirsiniz.
+        </p>
+    @endguest
+
     @if (session('hata'))
         <p class="uyari uyari-hata">{{ session('hata') }}</p>
     @endif
@@ -26,7 +33,7 @@
 
                 <div class="alan">
                     <label for="ad">Ad Soyad</label>
-                    <input type="text" id="ad" name="ad" value="{{ old('ad') }}"
+                    <input type="text" id="ad" name="ad" value="{{ old('ad', $kayitliAdres->name ?? auth()->user()->name ?? '') }}"
                            class="metin-girdi" required autocomplete="name">
                     @error('ad') <span class="alan-hata">{{ $message }}</span> @enderror
                 </div>
@@ -34,14 +41,14 @@
                 <div class="alan-ikili">
                     <div class="alan">
                         <label for="eposta">E-posta</label>
-                        <input type="email" id="eposta" name="eposta" value="{{ old('eposta') }}"
+                        <input type="email" id="eposta" name="eposta" value="{{ old('eposta', auth()->user()->email ?? '') }}"
                                class="metin-girdi" required autocomplete="email">
                         @error('eposta') <span class="alan-hata">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="alan">
                         <label for="telefon">Telefon</label>
-                        <input type="tel" id="telefon" name="telefon" value="{{ old('telefon') }}"
+                        <input type="tel" id="telefon" name="telefon" value="{{ old('telefon', $kayitliAdres->phone ?? '') }}"
                                class="metin-girdi" required autocomplete="tel">
                         @error('telefon') <span class="alan-hata">{{ $message }}</span> @enderror
                     </div>
@@ -53,35 +60,35 @@
 
                 <div class="alan">
                     <label for="adres">Adres</label>
-                    <input type="text" id="adres" name="adres" value="{{ old('adres') }}"
+                    <input type="text" id="adres" name="adres" value="{{ old('adres', $kayitliAdres->line1 ?? '') }}"
                            class="metin-girdi" required autocomplete="address-line1">
                     @error('adres') <span class="alan-hata">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="alan">
                     <label for="adres2">Apartman, daire (isteğe bağlı)</label>
-                    <input type="text" id="adres2" name="adres2" value="{{ old('adres2') }}"
+                    <input type="text" id="adres2" name="adres2" value="{{ old('adres2', $kayitliAdres->line2 ?? '') }}"
                            class="metin-girdi" autocomplete="address-line2">
                 </div>
 
                 <div class="alan-uclu">
                     <div class="alan">
                         <label for="ilce">İlçe</label>
-                        <input type="text" id="ilce" name="ilce" value="{{ old('ilce') }}"
+                        <input type="text" id="ilce" name="ilce" value="{{ old('ilce', $kayitliAdres->district ?? '') }}"
                                class="metin-girdi" required autocomplete="address-level2">
                         @error('ilce') <span class="alan-hata">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="alan">
                         <label for="il">İl</label>
-                        <input type="text" id="il" name="il" value="{{ old('il') }}"
+                        <input type="text" id="il" name="il" value="{{ old('il', $kayitliAdres->city ?? '') }}"
                                class="metin-girdi" required autocomplete="address-level1">
                         @error('il') <span class="alan-hata">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="alan">
                         <label for="posta_kodu">Posta kodu</label>
-                        <input type="text" id="posta_kodu" name="posta_kodu" value="{{ old('posta_kodu') }}"
+                        <input type="text" id="posta_kodu" name="posta_kodu" value="{{ old('posta_kodu', $kayitliAdres->postal_code ?? '') }}"
                                class="metin-girdi" autocomplete="postal-code">
                     </div>
                 </div>
