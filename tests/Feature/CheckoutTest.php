@@ -9,6 +9,7 @@ use App\Models\ProductVariant;
 use App\Services\Cart;
 use App\Services\VariantMatrix;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class CheckoutTest extends TestCase
@@ -32,6 +33,9 @@ class CheckoutTest extends TestCase
 
         $this->varyant = $urun->fresh()->variants()->first();
         $this->varyant->update(['stock' => 5]);
+
+        // Hicbir test dis servise cikmasin
+        Http::preventStrayRequests();
     }
 
     private function sepeteEkle(int $adet = 2): void
@@ -183,6 +187,15 @@ class CheckoutTest extends TestCase
 
     public function test_paytr_tanimliysa_benzetim_kapanir(): void
     {
+        /*
+         * Http::fake SART: kimlik bilgileri tanimlanınca gateway gercekten
+         * paytr.com'a istek atiyor. Sahte olmadan test dis servise cikar,
+         * yavaslar ve aglarin durumuna gore kirilir.
+         */
+        Http::fake([
+            'paytr.com/*' => Http::response(['status' => 'success', 'token' => 'sahte-token']),
+        ]);
+
         // Ikinci kilit: kimlik bilgileri varsa benzetim 404
         config([
             'paytr.merchant_id' => '123456',
