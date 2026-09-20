@@ -94,5 +94,6 @@
             </div>
         </div>
     </footer>
+    @stack('betik')
 </body>
 </html>
