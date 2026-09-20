@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\HomeController;
@@ -8,13 +9,20 @@ use App\Http\Controllers\OrderLookupController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentSimulationController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StockInquiryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', RobotsController::class)->name('robots');
+
 Route::get('/koleksiyonlar', [CollectionController::class, 'index'])->name('collections.index');
 Route::get('/koleksiyon/{slug}', [CollectionController::class, 'show'])->name('collections.show');
+Route::get('/kategori/{slug}', [CatalogController::class, 'category'])->name('catalog.category');
+Route::get('/ara', [CatalogController::class, 'search'])->name('catalog.search');
 Route::get('/urun/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 Route::get('/sepet', [CartController::class, 'index'])->name('cart.index');

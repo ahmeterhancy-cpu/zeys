@@ -6,6 +6,20 @@
     <title>@yield('baslik', config('shop.ad'))</title>
     <meta name="description" content="@yield('aciklama', 'Zeys Fashion House — Edirne. Kadın giyim koleksiyonları.')">
     <link rel="icon" href="{{ asset('img/zeys-logo-sm.png') }}" type="image/png">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Acik Grafik: baglanti paylasildiginda kart gorunumu --}}
+    <meta property="og:site_name" content="{{ config('shop.ad') }}">
+    <meta property="og:type" content="@yield('og_tur', 'website')">
+    <meta property="og:title" content="@yield('baslik', config('shop.ad'))">
+    <meta property="og:description" content="@yield('aciklama', 'Zeys Fashion House — Edirne. Kadın giyim koleksiyonları.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_gorsel', asset('img/zeys-logo.png'))">
+    <meta property="og:locale" content="tr_TR">
+    <meta name="twitter:card" content="summary_large_image">
+
+    @stack('yapisal_veri')
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -23,6 +37,7 @@
                 <ul class="ust-menu">
                     <li><a href="{{ url('/') }}">Ana Sayfa</a></li>
                     <li><a href="{{ url('/koleksiyonlar') }}">Koleksiyonlar</a></li>
+                    <li><a href="{{ url('/ara') }}">Ara</a></li>
                     <li><a href="{{ url('/iletisim') }}">İletişim</a></li>
                 </ul>
             </nav>

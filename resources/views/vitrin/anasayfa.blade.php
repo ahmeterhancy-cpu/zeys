@@ -3,6 +3,10 @@
 @section('baslik', config('shop.ad') . ' — Edirne')
 @section('aciklama', 'Zeys Fashion House, Edirne. Özenle seçilmiş kadın giyim koleksiyonları.')
 
+@push('yapisal_veri')
+    @include('vitrin.parca.jsonld', ['tur' => 'magaza'])
+@endpush
+
 @section('icerik')
 
     {{-- Açılış: dev bir stok fotoğrafı yerine markanın kendi işareti --}}

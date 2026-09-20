@@ -862,3 +862,38 @@
  * tıklanabilirliği korunur (müşteri o bedeni bekleyebilmeli).
  */
 .secenek-yok { cursor: pointer; }
+
+/* --- Arama ve kategori --- */
+
+.arama-formu {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
+}
+
+.arama-formu .metin-girdi {
+    flex: 1;
+    min-width: 240px;
+}
+
+.alt-kategoriler {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin: -8px 0 28px;
+}
+
+.alt-kategoriler a {
+    text-decoration: none;
+    font-size: 13px;
+    padding: 9px 16px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+    transition: border-color 0.16s, color 0.16s;
+}
+
+.alt-kategoriler a:hover {
+    border-color: var(--gold);
+    color: var(--gold-ink);
+}

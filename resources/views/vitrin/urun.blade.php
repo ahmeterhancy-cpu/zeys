@@ -3,6 +3,15 @@
 @section('baslik', $urun->name . ' — ' . config('shop.ad'))
 @section('aciklama', $urun->short_description ?: $urun->name)
 
+@section('og_tur', 'product')
+@if ($urun->hero_image)
+    @section('og_gorsel', asset('storage/' . $urun->hero_image))
+@endif
+
+@push('yapisal_veri')
+    @include('vitrin.parca.jsonld', ['tur' => 'urun', 'urun' => $urun])
+@endpush
+
 @section('icerik')
 @php
     // TUZAK: @json(...) içine parantezli/çok satırlı ifade yazılmaz.
