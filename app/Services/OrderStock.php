@@ -150,6 +150,29 @@ class OrderStock
         });
     }
 
+    /**
+     * Belirli varyantların stoğunu geri ekle.
+     *
+     * Kısmi iadede kullanılır: müşteri üç parçalı siparişin yalnızca birini
+     * iade ediyorsa tüm siparişin stoğunu geri vermek yanlış olur.
+     *
+     * @param  array<int, int>  $quantities  varyant kimliği => adet
+     */
+    public function restoreQuantities(array $quantities): void
+    {
+        DB::transaction(function () use ($quantities) {
+            foreach ($quantities as $variantId => $quantity) {
+                if ($quantity <= 0) {
+                    continue;
+                }
+
+                $variant = ProductVariant::whereKey($variantId)->lockForUpdate()->first();
+
+                $variant?->increment('stock', $quantity);
+            }
+        });
+    }
+
     /** Rezerv adetlerini geri ver. release() üzerinden çağrılır. */
     private function releaseReservations(Order $order): void
     {
