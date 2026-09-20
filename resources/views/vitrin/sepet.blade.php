@@ -134,10 +134,7 @@
                     </form>
                 @endif
 
-                <button type="button" class="dugme sepet-odeme" disabled aria-disabled="true">
-                    Ödemeye geç
-                </button>
-                <p class="ozet-not">Ödeme adımı Faz 5'in kalanında açılacak.</p>
+                <a class="dugme sepet-odeme" href="{{ route('checkout.form') }}">Ödemeye geç</a>
             </aside>
         </div>
     @endif
