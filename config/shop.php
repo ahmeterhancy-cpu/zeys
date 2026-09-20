@@ -32,6 +32,9 @@ return [
         'firma' => env('SHOP_KARGO_FIRMA', ''),
     ],
 
+    // Yeni siparis bildiriminin gidecegi magaza adresi (bos ise gonderilmez)
+    'siparis_bildirim_epostasi' => env('SHOP_SIPARIS_BILDIRIM', ''),
+
     // Stok
     'dusuk_stok_esigi' => (int) env('SHOP_DUSUK_STOK_ESIGI', 3),
 

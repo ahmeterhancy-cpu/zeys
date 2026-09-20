@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Log;
  */
 class OrderPayments
 {
-    public function __construct(private readonly OrderStock $stock) {}
+    public function __construct(
+        private readonly OrderStock $stock,
+        private readonly Notifier $notifier,
+    ) {}
 
     /**
      * Ödeme onaylandı.
@@ -36,6 +39,15 @@ class OrderPayments
 
         // Rezerv gerçek stok düşümüne dönüşür
         $this->stock->commit($order->fresh('items'));
+
+        /*
+         * Onay e-postası ödeme DOĞRULANDIKTAN sonra gider; sipariş
+         * verildiğinde gitseydi ödemesi düşen siparişler için de
+         * "siparişiniz alındı" gönderilmiş olurdu.
+         *
+         * Gönderim hatası burayı düşürmez (bkz. Notifier).
+         */
+        $this->notifier->orderPlaced($order->fresh('items'));
     }
 
     /** Ödeme başarısız: rezerv serbest bırakılır, stok geri gelir. */

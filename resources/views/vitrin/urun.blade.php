@@ -83,7 +83,13 @@
                     <fieldset class="eksen" data-eksen="{{ $eksen->id }}">
                         <legend class="eksen-baslik">
                             {{ $eksen->name }}
-                            @if ($eksen->name === 'Beden' && $bedenTablosu)
+                            {{--
+                                Beden tablosu dugmesi ilk METIN ekseninde gosteriliyor.
+                                Onceden eksen adi tam olarak "Beden" olmak zorundaydi;
+                                magaza ekseni "Olcu" ya da "Numara" diye adlandirsa
+                                tablo hic gorunmuyordu.
+                            --}}
+                            @if ($bedenTablosu && ! $eksen->is_color && $loop->first)
                                 <button type="button" class="beden-tablosu-ac">Beden tablosu</button>
                             @endif
                         </legend>
@@ -114,6 +120,32 @@
                     </button>
                 </div>
             </form>
+
+            {{--
+                "Stokta yok — haber ver".
+                JS, secilen varyant tukenmisse bu bolumu aciyor ve gizli
+                alana varyant kimligini yaziyor. JS calismazsa bolum
+                kapali kalir ama sayfanin geri kalani calisir.
+            --}}
+            <div class="haber-ver" id="haber-ver" hidden>
+                <p class="haber-ver-baslik">Bu beden tükendi</p>
+                <p class="haber-ver-metin">
+                    Yeniden stoğa girdiğinde size haber verelim.
+                </p>
+
+                <form method="POST" action="{{ route('stock.inquiry') }}" class="haber-ver-formu">
+                    @csrf
+                    <input type="hidden" name="variant_id" id="haber-ver-varyant" value="">
+                    <label class="gorunmez" for="haber-ver-eposta">E-posta</label>
+                    <input type="email" id="haber-ver-eposta" name="eposta"
+                           placeholder="E-posta adresiniz" class="metin-girdi" required>
+                    <button type="submit" class="dugme dugme-cizgi">Haber ver</button>
+                </form>
+            </div>
+
+            @if (session('bilgi'))
+                <p class="uyari">{{ session('bilgi') }}</p>
+            @endif
 
             <dl class="urun-detay">
                 @if ($urun->material)

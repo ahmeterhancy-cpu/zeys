@@ -25,7 +25,10 @@ use RuntimeException;
  */
 class Returns
 {
-    public function __construct(private readonly OrderStock $stock) {}
+    public function __construct(
+        private readonly OrderStock $stock,
+        private readonly Notifier $notifier,
+    ) {}
 
     /**
      * Cayma hakkı süresi dolmuş mu?
@@ -197,6 +200,8 @@ class Returns
                  */
                 $this->reserveExchangeVariants($request->fresh('items'));
 
+                $this->notifier->returnResolved($request->fresh());
+
                 return;
             }
 
@@ -213,6 +218,8 @@ class Returns
                 'admin_note' => $adminNote,
                 'resolved_at' => now(),
             ]);
+
+            $this->notifier->returnResolved($request->fresh());
         });
     }
 
@@ -225,6 +232,9 @@ class Returns
             'admin_note' => $adminNote,
             'resolved_at' => now(),
         ]);
+
+        // Ret gerekcesi musteriye AYNEN iletilir
+        $this->notifier->returnResolved($request->fresh());
     }
 
     /** İade parası gönderildi ya da değişim ürünü kargolandı. */
@@ -237,6 +247,8 @@ class Returns
             'exchange_carrier' => $carrier,
             'exchange_tracking_number' => $tracking,
         ]);
+
+        $this->notifier->returnResolved($request->fresh());
     }
 
     public function cancel(ReturnRequest $request): void

@@ -14,6 +14,8 @@ use RuntimeException;
  */
 class OrderShipping
 {
+    public function __construct(private readonly Notifier $notifier) {}
+
     /** Kargoya verildi. */
     public function markShipped(Order $order, ?string $carrier, ?string $tracking): void
     {
@@ -31,6 +33,8 @@ class OrderShipping
             'tracking_number' => $tracking,
             'shipped_at' => now(),
         ])->save();
+
+        $this->notifier->orderShipped($order->fresh('items'));
     }
 
     /**

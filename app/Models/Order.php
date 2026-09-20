@@ -35,6 +35,26 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function returnRequests(): HasMany
+    {
+        return $this->hasMany(ReturnRequest::class)->latest();
+    }
+
+    /** Vitrinde ve e-postada gösterilecek Türkçe durum. */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => 'Ödeme bekleniyor',
+            'paid' => 'Hazırlanıyor',
+            'preparing' => 'Hazırlanıyor',
+            'shipped' => 'Kargoda',
+            'delivered' => 'Teslim edildi',
+            'cancelled' => 'İptal edildi',
+            'refunded' => 'İade edildi',
+            default => $this->status,
+        };
+    }
+
     /** ZEY-260920-0001 — gün içinde artan sıra. */
     public static function nextNumber(): string
     {

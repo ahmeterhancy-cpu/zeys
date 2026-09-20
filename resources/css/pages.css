@@ -686,3 +686,179 @@
     .alan-ikili,
     .alan-uclu { grid-template-columns: 1fr; }
 }
+
+/* --- Sipariş sorgulama / detay --- */
+
+.siparis-sayfa { padding-bottom: 20px; }
+
+.siparis-basi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.siparis-basi h1 {
+    font-size: clamp(26px, 3.6vw, 38px);
+    margin: 0;
+}
+
+.siparis-tarih {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.siparis-durum {
+    font-size: 11px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    padding: 7px 13px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+    white-space: nowrap;
+}
+
+.siparis-durum-shipped { border-color: var(--gold); color: var(--gold-ink); }
+.siparis-durum-delivered { border-color: var(--ok); color: var(--ok); }
+.siparis-durum-cancelled,
+.siparis-durum-refunded { border-color: var(--danger); color: var(--danger); }
+
+.kargo-kutu {
+    margin-top: 24px;
+    padding: 18px 20px;
+    background: var(--gold-wash);
+    border: 1px solid var(--line);
+}
+
+.kargo-kutu p { margin: 8px 0 0; }
+.kargo-tarih { font-size: 13px; color: var(--ink-faint); }
+
+.siparis-kalem {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: start;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.siparis-kalem .sepet-ad { display: block; }
+
+.siparis-toplam {
+    margin-top: 20px;
+    margin-left: auto;
+    max-width: 340px;
+}
+
+.talep-satir {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.talep-no {
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+}
+
+.talep-tur { margin: 3px 0 0; font-size: 13px; color: var(--ink-faint); }
+
+.talep-ret {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--danger);
+    max-width: 52ch;
+}
+
+.talep-durum {
+    font-size: 11px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--gold-ink);
+    white-space: nowrap;
+}
+
+.cayma-not {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.iade-kalem {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.iade-kalem-kapali { opacity: 0.5; }
+
+.iade-kalem .onay-kutu { margin: 0; }
+
+.iade-kalem-alanlar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 12px;
+    padding-left: 27px;
+}
+
+.iade-kalem-alanlar label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.degisim-secim { flex: 1; min-width: 240px; }
+
+.iade-formu .form-blok { margin-bottom: 26px; }
+
+/* --- Stokta yok, haber ver --- */
+
+.haber-ver {
+    margin: 0 0 26px;
+    padding: 18px 20px;
+    background: var(--gold-wash);
+    border: 1px solid var(--line);
+}
+
+.haber-ver-baslik {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--gold-ink);
+}
+
+.haber-ver-metin {
+    margin: 0 0 14px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.haber-ver-formu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.haber-ver-formu .metin-girdi {
+    flex: 1;
+    min-width: 200px;
+}
+
+/*
+ * Seçilebilir ama stoksuz seçenek: sönük ve üzeri çizili kalır,
+ * tıklanabilirliği korunur (müşteri o bedeni bekleyebilmeli).
+ */
+.secenek-yok { cursor: pointer; }

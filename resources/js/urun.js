@@ -104,12 +104,15 @@
             const etiket = girdi.closest('.secenek');
             const varMi = uygun.has(deger);
 
-            girdi.disabled = !varMi;
+            /*
+             * Stoksuz secenek SONUK gosterilir ama SECILEBILIR kalir.
+             *
+             * Onceden disabled yapiliyordu; o zaman musteri "Siyah M"yi
+             * hic secemiyordu ve "stokta yok - haber ver" bolumu asla
+             * gorunmuyordu. Musteri tukenen bedeni secebilmeli ki
+             * bildirime kaydolabilsin.
+             */
             etiket.classList.toggle('secenek-yok', !varMi);
-
-            if (!varMi && girdi.checked) {
-                girdi.checked = false;
-            }
         });
 
         girdiler.forEach((g) => {
@@ -119,7 +122,8 @@
         const guncelSecim = secilenler();
         const varyant = tamEslesme(guncelSecim);
 
-        if (varyant) {
+        // Tukenmis varyant secilebildigi icin stok kontrolu SART
+        if (varyant && varyant.stok > 0) {
             varyantAlani.value = varyant.id;
             dugme.disabled = false;
             dugme.textContent = 'Sepete ekle';
@@ -132,12 +136,48 @@
         } else {
             varyantAlani.value = '';
             dugme.disabled = true;
-            dugme.textContent = 'Seçim yapın';
+            dugme.textContent = varyant ? 'Bu beden tükendi' : 'Seçim yapın';
             durum.textContent = '';
             durum.className = 'secim-durum';
         }
 
+        haberVerGuncelle(guncelSecim);
+
         renkGaleriGuncelle(guncelSecim);
+    }
+
+    /*
+     * Tukenmis kombinasyon secildiginde "haber ver" bolumu acilir.
+     *
+     * Tam kombinasyon secilmis ama stoklu varyant bulunamamissa, ayni
+     * kombinasyona karsilik gelen STOKSUZ varyant aranir — musteri
+     * "Siyah M yok" dedigimiz bedeni bekleyebilmeli.
+     */
+    function haberVerGuncelle(secili) {
+        const bolum = document.getElementById('haber-ver');
+        const alan = document.getElementById('haber-ver-varyant');
+
+        if (!bolum || !alan) return;
+
+        if (secili.length !== eksenler.length) {
+            bolum.hidden = true;
+            alan.value = '';
+            return;
+        }
+
+        const tam = varyantlar.find(
+            (v) =>
+                v.degerler.length === secili.length &&
+                secili.every((s) => v.degerler.includes(s))
+        );
+
+        if (tam && tam.stok < 1) {
+            bolum.hidden = false;
+            alan.value = tam.id;
+        } else {
+            bolum.hidden = true;
+            alan.value = '';
+        }
     }
 
     /* Renk seçilince galeri o renge geçer */
