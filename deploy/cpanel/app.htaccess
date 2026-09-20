@@ -1,0 +1,25 @@
+# public_html/zeys_app/.htaccess
+#
+# Uygulama public_html'in ICINDE duruyor (paket kok dizin degistirmeye
+# izin vermiyorsa). Bu dosya olmazsa .env, vendor/ ve tum kaynak kod
+# tarayicidan okunabilir. Deploy her seferinde bu dosyayi yeniden koyar.
+#
+# KURULUMDAN SONRA MUTLAKA DOGRULAYIN — 403 donmeli:
+#   https://ALANADI/zeys_app/.env
+#
+# BILEREK SADE: php_flag ve -ExecCGI gibi yonergeler LiteSpeed'de
+# desteklenmeyip 500 uretebiliyor; o da "kapali mi yoksa bozuk mu"
+# ayrimini imkansiz hale getiriyor. Erisimi kapatmak icin Require yeter.
+
+<IfModule mod_authz_core.c>
+    # Apache 2.4 / LiteSpeed
+    Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    # Apache 2.2
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+Options -Indexes

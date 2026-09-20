@@ -127,7 +127,7 @@ class OrdersTable
 
                 Filter::make('takili_rezerv')
                     ->label('Takılı rezervler (2 saatten eski)')
-                    ->query(fn ($sorgu) => $sorgu->where('stock_state', 'reserved')
+                    ->query(fn ($query) => $query->where('stock_state', 'reserved')
                         ->where('created_at', '<', now()->subHours(2))),
             ])
             ->recordActions([

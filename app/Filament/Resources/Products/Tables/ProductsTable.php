@@ -101,7 +101,7 @@ class ProductsTable
 
                 Filter::make('stok_bitti')
                     ->label('Stoğu bitenler')
-                    ->query(fn ($sorgu) => $sorgu->where('total_stock', '<', 1)),
+                    ->query(fn ($query) => $query->where('total_stock', '<', 1)),
             ])
             ->recordActions([
                 EditAction::make()->label('Düzenle'),

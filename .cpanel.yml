@@ -1,0 +1,82 @@
+---
+# cPanel -> Git Version Control -> Manage -> "Deploy HEAD Commit" bunu calistirir.
+# Klonlamak dosyalari public_html'e KOYMAZ; tasiyan adim budur.
+#
+# ============================================================================
+# DOLDURULACAK: asagidaki iki satirdaki KULLANICI yerine cPanel kullanici
+# adinizi yazin (ornek: /home/zeys1234/public_html). Kullanici adi cPanel
+# ana ekraninda "Kullanici Adi" olarak gorunur.
+# ============================================================================
+#
+# YERLESIM: alan adinin kok dizini DEGISTIRILEMIYORSA her sey public_html
+# icinde olmak zorunda. Uygulama public_html/zeys_app/ altina, Laravel'in
+# public/ icerigi dogrudan public_html'e gidiyor.
+# zeys_app/.htaccess klasoru webe kapatir — o dosya olmazsa .env indirilir.
+#
+# Kok dizin DEGISTIRILEBILIYORSA bu dosyanin 4. ve 5. adimlarina gerek yok;
+# kok dizini dogrudan zeys_app/public klasorune yoneltin. Bkz. DEPLOY.md.
+#
+# GUNLUK: her adim deploy-son.log dosyasina yazar. Deploy takilirsa onu
+# Dosya Yoneticisi'nden acip nerede durduguna bakin; cPanel'in kendi
+# gunlugunu aramaya gerek yok.
+#
+# Kopyalama /bin/cp ile ve dizinler TEK TEK sayilarak yapiliyor: rsync bu
+# sunucularda cogu zaman yok, tar da cPanel'in dar PATH'inde bulunamiyor.
+# Joker, find ya da boru yok — her komut mutlak yolla cagriliyor.
+#
+# Her gorev TEK SATIR: cPanel'in YAML ayristiricisi cok satirli komutlarda
+# takiliyor. Uzun gorunseler de bolmeyin.
+#
+# GOREV METINLERINDE "iki nokta + bosluk" KULLANMAYIN. Tirnaksiz bir YAML
+# degerinin icinde ": " gecerse ayristirici orayi eslesme sanip dosyayi
+# REDDEDER; cPanel deploy'u aninda duser ve "Last Deployed" son BASARILI
+# commit'te donar — yani hata hic gorunmez, deploy olmus gibi durur.
+# Bu yuzden asagidaki echo metinlerinde ":" yerine "=" var.
+#
+# Veritabani sifirlama gorevi BILEREK YOK: canlida gercek siparis verisi
+# olacak, tek bir yanlis satir her seyi silebilir. Sifirlama gerekirse
+# phpMyAdmin'den elle yapilir.
+#
+# Ayrintili anlatim ve sorun giderme = DEPLOY.md
+deployment:
+  tasks:
+    - export WEBROOT=/home/KULLANICI/public_html
+    - export APPPATH=/home/KULLANICI/public_html/zeys_app
+    - export LOG=/home/KULLANICI/deploy-son.log
+    - export PHPBIN=$(command -v php || echo /opt/cpanel/ea-php83/root/usr/bin/php)
+    - date > $LOG 2>&1
+    - echo "PHPBIN=$PHPBIN" >> $LOG 2>&1
+    - echo "APPPATH=$APPPATH WEBROOT=$WEBROOT" >> $LOG 2>&1
+    - echo "tar=$(command -v tar) php=$(command -v php) composer=$(command -v composer) rsync=$(command -v rsync)" >> $LOG 2>&1
+    - echo "--- 1/7 uygulama dosyalari ---" >> $LOG 2>&1
+    - /bin/mkdir -p $APPPATH >> $LOG 2>&1
+    - /bin/rm -rf $APPPATH/app $APPPATH/bootstrap/app.php $APPPATH/bootstrap/providers.php $APPPATH/config $APPPATH/database $APPPATH/deploy $APPPATH/public $APPPATH/resources $APPPATH/routes >> $LOG 2>&1
+    - /bin/cp -a app artisan bootstrap composer.json composer.lock config database deploy public resources routes .env.production.example $APPPATH/ >> $LOG 2>&1
+    - test -d vendor && /bin/cp -a vendor $APPPATH/ >> $LOG 2>&1 || echo "vendor depoda yok - composer calisacak" >> $LOG 2>&1
+    - echo "APPPATH icerigi=" >> $LOG 2>&1
+    - /bin/ls -1 $APPPATH >> $LOG 2>&1
+    - echo "--- 2/7 storage iskeleti ve izinler ---" >> $LOG 2>&1
+    - /bin/mkdir -p $APPPATH/storage/framework/cache/data $APPPATH/storage/framework/sessions $APPPATH/storage/framework/views $APPPATH/storage/logs $APPPATH/storage/app/public $APPPATH/bootstrap/cache >> $LOG 2>&1
+    - chmod -R 775 $APPPATH/storage $APPPATH/bootstrap/cache >> $LOG 2>&1
+    - echo "--- 3/7 klasoru webe kapat ---" >> $LOG 2>&1
+    - /bin/cp deploy/cpanel/app.htaccess $APPPATH/.htaccess >> $LOG 2>&1
+    - echo "--- 4/7 public icerigi web kokune ---" >> $LOG 2>&1
+    - /bin/cp -a public/img $WEBROOT/ >> $LOG 2>&1 || true
+    - /bin/cp -a public/css public/js public/fonts $WEBROOT/ >> $LOG 2>&1 || true
+    - /bin/cp -a public/favicon.ico public/robots.txt $WEBROOT/ >> $LOG 2>&1 || true
+    - /bin/rm -rf $WEBROOT/build >> $LOG 2>&1
+    - /bin/cp -a public/build $WEBROOT/build >> $LOG 2>&1
+    - /bin/cp deploy/cpanel/index.php $WEBROOT/index.php >> $LOG 2>&1
+    - /bin/cp public/.htaccess $WEBROOT/.htaccess >> $LOG 2>&1
+    - echo "WEBROOT icerigi=" >> $LOG 2>&1
+    - /bin/ls -1 $WEBROOT >> $LOG 2>&1
+    - echo "--- 5/7 storage bagi ---" >> $LOG 2>&1
+    - test -L $WEBROOT/storage || /bin/ln -s $APPPATH/storage/app/public $WEBROOT/storage >> $LOG 2>&1
+    - echo "--- 6/7 composer ---" >> $LOG 2>&1
+    - cd $APPPATH && command -v composer >/dev/null 2>&1 && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader >> $LOG 2>&1 || echo "COMPOSER BULUNAMADI - vendor depodan gelmeli, bkz DEPLOY.md" >> $LOG 2>&1
+    - echo "--- 7/7 gocler ve onbellek ---" >> $LOG 2>&1
+    - cd $APPPATH && $PHPBIN artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
+    - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
+    - cd $APPPATH && $PHPBIN artisan optimize >> $LOG 2>&1 || true
+    - cd $APPPATH && $PHPBIN artisan filament:optimize >> $LOG 2>&1 || true
+    - echo "=== DEPLOY BITTI ===" >> $LOG 2>&1
