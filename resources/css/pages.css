@@ -1,1 +1,16 @@
-/* Zeys Fashion House — pages (Faz 5te doldurulacak) */
+/* Zeys Fashion House — sayfaya ozel */
+
+.odeme-donus {
+    max-width: 600px;
+    margin: 90px auto;
+    padding-inline: var(--gutter);
+    text-align: center;
+}
+
+.odeme-donus h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    margin-bottom: 16px;
+}
+
+.odeme-donus p { color: var(--ink-soft); }

@@ -1,1 +1,22 @@
-/* Zeys Fashion House — motion (Faz 5te doldurulacak) */
+/* Zeys Fashion House — hareket */
+
+/*
+ * Icerik JS ile GIZLENMEZ.
+ *
+ * Belirme efekti yalnizca @media (prefers-reduced-motion: no-preference)
+ * icinde ve yalnizca .js-acik govdesinde calisir. JS calismazsa ya da
+ * rAF hic gelmezse sayfa tam gorunur kalir — animasyon ugruna bos sayfa
+ * riski alinmaz.
+ */
+@media (prefers-reduced-motion: no-preference) {
+    .js-acik .belir {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
+    }
+
+    .js-acik .belir.gorundu {
+        opacity: 1;
+        transform: none;
+    }
+}

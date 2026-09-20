@@ -1,40 +1,60 @@
 /*
  * Zeys Fashion House — temel jetonlar
  *
- * DIKKAT: Buradaki marka renkleri YER TUTUCUDUR. Logo geldiginde
- * paletin tamami logodan turetilecek. Notr gri + tek vurgu ile duruyor
- * ki erken bir "AI gradyani" gorunumune kilitlenmeyelim.
+ * Palet logodan ÖLÇÜLEREK çıkarıldı (resources/marka/logo-kaynak.png),
+ * gözle tahmin edilmedi. Altın rampası, logonun el yazısı vuruşundaki
+ * gerçek piksellerin doygunluk sıralamasıdır.
+ *
+ * KONTRAST — beyaz zemin üzerinde ölçülen oranlar:
+ *   #ECDFB7  1.33:1   yalnız dekor
+ *   #BC9C51  2.62:1   yalnız dekor   ← logonun parlak altını, METİN OLMAZ
+ *   #9F9363  3.08:1   yalnız kenarlık / çok büyük başlık
+ *   #816C44  5.05:1   metin için sınırda yeterli (AA)
+ *   #6E5A33  6.62:1   metin için rahat (AA)
+ *
+ * Bu yüzden altın İKİYE ayrılır: --gold çizgi/dekor içindir, metinde
+ * --gold-ink kullanılır. İkisi karıştırılırsa yazı okunmaz hâle gelir.
+ *
+ * Altın ZEMİN üzerinde beyaz yazı 2.62:1 ile kalır; koyu mürekkep
+ * 6.63:1 ile geçer. Koyu marka zeminlerindeki "yazı beyaz" alışkanlığı
+ * burada geçerli DEĞİL — altın açık bir renk.
  */
 
 :root {
-    /* Yuzeyler */
+    /* Yüzeyler — logonun zemini saf beyaz, sıcak kırıklar ondan türetildi */
     --paper: #ffffff;
-    --paper-alt: #f6f5f3;
-    --paper-sunken: #edebe7;
+    --paper-alt: #faf7f0;
+    --paper-sunken: #f2ece1;
 
-    /* Metin */
-    --ink: #1c1c1c;
-    --ink-soft: #55534f;
-    --ink-faint: #8a8783;
+    /* Metin — nötr siyah değil, altınla uyumlu sıcak koyu */
+    --ink: #1c1a15;
+    --ink-soft: #554f44;
+    --ink-faint: #8a8275;
 
-    /* Cizgi */
-    --line: #e0ddd8;
-    --line-strong: #c9c5be;
+    /* Çizgi */
+    --line: #e6dfd2;
+    --line-strong: #cdc2ad;
 
-    /* Vurgu — YER TUTUCU */
-    --accent: #c8a96a;
-    --accent-ink: #1c1c1c;
-    --accent-soft: #f2e9d8;
+    /* Altın — logodan ölçüldü */
+    --gold: #bc9c51;         /* parlak altın: çizgi, çerçeve, işaret. METİN DEĞİL. */
+    --gold-deep: #816c44;    /* koyu altın: küçük metin sınırda geçer */
+    --gold-ink: #6e5a33;     /* altın metin rengi — okunaklı */
+    --gold-pale: #ecdfb7;    /* soluk altın: zemin vurgusu */
+    --gold-wash: #faf6ea;    /* en hafif altın yıkama */
 
     /* Durum */
     --ok: #2f6f4a;
     --warn: #9a6b12;
     --danger: #a32b2b;
 
-    /* Olcu */
+    /* Ölçü */
     --gutter: 20px;
-    --radius: 2px;
+    --radius: 0px;           /* logo keskin ve zarif; yuvarlatma markaya yabancı */
     --measure: 68ch;
+
+    /* Tipografi — logodaki geniş aralıklı "-FASHION HOUSE-" yankısı */
+    --tracking-wide: 0.18em;
+    --tracking-wider: 0.32em;
 }
 
 *,
@@ -45,8 +65,9 @@
 
 html {
     /*
-     * overflow-x: clip — hidden DEGIL.
-     * hidden, html/body'yi kaydirma kabi yapip tum position:sticky'yi sessizce bozar.
+     * overflow-x: clip — hidden DEĞİL.
+     * hidden, html/body'yi kaydırma kabı yapıp tüm position:sticky'yi
+     * sessizce bozar.
      */
     overflow-x: clip;
 }
@@ -56,7 +77,7 @@ body {
     background: var(--paper);
     color: var(--ink);
     font-size: 16px;
-    line-height: 1.55;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -81,6 +102,18 @@ textarea {
 }
 
 :focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 2px;
+    outline: 2px solid var(--gold-ink);
+    outline-offset: 3px;
+}
+
+/* Ekran okuyucuya açık, gözden gizli */
+.gorunmez {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }

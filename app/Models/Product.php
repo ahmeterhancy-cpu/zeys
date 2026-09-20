@@ -105,6 +105,21 @@ class Product extends Model
         return $this->variants->contains(fn (ProductVariant $v) => $v->is_orderable);
     }
 
+    /**
+     * Ürün kartındaki renk noktaları.
+     *
+     * Eksen adına değil `kind = color`a bakar: mağaza ileride ekseni
+     * "Ton" diye adlandırsa bile renk noktaları çizilmeye devam eder.
+     */
+    public function getRenklerAttribute(): \Illuminate\Support\Collection
+    {
+        return $this->options
+            ->where('kind', 'color')
+            ->flatMap(fn (ProductOption $o) => $o->values)
+            ->unique('id')
+            ->values();
+    }
+
     public function getHasPriceRangeAttribute(): bool
     {
         return $this->min_price != $this->max_price;

@@ -1,1 +1,220 @@
-/* Zeys Fashion House — components (Faz 5te doldurulacak) */
+/* Zeys Fashion House — bilesenler */
+
+/* --- Etiket: logodaki "-FASHION HOUSE-" yazisinin yankisi --- */
+
+.etiket {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--gold-ink);
+}
+
+.etiket-cizgili {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+}
+
+.etiket-cizgili::before,
+.etiket-cizgili::after {
+    content: '';
+    height: 1px;
+    width: 34px;
+    background: var(--gold);
+}
+
+/* --- Dugmeler --- */
+
+.dugme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 34px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    /* Koyu zeminde beyaz yazi — 17:1 */
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.dugme:hover {
+    background: var(--gold-ink);
+    border-color: var(--gold-ink);
+}
+
+.dugme-cizgi {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line-strong);
+}
+
+.dugme-cizgi:hover {
+    background: transparent;
+    color: var(--gold-ink);
+    border-color: var(--gold);
+}
+
+.dugme[disabled],
+.dugme[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* --- Sepet sayaci --- */
+
+.sepet-bag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.sepet-bag:hover { color: var(--gold-ink); }
+
+.sepet-sayi {
+    min-width: 19px;
+    height: 19px;
+    padding-inline: 5px;
+    display: inline-grid;
+    place-items: center;
+    background: var(--gold-ink);
+    /* Koyu altin zemin uzerinde beyaz — 6.6:1 */
+    color: #ffffff;
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* --- Urun karti --- */
+
+.urun-kart {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.urun-gorsel {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    overflow: clip;
+}
+
+.urun-gorsel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+.urun-kart:hover .urun-gorsel img { transform: scale(1.04); }
+
+/*
+ * Fotografi olmayan urun. Bos gri kutu yerine markanin harfini tasiyan
+ * kagit yuzey — izgara "bozuk" degil "henuz fotograflanmamis" okunsun.
+ */
+.urun-gorsel-yok {
+    display: grid;
+    place-items: center;
+    background:
+        linear-gradient(var(--gold-wash), var(--paper-alt));
+}
+
+/*
+ * DIKKAT: burada `.urun-gorsel-yok span` yazmak rozeti de yakaliyordu
+ * (rozet ayni kabin icinde bir span). "YENI" rozeti 64px italik altina
+ * donusup karti ele geciriyordu. Seciciyi daima sinifa bagla.
+ */
+.urun-harf {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px;
+    font-style: italic;
+    color: var(--gold);
+    opacity: 0.45;
+    line-height: 1;
+    user-select: none;
+}
+
+.urun-rozet {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--paper);
+    border: 1px solid var(--gold);
+    color: var(--gold-ink);
+    font-size: 10px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    padding: 5px 10px;
+}
+
+.urun-bilgi { padding-top: 14px; }
+
+.urun-ad {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    line-height: 1.25;
+    margin: 0 0 5px;
+}
+
+.urun-fiyat {
+    font-size: 14px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+}
+
+.urun-fiyat del {
+    color: var(--ink-faint);
+    margin-right: 8px;
+}
+
+.urun-renkler {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.urun-renk {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+}
+
+.urun-tukendi {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+/* --- Urun izgarasi --- */
+
+.urun-izgara {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 34px 26px;
+}
+
+@media (max-width: 1000px) {
+    .urun-izgara { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 720px) {
+    .urun-izgara { grid-template-columns: repeat(2, 1fr); gap: 26px 16px; }
+    .urun-ad { font-size: 18px; }
+}
