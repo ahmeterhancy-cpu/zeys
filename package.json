@@ -1,0 +1,15 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "start": "concurrently -k -n serve,vite -c \"#1c1c1c,#c8a96a\" \"php artisan serve --host=127.0.0.1 --port=8141\" \"vite\""
+    },
+    "devDependencies": {
+        "concurrently": "^10.0.3",
+        "laravel-vite-plugin": "^3.1",
+        "vite": "^8.0.0"
+    }
+}
