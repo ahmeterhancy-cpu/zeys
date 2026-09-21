@@ -55,7 +55,13 @@
     /* Ölçü */
     --gutter: 20px;
     --kap: 1300px;
-    --radius: 0px;           /* referans köşeleri keskin */
+    /*
+     * Köşeler. Referans keskin köşeliydi; müşteri "çok köşeli" buldu.
+     * Bütün yuvarlatmalar koseler.css'te bu üç jetona bağlı.
+     */
+    --radius: 12px;          /* kart, görsel, kutu */
+    --radius-kucuk: 8px;     /* düğme, girdi, seçenek */
+    --radius-hap: 999px;     /* rozet, sayaç, küçük etiket */
     --measure: 68ch;
     --golge: 0 4px 18px rgba(0, 0, 0, 0.08);
 

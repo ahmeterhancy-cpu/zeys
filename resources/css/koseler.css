@@ -1,0 +1,140 @@
+/*
+ * Zeys Fashion House — köşeler
+ *
+ * Tüm yuvarlatma tek yerde: değer base.css'teki üç jetondan gelir.
+ * Son yüklenir ki bileşen dosyalarındaki kuralları ezsin.
+ *
+ * Tam genişlik bantlar (menü bandı, sayfa başlığı bandı, alt bilgi,
+ * slayt) bilerek düz kalır — kenardan kenara uzanan şeridin köşesi olmaz.
+ */
+
+/* --- Kutular, kartlar, görseller: --radius --- */
+
+.urun-gorsel,
+.urun-galeri-ana,
+.urun-mini-gorsel,
+.sepet-gorsel,
+.afis,
+.ozellikler,
+.bos-durum,
+.sepet-satirlar,
+.sepet-ozet,
+.odeme-ozet,
+.form-blok,
+.siparis-basi,
+.siparis-toplam,
+.hesap-menu,
+.hesap-siparis,
+.adres-karti,
+.kutu-sayfa,
+.iletisim-blok,
+.urun-guvence,
+.arac-cubugu,
+.beden-tablosu,
+.odeme-donus,
+.odeme-cerceve,
+.kategori-menu-liste,
+.kategori-menu-alt,
+.slayt-oge:not(.slayt-marka) .slayt-metin {
+    border-radius: var(--radius);
+}
+
+/* İçerik köşeden taşmasın */
+.urun-gorsel,
+.urun-galeri-ana,
+.afis,
+.sepet-satirlar,
+.sepet-ozet,
+.odeme-ozet,
+.ozellikler,
+.beden-tablosu {
+    overflow: clip;
+}
+
+/*
+ * Açılır kategori menüsü ve hesap menüsü KIRPILMAZ: kategori menüsünün
+ * alt listesi sağa taşarak açılıyor, hesap menüsü telefonda yatay
+ * kaydırılıyor — overflow: clip ikisini de bozardı. Yalnız köşedeki
+ * öğeler yuvarlatılır.
+ */
+.kategori-menu-liste > li:first-child > a { border-radius: var(--radius) var(--radius) 0 0; }
+.kategori-menu-liste > li:last-child > a { border-radius: 0 0 var(--radius) var(--radius); }
+.hesap-menu-kim { border-radius: var(--radius) var(--radius) 0 0; }
+
+@media (min-width: 861px) {
+    .hesap-menu > :last-child,
+    .hesap-menu > :last-child button { border-radius: 0 0 var(--radius) var(--radius); }
+    .hesap-menu-aktif { border-radius: 0; }
+}
+
+/* Kutunun gri başlık şeridi üst köşelere otursun */
+.sepet-ozet h3,
+.odeme-ozet h3 { border-radius: var(--radius) var(--radius) 0 0; }
+
+/* --- Düğmeler, girdiler, seçenekler: --radius-kucuk --- */
+
+.dugme,
+.dugme-kucuk,
+.metin-girdi,
+.adet-girdi,
+.alan input:not([type='checkbox']):not([type='radio']),
+.alan select,
+.alan textarea,
+.sirala-formu select,
+.secenek,
+.galeri-kucuk-dugme,
+.sayfa,
+.uyari,
+.kargo-kutu,
+.haber-ver,
+.ozet-tesvik,
+.alt-kategoriler a,
+.urun-detay,
+.kategori-menu-dugme {
+    border-radius: var(--radius-kucuk);
+}
+
+/* Arama çubuğu: kap yuvarlak, düğme sağ köşeye oturur */
+.baslik-arama {
+    border-radius: var(--radius-kucuk);
+    overflow: clip;
+}
+
+/* Menü bandındaki koyu blok bant içinde; yalnız alt köşeleri değil hepsi hafif */
+.kategori-menu-dugme { border-radius: 0; }
+
+/* Ürün kartındaki "Hızlı incele" şeridi görselin alt köşelerine uyar */
+.urun-incele { border-radius: 0 0 var(--radius) var(--radius); }
+
+/* Sol vurgu çizgili uyarılar: çizgi tarafı düz kalsın, yoksa çizgi kıvrılır */
+.uyari,
+.kargo-kutu,
+.haber-ver {
+    border-radius: 0 var(--radius-kucuk) var(--radius-kucuk) 0;
+}
+
+/* --- Rozetler, sayaçlar, etiketler: hap --- */
+
+.rozet,
+.sepet-sayi,
+.yan-sayi,
+.talep-durum,
+.siparis-durum {
+    border-radius: var(--radius-hap);
+}
+
+.rozet { padding-inline: 10px; }
+
+/* --- Daireler --- */
+
+.serit-ok,
+.yukari { border-radius: 50%; }
+
+/* Ürün sayfasındaki tablonun köşe hücreleri */
+.urun-detay { border-collapse: separate; border-spacing: 0; overflow: clip; }
+.urun-detay th,
+.urun-detay td { border-width: 0 0 1px 0; }
+.urun-detay { border: 1px solid var(--line); }
+.urun-detay tr:last-child th,
+.urun-detay tr:last-child td { border-bottom: 0; }
+.urun-detay th { border-right: 1px solid var(--line); }
