@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **199 test, 941 iddia** (1 atlanan)
+Son güncelleme: 2026-09-21 · **198 test, 726 iddia** (1 atlanan)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
