@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Mail\OrderPlaced;
 use App\Mail\OrderShipped;
 use App\Mail\ReturnResolved;
+use App\Mail\SozlesmeBelgeleri;
 use App\Models\Order;
 use App\Models\ReturnRequest;
 use Illuminate\Mail\Mailable;
@@ -49,6 +50,29 @@ class Notifier
         }
 
         return $sonuc;
+    }
+
+    /**
+     * Sözleşme belgelerini müşteriye ilet ve gönderim anını kaydet.
+     * Mağazaya kopya gitmez — belge müşterinin kişisel kaydıdır.
+     */
+    public function contractDocuments(Order $order): bool
+    {
+        if (! $order->contract_version && ! $order->preinfo_version) {
+            return false; // onaylanmış metin yok (eski / test siparişi)
+        }
+
+        $gitti = $this->gonder(
+            $order->customer_email,
+            new SozlesmeBelgeleri($order),
+            ['tur' => 'sozlesme_belgeleri', 'siparis' => $order->number],
+        );
+
+        if ($gitti) {
+            $order->forceFill(['contract_sent_at' => now()])->saveQuietly();
+        }
+
+        return $gitti;
     }
 
     public function orderShipped(Order $order): bool

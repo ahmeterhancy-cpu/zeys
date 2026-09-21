@@ -56,6 +56,9 @@ class CheckoutTest extends TestCase
             'il' => 'Edirne',
             'posta_kodu' => '22000',
             'sozlesme_onay' => '1',
+            // Musterinin gordugu surumler (formdaki gizli alanlar)
+            'sozlesme_surum' => '2026-09-20.1',
+            'onbilgi_surum' => '2026-09-20.1',
         ], $degisiklik);
     }
 

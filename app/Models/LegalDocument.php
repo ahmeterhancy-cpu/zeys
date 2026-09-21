@@ -14,6 +14,19 @@ class LegalDocument extends Model
         'published_at' => 'datetime',
     ];
 
+    /**
+     * Belirli bir sürüm — siparişin dayandığı metni bulmak için.
+     * Sürüm boşsa null (eski siparişler sürüm kaydetmemiş olabilir).
+     */
+    public static function surum(string $slug, ?string $version): ?self
+    {
+        if (! $version) {
+            return null;
+        }
+
+        return static::where('slug', $slug)->where('version', $version)->first();
+    }
+
     /** Yürürlükteki sürüm. */
     public static function current(string $slug): ?self
     {

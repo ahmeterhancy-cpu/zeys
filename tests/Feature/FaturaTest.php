@@ -45,6 +45,8 @@ class FaturaTest extends TestCase
             'il' => 'Edirne',
             'sozlesme_onay' => '1',
             'fatura_tipi' => 'bireysel',
+            'sozlesme_surum' => LegalDocument::current('mesafeli-satis')?->version,
+            'onbilgi_surum' => LegalDocument::current('on-bilgilendirme')?->version,
         ], $ek);
     }
 

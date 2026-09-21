@@ -79,6 +79,7 @@ class OrderPayments
          * Gönderim hatası burayı düşürmez (bkz. Notifier).
          */
         $this->notifier->orderPlaced($order->fresh('items'));
+        $this->notifier->contractDocuments($order->fresh('items'));
     }
 
     /** Ödeme başarısız: rezerv serbest bırakılır, stok geri gelir. */

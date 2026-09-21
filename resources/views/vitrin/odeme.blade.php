@@ -233,6 +233,10 @@
                 </span>
             </label>
 
+            {{-- Müşterinin GÖRDÜĞÜ sürümler; sunucu güncel sürümle karşılaştırır --}}
+            <input type="hidden" name="sozlesme_surum" value="{{ $sozlesme?->version }}">
+            <input type="hidden" name="onbilgi_surum" value="{{ $onBilgi?->version }}">
+
             @if ($sozlesme)
                 <p class="ozet-not">Onayladığınız sürüm: {{ $sozlesme->version }}</p>
             @endif

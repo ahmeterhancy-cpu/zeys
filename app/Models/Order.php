@@ -23,6 +23,7 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
         'contract_accepted_at' => 'datetime',
+        'contract_sent_at' => 'datetime',
     ];
 
     public function items(): HasMany

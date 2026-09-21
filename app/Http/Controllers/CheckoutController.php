@@ -126,6 +126,24 @@ class CheckoutController extends Controller
         );
 
         $sozlesme = LegalDocument::current('mesafeli-satis');
+        $onBilgi = LegalDocument::current('on-bilgilendirme');
+
+        /*
+         * Müşterinin GÖRDÜĞÜ sürüm formdan geliyor. Kasa açıldıktan sonra
+         * yeni sürüm yayımlandıysa müşteri eski metni onaylamış olur;
+         * sunucu sessizce yeni sürümü kaydetseydi kanıt yanlış olurdu.
+         * Bu durumda sipariş alınmaz, müşteri güncel metni onaylar.
+         */
+        $gorulen = [
+            $request->input('sozlesme_surum') ?: null,
+            $request->input('onbilgi_surum') ?: null,
+        ];
+
+        if ($gorulen !== [$sozlesme?->version, $onBilgi?->version]) {
+            return back()->withInput()->with('hata',
+                'Sözleşme metinleri siz bu sayfadayken güncellendi. Lütfen güncel metni okuyup yeniden onaylayın.'
+            );
+        }
 
         try {
             $order = $checkout->place(
@@ -136,6 +154,7 @@ class CheckoutController extends Controller
                 note: $veri['not'] ?? null,
                 // Müşterinin onayladığı metnin SÜRÜMÜ saklanır
                 contractVersion: $sozlesme?->version,
+                preinfoVersion: $onBilgi?->version,
                 ip: $request->ip(),
             );
         } catch (RuntimeException $e) {

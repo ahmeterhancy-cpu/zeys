@@ -35,6 +35,7 @@ class Checkout
         ?string $note = null,
         ?string $contractVersion = null,
         ?string $ip = null,
+        ?string $preinfoVersion = null,
     ): Order {
         $lines = $this->cart->lines();
 
@@ -55,7 +56,7 @@ class Checkout
 
         $order = DB::transaction(function () use (
             $lines, $customer, $shipping, $billing, $userId, $note,
-            $subtotal, $discount, $shippingTotal, $coupon, $contractVersion, $ip
+            $subtotal, $discount, $shippingTotal, $coupon, $contractVersion, $ip, $preinfoVersion
         ) {
             $order = Order::create([
                 'number' => Order::nextNumber(),
@@ -75,6 +76,7 @@ class Checkout
                 'coupon_code' => $coupon?->code,
                 'customer_note' => $note,
                 'contract_version' => $contractVersion,
+                'preinfo_version' => $preinfoVersion,
                 'contract_accepted_at' => $contractVersion ? now() : null,
                 'contract_ip' => $ip,
             ]);
