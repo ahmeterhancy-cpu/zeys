@@ -4,11 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Ozellik;
+use App\Models\OzellikDegeri;
 use App\Models\Product;
 use App\Models\ProductMedia;
 use App\Models\ProductVariant;
 use App\Models\SizeChart;
-use App\Services\VariantMatrix;
+use App\Services\UrunVaryantlari;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -84,7 +86,6 @@ class DemoSeeder extends Seeder
             ['Askılı Yazlık Elbise', 'elbise', 'yaz-26', 2190, ['S', 'M', 'L'], ['ekru', 'bej'], null],
         ];
 
-        $matris = app(VariantMatrix::class);
         $sayac = 1;
 
         foreach ($urunler as [$ad, $kategori, $koleksiyon, $fiyat, $bedenler, $renkAnahtarlari, $rozet]) {
@@ -107,13 +108,23 @@ class DemoSeeder extends Seeder
 
             $product->categories()->syncWithoutDetaching([$kategoriler[$kategori]->id]);
 
-            $matris->generate($product, [
-                'Beden' => ['kind' => 'text', 'values' => $bedenler],
-                'Renk' => ['kind' => 'color', 'values' => array_map(
-                    fn ($k) => $renkler[$k],
-                    $renkAnahtarlari
-                )],
-            ], $fiyat);
+            /*
+             * Panelle aynı yol: ortak özellik kütüphanesinden (Beden, Renk)
+             * seçip eşitle — ürün eksenleri kütüphaneye bağlı olsun ki
+             * panelin Varyantlar sekmesinde seçili görünsün.
+             */
+            $beden = Ozellik::firstOrCreate(['ad' => 'Beden'], ['tur' => 'text']);
+            $renk = Ozellik::firstOrCreate(['ad' => 'Renk'], ['tur' => 'color']);
+
+            app(UrunVaryantlari::class)->esitle($product, [
+                ['ozellik_id' => $beden->id, 'degerler' => collect($bedenler)
+                    ->map(fn ($b) => OzellikDegeri::firstOrCreate(['ozellik_id' => $beden->id, 'deger' => $b])->id)->all()],
+                ['ozellik_id' => $renk->id, 'degerler' => collect($renkAnahtarlari)
+                    ->map(fn ($k) => OzellikDegeri::firstOrCreate(
+                        ['ozellik_id' => $renk->id, 'deger' => $renkler[$k]['value']],
+                        ['renk_kodu' => $renkler[$k]['color_hex']],
+                    )->id)->all()],
+            ], ['fiyat' => $fiyat]);
 
             // Gerçekçi stok dağılımı: bazı bedenler tükenmiş olsun
             foreach ($product->fresh()->variants as $i => $variant) {

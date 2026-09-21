@@ -70,40 +70,7 @@ class PanelTest extends TestCase
             ->assertSee('Keten Gömlek');
     }
 
-    public function test_kombinasyon_uretme_eylemi_varyant_olusturur(): void
-    {
-        $urun = Product::create(['name' => 'Krep Bluz', 'base_sku' => 'ZEYS-005', 'is_active' => true]);
-
-        // Eksenler formdan girilmiş gibi
-        $beden = $urun->options()->create(['name' => 'Beden', 'kind' => 'text', 'position' => 0]);
-        $beden->values()->create(['value' => 'S', 'position' => 0]);
-        $beden->values()->create(['value' => 'M', 'position' => 1]);
-
-        $renk = $urun->options()->create(['name' => 'Renk', 'kind' => 'color', 'position' => 1]);
-        $renk->values()->create(['value' => 'Siyah', 'color_hex' => '#111111', 'position' => 0]);
-
-        $this->assertSame(0, $urun->variants()->count());
-
-        Livewire::actingAs($this->yonetici)
-            ->test(EditProduct::class, ['record' => $urun->id])
-            ->callAction('kombinasyonUret', ['varsayilan_fiyat' => 1290])
-            ->assertHasNoActionErrors();
-
-        // 2 beden x 1 renk
-        $this->assertSame(2, $urun->fresh()->variants()->count());
-        $this->assertSame('1290.00', $urun->fresh()->variants()->first()->price);
-    }
-
-    public function test_eksen_yokken_kombinasyon_uretilmez(): void
-    {
-        $urun = Product::create(['name' => 'Eksensiz', 'is_active' => true]);
-
-        Livewire::actingAs($this->yonetici)
-            ->test(EditProduct::class, ['record' => $urun->id])
-            ->callAction('kombinasyonUret', ['varsayilan_fiyat' => 100]);
-
-        $this->assertSame(0, $urun->fresh()->variants()->count());
-    }
+    // Varyant oluşturma akışı: tests/Feature/VaryantYonetimiTest.php
 
     public function test_varyant_tablosu_kombinasyon_etiketini_gosterir(): void
     {

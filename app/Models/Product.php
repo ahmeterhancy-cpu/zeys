@@ -146,7 +146,8 @@ class Product extends Model
     {
         return $q
             ->with([
-                'options.values',
+                // Yalnız satıştaki bir varyantı olan değerler (satıştan kalkmış renk noktası görünmesin)
+                'options.values' => fn ($v) => $v->whereHas('variants', fn ($q) => $q->where('is_active', true)),
                 'collection',
                 'media' => fn ($m) => $m->whereNull('product_option_value_id'),
             ])

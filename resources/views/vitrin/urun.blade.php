@@ -116,6 +116,8 @@
                 <input type="hidden" name="variant_id" id="variant-id" value="">
 
                 @foreach ($urun->options as $eksen)
+                    {{-- Satıştaki hiçbir varyantı kalmamış eksen çizilmez --}}
+                    @continue($eksen->values->isEmpty())
                     <fieldset class="eksen" data-eksen="{{ $eksen->id }}">
                         <legend class="eksen-baslik">
                             <span>{{ $eksen->name }}</span>

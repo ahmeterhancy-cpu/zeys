@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **364 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-21 · **374 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -101,6 +101,16 @@ iptal, iade onay/ret, fiyat, silme, CSV yükleme, rapor, kupon, ayarlar,
 kullanıcılar, yasal metinler, katalog yapısı, vitrin içeriği; panoda ciroyu
 görmez. Kısıtlar eylem düzeyinde `authorize()` ile — gizleme değil, sunucu da
 reddeder.
+
+**Varyantlar (WooCommerce tarzı)**: Katalog → **Özellikler** ortak kütüphane
+(Beden, Renk… ve değerleri, renk kodlarıyla; ad değişirse bütün ürünlerde
+değişir, ürünlerde kullanılan değer silinemez). Ürün formunda özellik ve
+değer seçilir, **kaydedince kombinasyonlar kendiliğinden oluşur** (oluştur
+ekranında da — tek adımda). Seçimden çıkan kombinasyon hiç satılmadıysa
+silinir, satıldıysa satıştan kalkar; değer geri eklenirse döner. Varyant
+tablosunda fiyat/eski fiyat/stok/satışta **satır içinde** düzenlenir; toplu:
+fiyat ata, yüzde değiştir, eski fiyat, stok ata/ekle, satışa aç/kaldır,
+görsel; değere göre süzgeç.
 
 **CSV biçimi** Türkçe Excel'e göre: `;` ayraç, ondalık virgül, BOM.
 Yükleme hepsi-ya-da-hiçbiri — tek hatalı satırda hiçbir şey uygulanmaz.

@@ -31,13 +31,13 @@ class VariantMatrix
      * kombinasyonlar eklenir. Eksenden çıkarılan değerlerin varyantları
      * silinmez, pasife alınır — geçmiş siparişlerin satırları onlara bağlı.
      */
-    public function generate(Product $product, array $axes, float $defaultPrice = 0): void
+    public function generate(Product $product, array $axes, float $defaultPrice = 0, array $defaults = []): void
     {
         // Matris üretilirken her satırda önbellek tazelenmesin; sonda bir kez.
         ProductVariantObserver::$muted = true;
 
         try {
-            $this->buildMatrix($product, $axes, $defaultPrice);
+            $this->buildMatrix($product, $axes, $defaultPrice, $defaults);
         } finally {
             ProductVariantObserver::$muted = false;
         }
@@ -45,16 +45,25 @@ class VariantMatrix
         $this->refreshProduct($product->fresh());
     }
 
-    private function buildMatrix(Product $product, array $axes, float $defaultPrice): void
+    /**
+     * $defaults: yeni varyantlar için ['compare_at_price' => ?float, 'stock' => int].
+     * Eksen/değer satırında 'ozellik_id' / 'ozellik_degeri_id' verilirse ürün
+     * tarafı ortak kütüphaneye bağlanır (bkz. App\Models\Ozellik).
+     */
+    private function buildMatrix(Product $product, array $axes, float $defaultPrice, array $defaults = []): void
     {
-        DB::transaction(function () use ($product, $axes, $defaultPrice) {
+        DB::transaction(function () use ($product, $axes, $defaultPrice, $defaults) {
             $valuesByAxis = [];
             $position = 0;
 
             foreach ($axes as $axisName => $config) {
                 $option = ProductOption::updateOrCreate(
                     ['product_id' => $product->id, 'name' => $axisName],
-                    ['kind' => $config['kind'] ?? 'text', 'position' => $position++],
+                    array_filter([
+                        'kind' => $config['kind'] ?? 'text',
+                        'position' => $position++,
+                        'ozellik_id' => $config['ozellik_id'] ?? null,
+                    ], fn ($v) => $v !== null),
                 );
 
                 $valuePosition = 0;
@@ -65,10 +74,11 @@ class VariantMatrix
 
                     $value = ProductOptionValue::updateOrCreate(
                         ['product_option_id' => $option->id, 'value' => $row['value']],
-                        [
+                        array_filter([
                             'color_hex' => $row['color_hex'] ?? null,
                             'position' => $valuePosition++,
-                        ],
+                            'ozellik_degeri_id' => $row['ozellik_degeri_id'] ?? null,
+                        ], fn ($v, $k) => $v !== null || $k === 'color_hex', ARRAY_FILTER_USE_BOTH),
                     );
 
                     $ids[] = $value->id;
@@ -102,7 +112,8 @@ class VariantMatrix
                     'product_id' => $product->id,
                     'sku' => $this->buildSku($product, $combination),
                     'price' => $defaultPrice,
-                    'stock' => 0,
+                    'compare_at_price' => $defaults['compare_at_price'] ?? null,
+                    'stock' => (int) ($defaults['stock'] ?? 0),
                     'reserved' => 0,
                     'is_active' => true,
                     'position' => $position++,
@@ -212,7 +223,7 @@ class VariantMatrix
     }
 
     /** Sıradan bağımsız kombinasyon kimliği. */
-    private function fingerprint(array $valueIds): string
+    public function fingerprint(array $valueIds): string
     {
         sort($valueIds);
 
@@ -225,7 +236,7 @@ class VariantMatrix
      * @param  array<array<int>>  $axes
      * @return array<array<int>>
      */
-    private function cartesian(array $axes): array
+    public function cartesian(array $axes): array
     {
         $result = [[]];
 

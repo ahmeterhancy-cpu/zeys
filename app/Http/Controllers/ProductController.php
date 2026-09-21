@@ -12,7 +12,8 @@ class ProductController extends Controller
             ->where('slug', $slug)
             ->where('is_active', true)
             ->with([
-                'options.values',
+                // Yalnız satıştaki bir varyantı olan değerler seçilebilir görünür
+                'options.values' => fn ($v) => $v->whereHas('variants', fn ($q) => $q->where('is_active', true)),
                 'variants.optionValues',
                 'media',
                 'categories.sizeChart',
