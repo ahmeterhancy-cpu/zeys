@@ -12,6 +12,10 @@
         <a href="{{ route('order.lookup.form') }}">sipariş numarasıyla sorgulayabilirsiniz</a>.
     </p>
 
+    @if (session('bilgi'))
+        <p class="uyari">{{ session('bilgi') }}</p>
+    @endif
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
@@ -36,5 +40,7 @@
 
         <button type="submit" class="dugme" style="margin-top:14px">Giriş yap</button>
     </form>
+
+    <p style="margin-top:22px"><a href="{{ route('password.request') }}">Parolamı unuttum</a></p>
 </div>
 @endsection

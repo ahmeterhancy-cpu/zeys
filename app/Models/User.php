@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Mail\ParolaSifirlama;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 /**
  * FilamentUser BILEREK uygulaniyor.
@@ -43,6 +47,23 @@ class User extends Authenticatable implements FilamentUser
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Laravel'in İngilizce varsayılan bildirimi yerine markalı Türkçe
+     * e-posta. Gönderim hatası isteği düşürmez; kullanıcıya yine aynı
+     * "gönderildi" mesajı gösterilir (hesap varlığını ele vermemek için).
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $baglanti = route('password.reset', ['token' => $token, 'email' => $this->email]);
+        $dakika = (int) config('auth.passwords.users.expire', 60);
+
+        try {
+            Mail::to($this->email)->send(new ParolaSifirlama($baglanti, $dakika));
+        } catch (Throwable $e) {
+            Log::error('Parola sıfırlama e-postası gönderilemedi: '.$e->getMessage());
+        }
     }
 
     public function orders()

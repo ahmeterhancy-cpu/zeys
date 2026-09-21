@@ -9,6 +9,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderLookupController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PaymentSimulationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RobotsController;
@@ -74,6 +75,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/giris', [AuthController::class, 'login']);
     Route::get('/kayit', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/kayit', [AuthController::class, 'register']);
+
+    Route::get('/parolami-unuttum', [PasswordResetController::class, 'requestForm'])->name('password.request');
+    Route::post('/parolami-unuttum', [PasswordResetController::class, 'sendLink'])
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+    Route::get('/parola-sifirla/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+    Route::post('/parola-sifirla', [PasswordResetController::class, 'reset'])
+        ->middleware('throttle:5,1')
+        ->name('password.update');
 });
 
 Route::post('/cikis', [AuthController::class, 'logout'])->name('logout');
