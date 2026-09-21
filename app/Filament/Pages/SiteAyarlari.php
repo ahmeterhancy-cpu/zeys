@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Concerns\YalnizYonetici;
 use App\Models\Setting;
 use App\Services\LegalPlaceholders;
 use BackedEnum;
@@ -30,6 +31,8 @@ use Filament\Support\Icons\Heroicon;
  */
 class SiteAyarlari extends Page
 {
+    use YalnizYonetici;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static ?string $navigationLabel = 'Site Ayarları';

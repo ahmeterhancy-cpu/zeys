@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SizeCharts;
 
+use App\Filament\Concerns\YalnizYonetici;
 use App\Filament\Resources\SizeCharts\Pages\CreateSizeChart;
 use App\Filament\Resources\SizeCharts\Pages\EditSizeChart;
 use App\Filament\Resources\SizeCharts\Pages\ListSizeCharts;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class SizeChartResource extends Resource
 {
+    use YalnizYonetici;
+
     protected static ?string $model = SizeChart::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTableCells;

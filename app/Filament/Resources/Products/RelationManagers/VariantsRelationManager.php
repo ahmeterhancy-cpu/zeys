@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Models\ProductVariant;
 use App\Services\OrderStock;
+use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -49,12 +50,14 @@ class VariantsRelationManager extends RelationManager
                 ->maxLength(60),
 
             TextInput::make('price')
+                ->disabled(fn () => ! Yetki::yonetici()) // fiyatı yalnız yönetici değiştirir
                 ->label('Fiyat (TL)')
                 ->numeric()
                 ->required()
                 ->minValue(0),
 
             TextInput::make('compare_at_price')
+                ->disabled(fn () => ! Yetki::yonetici()) // fiyatı yalnız yönetici değiştirir
                 ->label('Eski fiyat (TL)')
                 ->helperText('Doluysa vitrinde üstü çizili gösterilir.')
                 ->numeric()

@@ -26,7 +26,7 @@
     <a href="#icerik" class="gorunmez">İçeriğe atla</a>
 
     {{-- Perde açıkken siteyi gören tek kişi yönetici: unutulmasın diye uyarı --}}
-    @if (config('shop.bakim_modu') && auth()->user()?->isAdmin())
+    @if (config('shop.bakim_modu') && auth()->user()?->panelde())
         <div class="bakim-seridi">
             Bakım perdesi AÇIK — ziyaretçiler "Çok yakında" sayfasını görüyor.
             <a href="{{ url('/admin/site-ayarlari') }}">Ayarlardan kapat</a>

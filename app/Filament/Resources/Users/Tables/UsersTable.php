@@ -30,8 +30,12 @@ class UsersTable
                 TextColumn::make('role')
                     ->label('Rol')
                     ->badge()
-                    ->formatStateUsing(fn (string $state) => $state === 'admin' ? 'Yönetici' : 'Müşteri')
-                    ->color(fn (string $state) => $state === 'admin' ? 'primary' : 'gray'),
+                    ->formatStateUsing(fn (string $state) => User::ROLLER[$state] ?? $state)
+                    ->color(fn (string $state) => match ($state) {
+                        'admin' => 'primary',
+                        'staff' => 'info',
+                        default => 'gray',
+                    }),
 
                 TextColumn::make('orders_count')
                     ->label('Sipariş')
@@ -46,7 +50,7 @@ class UsersTable
             ->filters([
                 SelectFilter::make('role')
                     ->label('Rol')
-                    ->options(['admin' => 'Yönetici', 'customer' => 'Müşteri']),
+                    ->options(User::ROLLER),
             ])
             ->recordActions([
                 EditAction::make()->label('Düzenle'),

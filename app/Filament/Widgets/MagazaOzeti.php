@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ReturnRequest;
 use App\Models\StockInquiry;
+use App\Support\Yetki;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -58,7 +59,8 @@ class MagazaOzeti extends StatsOverviewWidget
 
         return [
             Stat::make('Bugün', $bugunAdet.' sipariş')
-                ->description(number_format($bugunCiro, 2, ',', '.').' TL ciro')
+                // Ciro yalnız yöneticiye (bkz. App\Support\Yetki)
+                ->description(Yetki::yonetici() ? number_format($bugunCiro, 2, ',', '.').' TL ciro' : 'Ödemesi alınan sipariş')
                 ->color('primary')
                 ->url(OrderResource::getUrl('index')),
 

@@ -116,9 +116,9 @@ class KvkkController extends Controller
          * Yönetici hesabı vitrinden silinemez: son yöneticiyi silmek paneli
          * kilitler. Yönetici hesapları panelden (Kullanıcılar) yönetilir.
          */
-        if ($k->isAdmin()) {
+        if ($k->panelde()) {
             throw ValidationException::withMessages([
-                'parola' => 'Yönetici hesapları buradan silinemez; panelden yönetin.',
+                'parola' => 'Panel (yönetici/personel) hesapları buradan silinemez; panelden yönetin.',
             ]);
         }
 

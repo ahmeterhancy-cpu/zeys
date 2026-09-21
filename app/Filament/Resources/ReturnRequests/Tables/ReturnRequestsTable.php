@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ReturnRequests\Tables;
 use App\Models\ReturnRequest;
 use App\Services\PaymentRefunds;
 use App\Services\Returns;
+use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
@@ -147,7 +148,7 @@ class ReturnRequestsTable
                         'Teslim alındı olarak işaretlendi'
                     )),
 
-                Action::make('onayla')
+                Action::make('onayla')->authorize(fn () => Yetki::yonetici())
                     ->label('Onayla')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -165,7 +166,7 @@ class ReturnRequestsTable
                         'Talep onaylandı'
                     )),
 
-                Action::make('reddet')
+                Action::make('reddet')->authorize(fn () => Yetki::yonetici())
                     ->label('Reddet')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
@@ -183,7 +184,7 @@ class ReturnRequestsTable
                         'Talep reddedildi'
                     )),
 
-                Action::make('paytrIade')
+                Action::make('paytrIade')->authorize(fn () => Yetki::yonetici())
                     ->label('Parayı PayTR ile iade et')
                     ->icon('heroicon-o-banknotes')
                     ->color('success')
@@ -203,6 +204,8 @@ class ReturnRequestsTable
                     )),
 
                 Action::make('tamamla')
+                    // Değişimi personel kapatabilir; "elle iade ettim" para hareketidir, yalnız yönetici
+                    ->authorize(fn (ReturnRequest $kayit) => $kayit->is_exchange || Yetki::yonetici())
                     ->label(fn (ReturnRequest $kayit) => $kayit->is_exchange ? 'Tamamla' : 'Elle iade ettim')
                     ->icon('heroicon-o-flag')
                     ->color(fn (ReturnRequest $kayit) => $kayit->is_exchange ? 'success' : 'gray')

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProductReviews;
 
 use App\Filament\Resources\ProductReviews\Pages\ListProductReviews;
 use App\Models\ProductReview;
+use App\Support\Yetki;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -116,7 +117,7 @@ class ProductReviewResource extends Resource
                     ->modalDescription('Yorum vitrinde görünmez; kayıt panelde kalır.')
                     ->action(fn (ProductReview $record) => $record->update(['status' => 'rejected'])),
 
-                DeleteAction::make()->label('Sil'),
+                DeleteAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -130,7 +131,7 @@ class ProductReviewResource extends Resource
                         })
                         ->deselectRecordsAfterCompletion(),
 
-                    DeleteBulkAction::make()->label('Sil'),
+                    DeleteBulkAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
                 ]),
             ])
             ->emptyStateHeading('Bekleyen yorum yok')

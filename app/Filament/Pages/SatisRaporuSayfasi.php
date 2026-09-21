@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Concerns\YalnizYonetici;
 use App\Services\SatisRaporu;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -20,6 +21,8 @@ use Livewire\Attributes\Computed;
  */
 class SatisRaporuSayfasi extends Page
 {
+    use YalnizYonetici;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static ?string $navigationLabel = 'Satış Raporu';

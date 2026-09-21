@@ -5,6 +5,7 @@ namespace App\Filament\Resources\StockInquiries;
 use App\Filament\Resources\StockInquiries\Pages\ListStockInquiries;
 use App\Models\StockInquiry;
 use App\Services\StockAlerts;
+use App\Support\Yetki;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -134,11 +135,11 @@ class StockInquiryResource extends Resource
                         $bildirim->send();
                     }),
 
-                DeleteAction::make()->label('Sil'),
+                DeleteAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Sil'),
+                    DeleteBulkAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
                 ]),
             ])
             ->emptyStateHeading('Bekleyen stok talebi yok')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Collections;
 
+use App\Filament\Concerns\YalnizYonetici;
 use App\Filament\Resources\Collections\Pages\CreateCollection;
 use App\Filament\Resources\Collections\Pages\EditCollection;
 use App\Filament\Resources\Collections\Pages\ListCollections;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class CollectionResource extends Resource
 {
+    use YalnizYonetici;
+
     protected static ?string $model = Collection::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

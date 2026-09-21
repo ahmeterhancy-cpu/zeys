@@ -48,7 +48,7 @@ class BakimPerdesi
         }
 
         // Yönetici siteyi olduğu gibi görür — yayına almadan önce bakabilsin
-        if ($request->user()?->isAdmin()) {
+        if ($request->user()?->panelde()) {
             return $next($request);
         }
 

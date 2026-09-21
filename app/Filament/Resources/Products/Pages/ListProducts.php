@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Resources\Products\ProductResource;
 use App\Services\UrunCsv;
+use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
@@ -31,7 +32,7 @@ class ListProducts extends ListRecords
                         ['Content-Type' => 'text/csv; charset=UTF-8'],
                     )),
 
-                Action::make('csvIce')
+                Action::make('csvIce')->authorize(fn () => Yetki::yonetici())
                     ->label('Fiyat/stok tablosu yükle')
                     ->icon('heroicon-o-arrow-up-tray')
                     ->modalHeading('Fiyat/stok tablosu yükle')

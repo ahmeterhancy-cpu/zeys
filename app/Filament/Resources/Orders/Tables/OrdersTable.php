@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Services\OrderShipping;
 use App\Services\OrderStock;
 use App\Services\PaymentRefunds;
+use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
@@ -187,7 +188,7 @@ class OrdersTable
                         Notification::make()->title('Teslim edildi olarak işaretlendi')->success()->send();
                     }),
 
-                Action::make('iptal')
+                Action::make('iptal')->authorize(fn () => Yetki::yonetici())
                     ->label('İptal et')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')

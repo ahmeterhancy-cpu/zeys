@@ -38,15 +38,32 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    /** Panele yalnizca yoneticiler girer. */
+    public const ROLLER = [
+        'customer' => 'Müşteri',
+        'staff' => 'Personel',
+        'admin' => 'Yönetici',
+    ];
+
+    /** Panele yöneticiler ve personel girer; personelin yetkisi kısıtlı (App\Support\Yetki). */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->isAdmin();
+        return $this->panelde();
     }
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
+    }
+
+    /** Panel kullanıcısı mı (yönetici ya da personel). */
+    public function panelde(): bool
+    {
+        return $this->isAdmin() || $this->isStaff();
     }
 
     /**

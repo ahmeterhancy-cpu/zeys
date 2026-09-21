@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\Pages;
 use App\Filament\Resources\Products\ProductResource;
 use App\Models\Product;
 use App\Services\VariantMatrix;
+use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
@@ -91,7 +92,7 @@ class EditProduct extends EditRecord
                 ->url(fn (Product $record) => url('/urun/'.$record->slug))
                 ->openUrlInNewTab(),
 
-            DeleteAction::make()->label('Sil'),
+            DeleteAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
         ];
     }
 }

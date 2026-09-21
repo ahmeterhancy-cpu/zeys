@@ -34,7 +34,8 @@ class UserForm
                         ->label('Rol')
                         ->options([
                             'customer' => 'Müşteri',
-                            'admin' => 'Yönetici (panele girer)',
+                            'staff' => 'Personel (panele girer, kısıtlı)',
+                            'admin' => 'Yönetici (panele girer, tam yetki)',
                         ])
                         ->default('customer')
                         ->required()
@@ -46,7 +47,9 @@ class UserForm
                         ->disabled(fn (?User $record) => $record && $record->id === auth()->id())
                         ->helperText(fn (?User $record) => $record && $record->id === auth()->id()
                             ? 'Kendi rolünüzü değiştiremezsiniz.'
-                            : 'Yönetici panele girebilir; müşteri yalnızca vitrindeki hesabını kullanır.'),
+                            : 'Personel: sipariş hazırlama, kargo, iade lojistiği, stok, yorum. '
+                                .'Para iadesi, fiyat, silme, rapor ve ayarlar yalnız yöneticide. '
+                                .'Müşteri yalnızca vitrindeki hesabını kullanır.'),
 
                     TextInput::make('password')
                         ->label('Parola')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LegalDocuments;
 
+use App\Filament\Concerns\YalnizYonetici;
 use App\Filament\Resources\LegalDocuments\Pages\CreateLegalDocument;
 use App\Filament\Resources\LegalDocuments\Pages\EditLegalDocument;
 use App\Filament\Resources\LegalDocuments\Pages\ListLegalDocuments;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class LegalDocumentResource extends Resource
 {
+    use YalnizYonetici;
+
     protected static ?string $model = LegalDocument::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;

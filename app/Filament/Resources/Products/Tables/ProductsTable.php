@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
+use App\Support\Yetki;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -109,7 +110,7 @@ class ProductsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('Sil'),
+                    DeleteBulkAction::make()->authorize(fn () => Yetki::yonetici())->label('Sil'),
                 ]),
             ])
             ->emptyStateHeading('Henüz ürün yok')
