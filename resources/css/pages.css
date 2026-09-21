@@ -1141,3 +1141,17 @@
 }
 
 .bakim-seridi a { color: #ffffff; margin-left: 10px; }
+
+/* Sipariş sayfasında fatura bağlantısı */
+.fatura-bag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 0;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-kucuk);
+}
+
+.fatura-bag .ikon { width: 20px; height: 20px; color: var(--vurgu); }
+.fatura-bag a { color: var(--vurgu); font-weight: 600; }

@@ -50,6 +50,7 @@ Route::post('/siparis-sorgula', [OrderLookupController::class, 'lookup'])->name(
 Route::middleware('signed')->group(function () {
     Route::get('/siparis/{order:number}', [OrderLookupController::class, 'show'])->name('order.show');
     Route::post('/siparis/{order:number}/iade', [OrderLookupController::class, 'storeReturn'])->name('order.return');
+    Route::get('/siparis/{order:number}/fatura', [OrderLookupController::class, 'fatura'])->name('order.invoice');
     Route::post('/siparis/{order:number}/degerlendirme', [ReviewController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('order.review');

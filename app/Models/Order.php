@@ -24,6 +24,8 @@ class Order extends Model
         'delivered_at' => 'datetime',
         'contract_accepted_at' => 'datetime',
         'contract_sent_at' => 'datetime',
+        'invoice_date' => 'date',
+        'invoice_sent_at' => 'datetime',
     ];
 
     public function items(): HasMany
@@ -78,6 +80,11 @@ class Order extends Model
     public function getIsPaidAttribute(): bool
     {
         return $this->payment_status === 'paid';
+    }
+
+    public function getFaturaKesildiAttribute(): bool
+    {
+        return filled($this->invoice_number);
     }
 
     /** Faturada kullanılacak adres — ayrı verilmemişse teslimat adresi. */

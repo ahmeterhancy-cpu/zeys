@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Mail\BackInStock;
+use App\Mail\FaturaGonderimi;
 use App\Mail\OrderPlaced;
 use App\Mail\OrderShipped;
 use App\Mail\ParolaSifirlama;
@@ -36,6 +37,11 @@ class EpostaOnizleme
                 $o->tracking_number ??= '123456789';
             })),
             'sozlesme-belgeleri' => new SozlesmeBelgeleri($siparis),
+            'fatura' => new FaturaGonderimi(tap(clone $siparis, function (Order $o) {
+                $o->invoice_number ??= 'ZEY2026000000001';
+                $o->invoice_date ??= now();
+                $o->invoice_pdf = null; // önizlemede ek yok
+            })),
             'stokta' => new BackInStock(ProductVariant::with('product', 'optionValues.option')->first() ?? static::ornekVaryant()),
             'parola-sifirlama' => new ParolaSifirlama(url('/parola-sifirla/ornek'), 60),
             'iade-onay' => new ReturnResolved(static::ornekTalep($siparis, 'approved', false)),

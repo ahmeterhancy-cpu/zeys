@@ -18,6 +18,14 @@
         <span class="siparis-durum siparis-durum-{{ $order->status }}">{{ $order->status_label }}</span>
     </div>
 
+    @if ($order->invoice_pdf)
+        <p class="fatura-bag">
+            @include('vitrin.parca.ikon', ['ad' => 'eposta'])
+            Faturanız hazır ({{ $order->invoice_number }}) —
+            <a href="{{ \Illuminate\Support\Facades\URL::signedRoute('order.invoice', ['order' => $order->number]) }}">PDF olarak indirin</a>
+        </p>
+    @endif
+
     @if ($order->tracking_number)
         <div class="kargo-kutu">
             <span class="etiket">Kargo</span>

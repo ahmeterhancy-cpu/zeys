@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Services\Returns;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
@@ -85,6 +86,17 @@ class OrderLookupController extends Controller
             'iadeAcilabilir' => $order->payment_status === 'paid'
                 && $returns->isWithinWithdrawalPeriod($order),
         ]);
+    }
+
+    /**
+     * Fatura PDF'i. İmzalı adresle (sipariş sayfasındaki bağlantı) açılır;
+     * dosya gizli diskte durur, herkese açık bir yolu yoktur.
+     */
+    public function fatura(Order $order)
+    {
+        abort_unless($order->invoice_pdf && Storage::disk('local')->exists($order->invoice_pdf), 404);
+
+        return Storage::disk('local')->download($order->invoice_pdf, 'Fatura-'.$order->invoice_number.'.pdf');
     }
 
     /** Müşterinin iade / değişim talebi açması. */

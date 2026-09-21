@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\DusukStok;
+use App\Mail\FaturaGonderimi;
 use App\Mail\OrderPlaced;
 use App\Mail\OrderShipped;
 use App\Mail\ReturnResolved;
@@ -120,6 +121,22 @@ class Notifier
             new DusukStok($variant),
             ['tur' => 'dusuk_stok', 'sku' => $variant->sku, 'stok' => $variant->stock],
         );
+    }
+
+    /** Fatura PDF'i müşteriye; gönderim anı kaydedilir. */
+    public function invoice(Order $order): bool
+    {
+        $sonuc = $this->gonder(
+            $order->customer_email,
+            new FaturaGonderimi($order),
+            ['tur' => 'fatura', 'siparis' => $order->number],
+        );
+
+        if ($sonuc) {
+            $order->forceFill(['invoice_sent_at' => now()])->save();
+        }
+
+        return $sonuc;
     }
 
     /** @param  array<string, mixed>  $baglam */

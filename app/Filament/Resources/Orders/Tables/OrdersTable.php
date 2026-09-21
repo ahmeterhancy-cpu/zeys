@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Models\Order;
+use App\Services\Faturalar;
 use App\Services\OrderShipping;
 use App\Services\OrderStock;
 use App\Services\PaymentRefunds;
 use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -16,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 class OrdersTable
@@ -106,6 +110,16 @@ class OrdersTable
                     ->placeholder('—')
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('invoice_number')
+                    ->label('Fatura')
+                    ->getStateUsing(fn (Order $kayit) => $kayit->invoice_number
+                        ?: ($kayit->payment_status === 'paid' ? 'Kesilmedi' : null))
+                    ->badge()
+                    ->color(fn (Order $kayit) => $kayit->invoice_number ? 'success' : 'warning')
+                    ->description(fn (Order $kayit) => $kayit->invoice_sent_at ? 'Gönderildi' : null)
+                    ->placeholder('—')
+                    ->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('payment_status')
@@ -128,12 +142,78 @@ class OrdersTable
                         'cancelled' => 'İptal',
                     ]),
 
+                Filter::make('faturasiz')
+                    ->label('Faturası kesilmemiş ödenmiş siparişler')
+                    ->query(fn ($query) => $query->where('payment_status', 'paid')
+                        ->where('status', '!=', 'cancelled')
+                        ->whereNull('invoice_number')),
+
                 Filter::make('takili_rezerv')
                     ->label('Takılı rezervler (2 saatten eski)')
                     ->query(fn ($query) => $query->where('stock_state', 'reserved')
                         ->where('created_at', '<', now()->subHours(2))),
             ])
             ->recordActions([
+                /*
+                 * Fatura muhasebe programında kesilir; burada numarası, tarihi
+                 * ve PDF'i siparişe bağlanır. PDF gizli diske (local) yazılır:
+                 * kişisel veri içerir, herkese açık klasöre konmaz.
+                 */
+                Action::make('fatura')
+                    ->label(fn (Order $kayit) => $kayit->invoice_number ? 'Fatura' : 'Fatura gir')
+                    ->icon('heroicon-o-document-text')
+                    ->color(fn (Order $kayit) => $kayit->invoice_number ? 'gray' : 'warning')
+                    ->visible(fn (Order $kayit) => $kayit->payment_status === 'paid')
+                    ->modalHeading(fn (Order $kayit) => 'Fatura — '.$kayit->number)
+                    ->fillForm(fn (Order $kayit) => [
+                        'numara' => $kayit->invoice_number,
+                        'tarih' => $kayit->invoice_date?->toDateString() ?? now()->toDateString(),
+                        'gonder' => ! $kayit->invoice_sent_at,
+                    ])
+                    ->schema(fn (Order $kayit) => [
+                        TextInput::make('numara')
+                            ->label('Fatura numarası')
+                            ->required()
+                            ->maxLength(40)
+                            ->unique('orders', 'invoice_number', ignorable: $kayit),
+                        DatePicker::make('tarih')
+                            ->label('Fatura tarihi')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d.m.Y'),
+                        FileUpload::make('pdf')
+                            ->label($kayit->invoice_pdf ? 'Yeni PDF (mevcut dosyanın yerine geçer)' : 'Fatura PDF')
+                            ->disk('local')
+                            ->directory('faturalar')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(5120)
+                            ->required(fn () => ! $kayit->invoice_pdf),
+                        Toggle::make('gonder')
+                            ->label('Müşteriye e-postayla gönder (PDF ekli)')
+                            ->helperText($kayit->invoice_sent_at
+                                ? 'Daha önce '.$kayit->invoice_sent_at->format('d.m.Y H:i').' tarihinde gönderildi.'
+                                : null),
+                    ])
+                    ->action(function (Order $record, array $data) {
+                        $gitti = app(Faturalar::class)->kaydet($record, $data['numara'], $data['tarih'], $data['pdf'] ?? null, (bool) $data['gonder']);
+
+                        Notification::make()
+                            ->title('Fatura kaydedildi')
+                            ->body($data['gonder'] ? ($gitti ? 'Müşteriye e-postayla gönderildi.' : 'E-posta gönderilemedi — günlüğe bakın.') : null)
+                            ->color($data['gonder'] && ! $gitti ? 'warning' : 'success')
+                            ->send();
+                    }),
+
+                Action::make('faturaIndir')
+                    ->label('Fatura PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->visible(fn (Order $kayit) => (bool) $kayit->invoice_pdf)
+                    ->action(fn (Order $record) => Storage::disk('local')->download(
+                        $record->invoice_pdf,
+                        'Fatura-'.$record->invoice_number.'.pdf',
+                    )),
+
                 Action::make('kargola')
                     ->label('Kargoya ver')
                     ->icon('heroicon-o-truck')

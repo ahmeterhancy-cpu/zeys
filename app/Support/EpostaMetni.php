@@ -63,6 +63,14 @@ class EpostaMetni
             'metin' => 'Sipariş {siparis_no} için sipariş sırasında onayladığınız Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi aşağıdadır. Bu e-postayı saklamanızı öneririz.',
             'not' => '',
         ],
+        'fatura' => [
+            'ad' => 'Fatura',
+            'degiskenler' => ['ad', 'siparis_no', 'fatura_no', 'magaza'],
+            'konu' => 'Faturanız — {siparis_no}',
+            'baslik' => 'Faturanız hazır',
+            'metin' => 'Merhaba {ad}, {siparis_no} numaralı siparişinizin faturası ({fatura_no}) ektedir. Sipariş sayfanızdan da istediğiniz zaman indirebilirsiniz.',
+            'not' => '',
+        ],
         'iade-onay' => [
             'ad' => 'İade onaylandı',
             'degiskenler' => ['ad', 'talep_no', 'siparis_no', 'tutar', 'magaza'],
@@ -116,6 +124,7 @@ class EpostaMetni
         'dakika' => 'Bağlantının geçerlilik süresi',
         'talep_no' => 'İade talep numarası',
         'tutar' => 'İade tutarı (ör. 2.890,00)',
+        'fatura_no' => 'Fatura numarası',
     ];
 
     /**
