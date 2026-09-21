@@ -1011,3 +1011,38 @@
     line-height: 1.7;
     margin-top: 8px;
 }
+
+/* --- Kasa: fatura --- */
+
+.fatura-tipi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 26px;
+    margin-bottom: 14px;
+}
+
+.fatura-tipi .onay-kutu { margin: 0; }
+
+.alan-ipucu {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--ink-faint);
+}
+
+/*
+ * :has() destekleyen tarayıcıda yalnız seçili fatura tipinin alanları
+ * görünür. Desteklemeyen tarayıcıda bu kurallar hiç eşleşmez ve bütün
+ * alanlar görünür kalır — form yine doğru çalışır (sunucu seçime göre
+ * doğrular). İçerik JS'e ya da :has()'e bağlı olarak GİZLENMEZ.
+ */
+.fatura-blok:has(input[name="fatura_tipi"][value="bireysel"]:checked) .kurumsal-alanlar,
+.fatura-blok:has(input[name="fatura_tipi"][value="kurumsal"]:checked) .bireysel-alanlar {
+    display: none;
+}
+
+.fatura-blok:not(:has(input[name="farkli_fatura_adresi"]:checked)) .fatura-adres-alanlari {
+    display: none;
+}
+
+.fatura-adres-alanlari { margin-top: 14px; }

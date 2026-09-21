@@ -80,4 +80,29 @@
             @endif
         </td>
     </tr>
+
+    @php($fatura = $order->billing_address ?? [])
+    @if (! empty($fatura))
+        <tr>
+            <td style="color:#6e5a33; font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:18px 0 8px;">
+                Fatura
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#554f44;">
+                @if (($fatura['invoice_type'] ?? null) === 'corporate')
+                    {{ $fatura['company_name'] ?? '' }}<br>
+                    {{ $fatura['tax_office'] ?? '' }} V.D. · {{ $fatura['tax_number'] ?? '' }}<br>
+                @else
+                    {{ $fatura['name'] ?? '' }} (bireysel)<br>
+                    {{-- TCKN e-postada maskeli: e-posta güvenli bir kanal değil --}}
+                    @if (! empty($fatura['tax_number']))
+                        T.C. kimlik no: •••••••{{ substr($fatura['tax_number'], -4) }}<br>
+                    @endif
+                @endif
+                {{ trim(($fatura['line1'] ?? '').' '.($fatura['line2'] ?? '')) }}<br>
+                {{ ($fatura['district'] ?? '').' / '.($fatura['city'] ?? '') }}
+            </td>
+        </tr>
+    @endif
 </table>

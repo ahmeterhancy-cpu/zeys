@@ -98,6 +98,94 @@
                     <textarea id="not" name="not" rows="3" class="metin-girdi">{{ old('not') }}</textarea>
                 </div>
             </fieldset>
+
+            @php
+                $faturaTipi = old('fatura_tipi', ($kayitliAdres->invoice_type ?? null) === 'corporate' ? 'kurumsal' : 'bireysel');
+                $kayitliKurumsal = ($kayitliAdres->invoice_type ?? null) === 'corporate';
+            @endphp
+
+            {{--
+                Fatura (e-Arşiv). Kurumsal alanlar CSS :has() ile gösterilip
+                gizleniyor; JS gerekmez. :has desteklemeyen tarayıcıda alanlar
+                yalnızca hep görünür kalır — form yine çalışır.
+            --}}
+            <fieldset class="form-blok fatura-blok">
+                <legend class="etiket">Fatura</legend>
+
+                <div class="fatura-tipi">
+                    <label class="onay-kutu">
+                        <input type="radio" name="fatura_tipi" value="bireysel" @checked($faturaTipi === 'bireysel')>
+                        <span>Bireysel</span>
+                    </label>
+                    <label class="onay-kutu">
+                        <input type="radio" name="fatura_tipi" value="kurumsal" @checked($faturaTipi === 'kurumsal')>
+                        <span>Kurumsal (şirket adına)</span>
+                    </label>
+                </div>
+
+                <div class="bireysel-alanlar">
+                    <div class="alan">
+                        <label for="tckn">T.C. kimlik no (isteğe bağlı)</label>
+                        <input type="text" id="tckn" name="tckn" inputmode="numeric" maxlength="11"
+                               value="{{ old('tckn', ! $kayitliKurumsal ? ($kayitliAdres->tax_number ?? '') : '') }}"
+                               class="metin-girdi" autocomplete="off">
+                        <span class="alan-ipucu">e-Arşiv faturanızda yer alır. Boş bırakabilirsiniz.</span>
+                        @error('tckn') <span class="alan-hata">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="kurumsal-alanlar">
+                    <div class="alan">
+                        <label for="firma_unvani">Firma unvanı</label>
+                        <input type="text" id="firma_unvani" name="firma_unvani"
+                               value="{{ old('firma_unvani', $kayitliAdres->company_name ?? '') }}"
+                               class="metin-girdi" autocomplete="organization">
+                        @error('firma_unvani') <span class="alan-hata">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="alan-ikili">
+                        <div class="alan">
+                            <label for="vergi_dairesi">Vergi dairesi</label>
+                            <input type="text" id="vergi_dairesi" name="vergi_dairesi"
+                                   value="{{ old('vergi_dairesi', $kayitliAdres->tax_office ?? '') }}"
+                                   class="metin-girdi">
+                            @error('vergi_dairesi') <span class="alan-hata">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="alan">
+                            <label for="vkn">Vergi no (VKN)</label>
+                            <input type="text" id="vkn" name="vkn" inputmode="numeric" maxlength="10"
+                                   value="{{ old('vkn', $kayitliKurumsal ? ($kayitliAdres->tax_number ?? '') : '') }}"
+                                   class="metin-girdi">
+                            @error('vkn') <span class="alan-hata">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <label class="onay-kutu">
+                    <input type="checkbox" name="farkli_fatura_adresi" value="1" @checked(old('farkli_fatura_adresi'))>
+                    <span>Fatura adresim teslimat adresinden farklı</span>
+                </label>
+
+                <div class="fatura-adres-alanlari">
+                    <div class="alan">
+                        <label for="fatura_adres">Fatura adresi</label>
+                        <input type="text" id="fatura_adres" name="fatura_adres" value="{{ old('fatura_adres') }}" class="metin-girdi">
+                        @error('fatura_adres') <span class="alan-hata">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="alan-ikili">
+                        <div class="alan">
+                            <label for="fatura_ilce">İlçe</label>
+                            <input type="text" id="fatura_ilce" name="fatura_ilce" value="{{ old('fatura_ilce') }}" class="metin-girdi">
+                            @error('fatura_ilce') <span class="alan-hata">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="alan">
+                            <label for="fatura_il">İl</label>
+                            <input type="text" id="fatura_il" name="fatura_il" value="{{ old('fatura_il') }}" class="metin-girdi">
+                            @error('fatura_il') <span class="alan-hata">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         </div>
 
         <aside class="odeme-ozet">

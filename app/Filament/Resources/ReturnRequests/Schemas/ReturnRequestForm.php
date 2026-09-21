@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ReturnRequests\Schemas;
 
 use App\Models\ReturnRequest;
+use App\Support\Tarih;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -66,7 +67,7 @@ class ReturnRequestForm
                         ->label('Teslim tarihi')
                         ->disabled()
                         ->helperText('Cayma hakkı bu tarihten başlar.')
-                        ->formatStateUsing(fn ($state) => $state ? $state->format('d.m.Y') : '—'),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state, 'd.m.Y')),
                 ]),
 
             Section::make('Geri gönderim')
@@ -79,12 +80,12 @@ class ReturnRequestForm
                     TextInput::make('shipped_back_at')
                         ->label('Gönderim')
                         ->disabled()
-                        ->formatStateUsing(fn ($state) => $state ? $state->format('d.m.Y H:i') : '—'),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
 
                     TextInput::make('received_at')
                         ->label('Bize ulaştı')
                         ->disabled()
-                        ->formatStateUsing(fn ($state) => $state ? $state->format('d.m.Y H:i') : '—'),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                 ]),
 
             Section::make('Değişim gönderimi')
@@ -108,7 +109,7 @@ class ReturnRequestForm
                     TextInput::make('resolved_at')
                         ->label('Sonuçlandı')
                         ->disabled()
-                        ->formatStateUsing(fn ($state) => $state ? $state->format('d.m.Y H:i') : '—'),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                 ]),
 
             Section::make('Notlar')

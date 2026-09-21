@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\Order;
+use App\Support\Tarih;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -30,7 +31,7 @@ class OrderForm
                 ->schema([
                     TextInput::make('number')->label('Sipariş no')->disabled(),
                     TextInput::make('created_at')->label('Tarih')->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('d.m.Y H:i')),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                     TextInput::make('status')->label('Durum')->disabled(),
                 ]),
 
@@ -59,6 +60,43 @@ class OrderForm
                         }),
                 ]),
 
+            Section::make('Fatura (e-Arşiv)')
+                ->description('Faturayı keserken bu bilgileri kullanın. Bireyselde kimlik no boşsa GİB genel numarası kullanılır.')
+                ->columns(3)
+                ->schema([
+                    TextInput::make('fatura_tipi')
+                        ->label('Tür')
+                        ->disabled()
+                        ->formatStateUsing(fn (?Order $record) => ($record?->billing_address['invoice_type'] ?? null) === 'corporate'
+                            ? 'Kurumsal'
+                            : 'Bireysel'),
+
+                    TextInput::make('fatura_kimlik')
+                        ->label('TCKN / VKN')
+                        ->disabled()
+                        ->formatStateUsing(fn (?Order $record) => $record?->billing_address['tax_number'] ?? '—'),
+
+                    TextInput::make('fatura_vd')
+                        ->label('Vergi dairesi')
+                        ->disabled()
+                        ->formatStateUsing(fn (?Order $record) => $record?->billing_address['tax_office'] ?? '—'),
+
+                    Textarea::make('fatura_adresi')
+                        ->label('Fatura adresi')
+                        ->disabled()
+                        ->rows(3)
+                        ->columnSpanFull()
+                        ->formatStateUsing(function (?Order $record) {
+                            $f = $record?->invoice_address ?? [];
+
+                            return trim(implode("\n", array_filter([
+                                $f['company_name'] ?? $f['name'] ?? null,
+                                trim(($f['line1'] ?? '').' '.($f['line2'] ?? '')),
+                                trim(($f['district'] ?? '').' / '.($f['city'] ?? '')),
+                            ])));
+                        }),
+                ]),
+
             Section::make('Tutarlar')
                 ->columns(4)
                 ->schema([
@@ -78,7 +116,7 @@ class OrderForm
                     TextInput::make('payment_ref')->label('Ödeme referansı')->disabled()->placeholder('—'),
                     TextInput::make('stock_state')->label('Stok durumu')->disabled(),
                     TextInput::make('paid_at')->label('Ödeme zamanı')->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('d.m.Y H:i')),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                 ]),
 
             Section::make('Yasal onay')
@@ -87,7 +125,7 @@ class OrderForm
                 ->schema([
                     TextInput::make('contract_version')->label('Sözleşme sürümü')->disabled()->placeholder('—'),
                     TextInput::make('contract_accepted_at')->label('Onay zamanı')->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('d.m.Y H:i')),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                     TextInput::make('contract_ip')->label('IP')->disabled()->placeholder('—'),
                 ]),
 
@@ -97,9 +135,9 @@ class OrderForm
                     TextInput::make('shipping_carrier')->label('Kargo firması'),
                     TextInput::make('tracking_number')->label('Takip numarası'),
                     TextInput::make('shipped_at')->label('Kargoya veriliş')->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('d.m.Y H:i')),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                     TextInput::make('delivered_at')->label('Teslim')->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('d.m.Y H:i')),
+                        ->formatStateUsing(fn ($state) => Tarih::goster($state)),
                 ]),
 
             Section::make('Notlar')
