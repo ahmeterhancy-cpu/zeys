@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Product;
@@ -71,7 +72,16 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
+        /*
+         * Panelden yönetilen slayt/afişler (Vitrin → Slayt ve Afişler).
+         * Bir yer boşsa görünüm otomatik içeriğe döner.
+         */
+        $banner = fn (string $yer) => rescue(fn () => Banner::yayinda($yer)->get(), collect(), false);
+
         return view('vitrin.anasayfa', [
+            'bannerSlayt' => $banner('slayt'),
+            'bannerAfis' => $banner('afis')->take(3),
+            'bannerGenis' => $banner('genis')->take(2),
             'koleksiyonlar' => $koleksiyonlar,
             // Slayt: görseli olan koleksiyonlar; yoksa markanın kendi slaytı
             'slaytlar' => $koleksiyonlar->whereNotNull('image')->take(3)->values(),

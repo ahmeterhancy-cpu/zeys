@@ -57,6 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Katalog',
                 'Satış',
+                'Vitrin',
                 'Ayarlar',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

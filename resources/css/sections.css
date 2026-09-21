@@ -383,3 +383,7 @@
     .ozellikler { grid-template-columns: minmax(0, 1fr); }
     .ozellikler li + li { border-left: 0; border-top: 1px solid var(--line); }
 }
+
+/* Panelden "metin solda" seçilen slayt */
+.slayt-ic-sol { justify-content: flex-start; }
+.slayt-marka .slayt-ic-sol { justify-content: space-between; }

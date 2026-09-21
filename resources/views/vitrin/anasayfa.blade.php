@@ -19,6 +19,49 @@
         'Yeni Gelenler' => $yeniUrunler->take(3),
         'Çok Satanlar' => $cokSatanlar->take(3),
     ], fn ($l) => $l->isNotEmpty());
+
+    /*
+     * Slayt ve afişler tek biçime getirilir. Kaynak sırası:
+     * panelden girilenler (Vitrin → Slayt ve Afişler) → görselli koleksiyonlar
+     * → sabit içerik. Görünüm yalnız bu listeleri çizer.
+     */
+    $bannerBicim = fn ($b) => [
+        'ust' => $b->ust_metin,
+        'baslik' => $b->baslik,
+        'alt' => $b->alt_metin,
+        'dugme' => $b->dugme_metni ?: ($b->adres ? 'Alışverişe başla' : null),
+        'adres' => $b->adres,
+        'dis' => $b->dis_baglanti,
+        'gorsel' => $b->gorsel ? asset('storage/' . $b->gorsel) : null,
+        'konum' => $b->metin_konumu,
+    ];
+
+    $slaytListesi = $bannerSlayt->isNotEmpty()
+        ? $bannerSlayt->map($bannerBicim)->all()
+        : $slaytlar->map(fn ($k) => [
+            'ust' => 'Yeni koleksiyon', 'baslik' => $k->name, 'alt' => $k->description,
+            'dugme' => 'Alışverişe başla', 'adres' => route('collections.show', $k->slug), 'dis' => false,
+            'gorsel' => asset('storage/' . $k->image), 'konum' => 'sag',
+        ])->all();
+
+    $afisListesi = $bannerAfis->isNotEmpty()
+        ? $bannerAfis->map($bannerBicim)->all()
+        : $koleksiyonlar->take(3)->map(fn ($k) => [
+            'ust' => $k->products_count . ' parça', 'baslik' => $k->name,
+            'alt' => $k->description ? \Illuminate\Support\Str::limit($k->description, 70) : null,
+            'dugme' => 'Alışverişe başla', 'adres' => route('collections.show', $k->slug), 'dis' => false,
+            'gorsel' => $k->image ? asset('storage/' . $k->image) : null, 'konum' => 'sol',
+        ])->all();
+
+    $genisListesi = $bannerGenis->isNotEmpty()
+        ? $bannerGenis->map($bannerBicim)->all()
+        : [
+            ['ust' => 'Edirne mağazamız', 'baslik' => 'Deneyerek alın', 'alt' => config('shop.satici.adres'),
+             'dugme' => 'Yol tarifi ve iletişim', 'adres' => url('/iletisim'), 'dis' => false, 'gorsel' => null, 'konum' => 'sol', 'ikon' => 'magaza'],
+            ['ust' => 'Kolay iade ve değişim', 'baslik' => config('shop.cayma_hakki_gun') . ' gün içinde iade',
+             'alt' => 'Bedeni olmadı mı? Sipariş sayfanızdan birkaç tıkla değişim talebi açın.',
+             'dugme' => 'İade koşulları', 'adres' => url('/sayfa/iade-degisim'), 'dis' => false, 'gorsel' => null, 'konum' => 'sol', 'ikon' => 'iade'],
+        ];
 @endphp
 
 @section('icerik')
@@ -27,21 +70,30 @@
         <div class="kap" style="margin-top:20px"><p class="uyari">{{ session('bilgi') }}</p></div>
     @endif
 
-    {{-- 1. Slayt — görselli koleksiyonlar; yoksa markanın kendi slaytı --}}
+    {{-- 1. Slayt — panel slaytları; yoksa görselli koleksiyonlar; yoksa markanın kendi slaytı --}}
     <section class="slayt" aria-label="Öne çıkanlar" data-slayt>
         <div class="slayt-ray">
-            @forelse ($slaytlar as $slayt)
-                <div class="slayt-oge" id="slayt-{{ $loop->iteration }}"
-                     style="background-image: url('{{ asset('storage/' . $slayt->image) }}')">
-                    <div class="kap slayt-ic">
+            @forelse ($slaytListesi as $slayt)
+                <div @class(['slayt-oge', 'slayt-marka' => ! $slayt['gorsel']]) id="slayt-{{ $loop->iteration }}"
+                     @if ($slayt['gorsel']) style="background-image: url('{{ $slayt['gorsel'] }}')" @endif>
+                    <div @class(['kap', 'slayt-ic', 'slayt-ic-sol' => $slayt['konum'] === 'sol'])>
                         <div class="slayt-metin">
-                            <p class="slayt-vurgu">Yeni koleksiyon</p>
-                            <h2 class="slayt-baslik">{{ $slayt->name }}</h2>
-                            @if ($slayt->description)
-                                <p class="slayt-alt">{{ $slayt->description }}</p>
+                            @if ($slayt['ust'])
+                                <p class="slayt-vurgu">{{ $slayt['ust'] }}</p>
+                            @endif
+                            @if ($loop->first)
+                                <h1 class="slayt-baslik">{{ $slayt['baslik'] }}</h1>
+                            @else
+                                <h2 class="slayt-baslik">{{ $slayt['baslik'] }}</h2>
+                            @endif
+                            @if ($slayt['alt'])
+                                <p class="slayt-alt">{{ $slayt['alt'] }}</p>
                             @endif
                             <div class="slayt-dugmeler">
-                                <a class="dugme" href="{{ route('collections.show', $slayt->slug) }}">Alışverişe başla</a>
+                                @if ($slayt['adres'])
+                                    <a class="dugme" href="{{ $slayt['adres'] }}"
+                                       @if ($slayt['dis']) rel="noopener" target="_blank" @endif>{{ $slayt['dugme'] }}</a>
+                                @endif
                                 <a class="dugme dugme-cizgi" href="{{ url('/koleksiyonlar') }}">Tüm ürünler</a>
                             </div>
                         </div>
@@ -71,9 +123,9 @@
             @endforelse
         </div>
 
-        @if ($slaytlar->count() > 1)
+        @if (count($slaytListesi) > 1)
             <div class="slayt-noktalar">
-                @foreach ($slaytlar as $slayt)
+                @foreach ($slaytListesi as $slayt)
                     <a href="#slayt-{{ $loop->iteration }}" aria-label="{{ $loop->iteration }}. slayt"
                        @class(['aktif' => $loop->first])></a>
                 @endforeach
@@ -113,23 +165,12 @@
         </section>
     @endif
 
-    {{-- 4. Koleksiyon afişleri --}}
-    @if ($koleksiyonlar->isNotEmpty())
+    {{-- 4. Üçlü afiş — panel afişleri; yoksa koleksiyonlar --}}
+    @if ($afisListesi !== [])
         <section class="kap bolum">
-            <div class="afisler afisler-{{ min(3, $koleksiyonlar->count()) }}">
-                @foreach ($koleksiyonlar->take(3) as $koleksiyon)
-                    <a class="afis {{ $koleksiyon->image ? 'afis-gorselli' : 'afis-duz afis-ton-' . $loop->iteration }}"
-                       href="{{ route('collections.show', $koleksiyon->slug) }}"
-                       @if ($koleksiyon->image) style="background-image: url('{{ asset('storage/' . $koleksiyon->image) }}')" @endif>
-                        <span class="afis-metin">
-                            <span class="afis-ust">{{ $koleksiyon->products_count }} parça</span>
-                            <span class="afis-baslik">{{ $koleksiyon->name }}</span>
-                            @if ($koleksiyon->description)
-                                <span class="afis-alt">{{ \Illuminate\Support\Str::limit($koleksiyon->description, 70) }}</span>
-                            @endif
-                            <span class="afis-bag">Alışverişe başla @include('vitrin.parca.ikon', ['ad' => 'ok-sag'])</span>
-                        </span>
-                    </a>
+            <div class="afisler afisler-{{ min(3, count($afisListesi)) }}">
+                @foreach ($afisListesi as $afis)
+                    @include('vitrin.parca.afis', ['afis' => $afis, 'sira' => $loop->iteration])
                 @endforeach
             </div>
         </section>
@@ -166,27 +207,12 @@
         </section>
     @endif
 
-    {{-- 6. Mağaza afişleri — gerçek bilgi: adres ve iade hakkı --}}
+    {{-- 6. İkili geniş afiş — panel afişleri; yoksa mağaza ve iade bilgisi --}}
     <section class="kap bolum">
-        <div class="afisler afisler-2">
-            <a class="afis afis-duz afis-genis afis-ton-1" href="{{ url('/iletisim') }}">
-                <span class="afis-metin">
-                    <span class="afis-ust">Edirne mağazamız</span>
-                    <span class="afis-baslik">Deneyerek alın</span>
-                    <span class="afis-alt">{{ config('shop.satici.adres') }}</span>
-                    <span class="afis-bag">Yol tarifi ve iletişim @include('vitrin.parca.ikon', ['ad' => 'ok-sag'])</span>
-                </span>
-                @include('vitrin.parca.ikon', ['ad' => 'magaza', 'sinif' => 'afis-ikon'])
-            </a>
-            <a class="afis afis-duz afis-genis afis-ton-2" href="{{ url('/sayfa/iade-degisim') }}">
-                <span class="afis-metin">
-                    <span class="afis-ust">Kolay iade ve değişim</span>
-                    <span class="afis-baslik">{{ config('shop.cayma_hakki_gun') }} gün içinde iade</span>
-                    <span class="afis-alt">Bedeni olmadı mı? Sipariş sayfanızdan birkaç tıkla değişim talebi açın.</span>
-                    <span class="afis-bag">İade koşulları @include('vitrin.parca.ikon', ['ad' => 'ok-sag'])</span>
-                </span>
-                @include('vitrin.parca.ikon', ['ad' => 'iade', 'sinif' => 'afis-ikon'])
-            </a>
+        <div class="afisler afisler-{{ min(2, count($genisListesi)) }}">
+            @foreach ($genisListesi as $afis)
+                @include('vitrin.parca.afis', ['afis' => $afis, 'sira' => $loop->iteration, 'genis' => true])
+            @endforeach
         </div>
     </section>
 
