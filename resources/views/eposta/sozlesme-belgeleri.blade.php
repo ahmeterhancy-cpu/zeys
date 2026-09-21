@@ -1,16 +1,14 @@
 @extends('eposta.duzen')
 
-@section('konu', 'Sözleşme belgeleriniz — ' . $order->number)
+@section('konu', $metin['konu'])
 
 @section('icerik')
     <h1 style="margin:0 0 6px; font-size:26px; font-weight:normal; color:#1c1a15;">
-        Sözleşme belgeleriniz
+        {{ $metin['baslik'] }}
     </h1>
 
     <p style="margin:0 0 20px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-        Sipariş <strong style="color:#1c1a15;">{{ $order->number }}</strong> için sipariş
-        sırasında onayladığınız Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi
-        aşağıdadır. Bu e-postayı saklamanızı öneririz.
+        {!! nl2br(e($metin['metin'])) !!}
     </p>
 
     {{-- Taraflar ve siparişe özgü bilgiler --}}

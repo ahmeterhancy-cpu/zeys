@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\LegalDocument;
 use App\Models\Order;
+use App\Support\EpostaMetni;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -33,13 +34,18 @@ class SozlesmeBelgeleri extends Mailable
     {
         $this->onBilgi = LegalDocument::surum('on-bilgilendirme', $order->preinfo_version);
         $this->sozlesme = LegalDocument::surum('mesafeli-satis', $order->contract_version);
+        $this->metin = EpostaMetni::al('sozlesme-belgeleri', [
+            'ad' => $order->customer_name,
+            'siparis_no' => $order->number,
+        ]);
     }
+
+    /** Panelden değiştirilebilen metinler (bkz. App\Support\EpostaMetni) */
+    public array $metin;
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Sözleşme belgeleriniz — '.$this->order->number,
-        );
+        return new Envelope(subject: $this->metin['konu']);
     }
 
     public function content(): Content

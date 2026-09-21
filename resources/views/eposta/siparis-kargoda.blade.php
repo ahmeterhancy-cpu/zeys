@@ -1,16 +1,20 @@
 @extends('eposta.duzen')
 
-@section('konu', 'Siparişiniz kargoya verildi — ' . $order->number)
+@section('konu', $metin['konu'])
 
 @section('icerik')
     <h1 style="margin:0 0 6px; font-size:28px; font-weight:normal; color:#1c1a15;">
-        Siparişiniz yola çıktı
+        {{ $metin['baslik'] }}
     </h1>
 
     <p style="margin:0 0 22px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
         Sipariş numaranız
         <strong style="color:#1c1a15;">{{ $order->number }}</strong>
     </p>
+
+    @if (filled($metin['metin']))
+        <p style="margin:0 0 18px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44; line-height:1.7;">{!! nl2br(e($metin['metin'])) !!}</p>
+    @endif
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 6px;">
         <tr>
@@ -30,9 +34,11 @@
         </tr>
     </table>
 
-    <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:13px; color:#8a8275;">
-        Takip numarası kargo firmasının sisteminde görünmesi birkaç saat sürebilir.
-    </p>
+    @if (filled($metin['not']))
+        <p style="margin:18px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:13px; color:#8a8275;">
+            {!! nl2br(e($metin['not'])) !!}
+        </p>
+    @endif
 
     @include('eposta.parca.siparis-dugmesi', ['order' => $order])
 

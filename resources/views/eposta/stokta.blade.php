@@ -1,10 +1,10 @@
 @extends('eposta.duzen')
 
-@section('konu', 'Beklediğiniz ürün stokta')
+@section('konu', $metin['konu'])
 
 @section('icerik')
     <h1 style="margin:0 0 6px; font-size:28px; font-weight:normal; color:#1c1a15;">
-        Beklediğiniz ürün stokta
+        {{ $metin['baslik'] }}
     </h1>
 
     <p style="margin:0 0 22px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
@@ -15,8 +15,7 @@
     </p>
 
     <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-        Haber verilmesini istediğiniz beden yeniden satışta. Sınırlı sayıda
-        olabileceği için beklemeden bakmanızı öneririz.
+        {!! nl2br(e($metin['metin'])) !!}
     </p>
 
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 0;">
@@ -30,8 +29,9 @@
         </tr>
     </table>
 
-    <p style="margin:26px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8a8275;">
-        Bu bildirimi, ürün sayfasında "haber ver" dediğiniz için aldınız.
-        Başka bir bildirim gönderilmeyecek.
-    </p>
+    @if (filled($metin['not']))
+        <p style="margin:26px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8a8275;">
+            {!! nl2br(e($metin['not'])) !!}
+        </p>
+    @endif
 @endsection

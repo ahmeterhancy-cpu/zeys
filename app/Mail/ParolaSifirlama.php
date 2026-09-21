@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Support\EpostaMetni;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -12,11 +13,17 @@ class ParolaSifirlama extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $baglanti, public int $dakika) {}
+    /** Panelden değiştirilebilen metinler (bkz. App\Support\EpostaMetni) */
+    public array $metin;
+
+    public function __construct(public string $baglanti, public int $dakika)
+    {
+        $this->metin = EpostaMetni::al('parola-sifirlama', ['dakika' => $dakika]);
+    }
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Parola sıfırlama — '.config('shop.ad'));
+        return new Envelope(subject: $this->metin['konu']);
     }
 
     public function content(): Content

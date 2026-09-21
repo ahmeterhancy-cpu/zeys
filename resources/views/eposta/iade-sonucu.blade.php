@@ -1,20 +1,13 @@
 @extends('eposta.duzen')
 
-@section('konu', 'İade talebiniz — ' . $talep->number)
+@section('konu', $metin['konu'] ?? 'İade talebiniz — ' . $talep->number)
 
 @section('icerik')
     @php($order = $talep->order)
 
+    {{-- Başlık ve ana metin panelden değiştirilebilir (Ayarlar → E-posta Metinleri) --}}
     <h1 style="margin:0 0 6px; font-size:28px; font-weight:normal; color:#1c1a15;">
-        @if ($talep->status === 'approved')
-            {{ $talep->is_exchange ? 'Değişim talebiniz onaylandı' : 'İade talebiniz onaylandı' }}
-        @elseif ($talep->status === 'rejected')
-            İade talebiniz hakkında
-        @elseif ($talep->status === 'completed')
-            {{ $talep->is_exchange ? 'Değişim ürününüz yola çıktı' : 'İade tutarınız gönderildi' }}
-        @else
-            Talebiniz güncellendi
-        @endif
+        {{ $metin['baslik'] ?? 'Talebiniz güncellendi' }}
     </h1>
 
     <p style="margin:0 0 22px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
@@ -22,54 +15,25 @@
         · Sipariş {{ $order->number }}
     </p>
 
-    @if ($talep->status === 'approved' && ! $talep->is_exchange)
-        <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-            Ürününüz tarafımıza ulaştı ve incelendi. İade tutarı
-            <strong style="color:#1c1a15;">{{ number_format((float) $talep->refund_amount, 2, ',', '.') }} TL</strong>
-            olarak onaylandı; ödemeyi yaptığınız karta
-            <strong>14 gün</strong> içinde iade edilecek. Bankaya göre
-            hesabınıza yansıması birkaç gün sürebilir.
+    @if ($metin)
+        <p style="margin:0 0 16px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44; line-height:1.7;">
+            {!! nl2br(e($metin['metin'])) !!}
         </p>
+    @endif
 
-    @elseif ($talep->status === 'approved' && $talep->is_exchange)
-        <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-            Ürününüz tarafımıza ulaştı. Talep ettiğiniz beden hazırlanıyor;
-            kargoya verildiğinde takip numarasını ileteceğiz. Değişimde
-            ücret iadesi yapılmaz.
-        </p>
+    {{-- Ret gerekçesi yöneticinin talebe yazdığı nottan gelir --}}
+    @if ($talep->status === 'rejected' && $talep->admin_note)
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td style="padding:16px 18px; background:#fdf3f3; border-left:2px solid #a32b2b; font-family:Arial,Helvetica,sans-serif; font-size:14px; line-height:1.7; color:#7d2020;">
+                    {{ $talep->admin_note }}
+                </td>
+            </tr>
+        </table>
+    @endif
 
-    @elseif ($talep->status === 'rejected')
-        <p style="margin:0 0 16px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-            Talebinizi inceledik ancak onaylayamadık. Gerekçe aşağıda.
-            Sorunuz olursa bize yazabilirsiniz.
-        </p>
-
-        @if ($talep->admin_note)
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                    <td style="padding:16px 18px; background:#fdf3f3; border-left:2px solid #a32b2b; font-family:Arial,Helvetica,sans-serif; font-size:14px; line-height:1.7; color:#7d2020;">
-                        {{ $talep->admin_note }}
-                    </td>
-                </tr>
-            </table>
-        @endif
-
-    @elseif ($talep->status === 'completed' && $talep->is_exchange)
-        <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-            Değişim ürününüz kargoya verildi.
-            @if ($talep->exchange_tracking_number)
-                Takip numarası
-                <strong style="letter-spacing:1px; color:#1c1a15;">{{ $talep->exchange_tracking_number }}</strong>
-                ({{ $talep->exchange_carrier }}).
-            @endif
-        </p>
-
-    @elseif ($talep->status === 'completed')
-        <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#554f44;">
-            İade tutarı
-            <strong style="color:#1c1a15;">{{ number_format((float) $talep->refund_amount, 2, ',', '.') }} TL</strong>
-            gönderildi. Bankaya göre hesabınıza yansıması birkaç gün sürebilir.
-        </p>
+    @if (! empty($metin['not']))
+        <p style="margin:16px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#8a8275;">{!! nl2br(e($metin['not'])) !!}</p>
     @endif
 
     {{-- İade edilen kalemler --}}
