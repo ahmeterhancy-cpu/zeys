@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\DusukStok;
 use App\Mail\OrderPlaced;
 use App\Mail\OrderShipped;
 use App\Mail\ReturnResolved;
 use App\Mail\SozlesmeBelgeleri;
 use App\Models\Order;
+use App\Models\ProductVariant;
 use App\Models\ReturnRequest;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Log;
@@ -98,6 +100,25 @@ class Notifier
             $eposta,
             new ReturnResolved($talep),
             ['tur' => 'iade_sonucu', 'talep' => $talep->number],
+        );
+    }
+
+    /**
+     * Mağazaya: bir varyantın stoğu eşiğe indi ya da bitti.
+     * Adres boşsa sessizce geçilir — bildirim isteğe bağlı.
+     */
+    public function lowStock(ProductVariant $variant): bool
+    {
+        $alici = config('shop.siparis_bildirim_epostasi');
+
+        if (! $alici) {
+            return false;
+        }
+
+        return $this->gonder(
+            $alici,
+            new DusukStok($variant),
+            ['tur' => 'dusuk_stok', 'sku' => $variant->sku, 'stok' => $variant->stock],
         );
     }
 
