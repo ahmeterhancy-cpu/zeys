@@ -22,13 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Oturum katmanı bu yollara zaten uygulanmıyor; yine de CSRF
-        // listesinden düşürülür ki ileride biri bu rotaları `web` grubuna
-        // taşırsa istek sessizce 419'a düşmesin.
         // Bakım perdesi — yalnız `web` grubu; PayTR uçları (routes/paytr.php)
         // bu grubun dışında olduğu için perde açıkken de ödeme işlenir.
         $middleware->appendToGroup('web', BakimPerdesi::class);
 
+        // Oturum katmanı PayTR yollarına zaten uygulanmıyor; yine de CSRF
+        // listesinden düşürülür ki ileride biri bu rotaları `web` grubuna
+        // taşırsa istek sessizce 419'a düşmesin.
         $middleware->validateCsrfTokens(except: [
             'paytr/callback',
             'odeme/donus/*',
