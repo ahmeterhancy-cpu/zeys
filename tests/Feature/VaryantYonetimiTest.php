@@ -371,4 +371,45 @@ class VaryantYonetimiTest extends TestCase
 
         $this->assertDatabaseHas('ozellikler', ['ad' => 'Kumaş', 'tur' => 'text']);
     }
+
+    public function test_olustururken_tablo_kaydetmeden_gelir_ve_satir_degerleri_yazilir(): void
+    {
+        $beden = $this->ozellik('Beden');
+        $renk = $this->ozellik('Renk');
+        [$s, $m] = [$this->degerler('Beden', ['S'])[0], $this->degerler('Beden', ['M'])[0]];
+        $siyah = $this->degerler('Renk', ['Siyah'])[0];
+
+        $sayfa = Livewire::actingAs($this->yonetici)->test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Keten Pantolon',
+                'base_sku' => 'ZEYS-200',
+                'is_active' => true,
+                'secim' => [$beden->id => [$s, $m], $renk->id => [$siyah]],
+                'varsayilan_fiyat' => 1000,
+                'varsayilan_stok' => 5,
+            ]);
+
+        // Kaydetmeden satırlar hazır, etiketler kütüphane sırasıyla
+        $satirlar = collect($sayfa->get('data.kombinasyonlar'));
+        $this->assertEqualsCanonicalizing(['S / Siyah', 'M / Siyah'], $satirlar->pluck('etiket')->all());
+
+        $mAnahtar = UrunVaryantlari::kombinasyonAnahtari([$m, $siyah]);
+        $sayfa->set('data.kombinasyonlar.k'.$mAnahtar.'.price', 1250)
+            ->set('data.kombinasyonlar.k'.$mAnahtar.'.stock', 2);
+
+        // Seçime değer eklemek girilen satırı silmez
+        $sayfa->set('data.secim.'.$beden->id, [$s, $m, $this->degerler('Beden', ['L'])[0]]);
+        $this->assertSame(1250, $sayfa->get('data.kombinasyonlar.k'.$mAnahtar.'.price'));
+        $this->assertCount(3, $sayfa->get('data.kombinasyonlar'));
+
+        $sayfa->call('create')->assertHasNoFormErrors();
+
+        $v = Product::where('name', 'Keten Pantolon')->firstOrFail()
+            ->variants()->with('optionValues.option')->get()->keyBy('label');
+
+        $this->assertSame('1250.00', $v['M / Siyah']->price);
+        $this->assertSame(2, $v['M / Siyah']->stock);
+        $this->assertSame('1000.00', $v['S / Siyah']->price, 'Boş hücre başlangıç değerini alır');
+        $this->assertSame(5, $v['L / Siyah']->stock);
+    }
 }

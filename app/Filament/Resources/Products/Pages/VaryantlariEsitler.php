@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
-use App\Models\Ozellik;
 use App\Models\Product;
 use App\Services\UrunVaryantlari;
 use App\Support\Yetki;
@@ -25,7 +24,8 @@ trait VaryantlariEsitler
     protected function varyantAlanlariniAyir(array $data): array
     {
         $this->varyantVerisi = [
-            'eksenler' => static::seciminEksenleri($data['secim'] ?? []),
+            'eksenler' => UrunVaryantlari::seciminEksenleri($data['secim'] ?? []),
+            'satirlar' => $data['kombinasyonlar'] ?? [],
             'varsayilan' => [
                 // Personel fiyat belirleyemez (alan kilitli; yine de sunucuda da yok sayılır)
                 'fiyat' => Yetki::yonetici() ? ($data['varsayilan_fiyat'] ?? null) : null,
@@ -34,22 +34,9 @@ trait VaryantlariEsitler
             ],
         ];
 
-        unset($data['secim'], $data['varsayilan_fiyat'], $data['varsayilan_eski_fiyat'], $data['varsayilan_stok']);
+        unset($data['secim'], $data['kombinasyonlar'], $data['varsayilan_fiyat'], $data['varsayilan_eski_fiyat'], $data['varsayilan_stok']);
 
         return $data;
-    }
-
-    /**
-     * Çip seçimi (secim.{ozellik_id} => [değer id]) → eksen listesi,
-     * kütüphane sırasıyla (vitrinde seçiciler bu sırayla görünür).
-     */
-    public static function seciminEksenleri(array $secim): array
-    {
-        $secim = array_filter($secim, fn ($degerler) => ! empty($degerler));
-
-        return Ozellik::whereIn('id', array_keys($secim))->orderBy('sira')->orderBy('ad')->pluck('id')
-            ->map(fn ($id) => ['ozellik_id' => $id, 'degerler' => array_values((array) $secim[$id])])
-            ->all();
     }
 
     protected function varyantlariEsitle(Product $product): void
@@ -63,6 +50,8 @@ trait VaryantlariEsitler
             $this->varyantVerisi['eksenler'],
             $this->varyantVerisi['varsayilan'],
         );
+
+        $this->satirlariUygula($product, $this->varyantVerisi['satirlar']);
 
         $degisiklik = array_filter([
             $sonuc['eklenen'] ? $sonuc['eklenen'].' kombinasyon eklendi' : null,
@@ -78,6 +67,47 @@ trait VaryantlariEsitler
                 ->body(implode(' · ', $degisiklik).'. Toplam '.$sonuc['toplam'].' varyant.')
                 ->success()
                 ->send();
+        }
+    }
+
+    /**
+     * Oluştururken tabloda girilen satır değerleri (fiyat, stok, görsel,
+     * satışta) ilgili varyanta yazılır. Boş hücre = başlangıç değeri kalır.
+     */
+    protected function satirlariUygula(Product $product, array $satirlar): void
+    {
+        if ($satirlar === []) {
+            return;
+        }
+
+        $satirlar = collect($satirlar)->keyBy('anahtar');
+
+        foreach ($product->variants()->with('optionValues')->get() as $varyant) {
+            $satir = $satirlar->get(UrunVaryantlari::kombinasyonAnahtari(
+                $varyant->optionValues->pluck('ozellik_degeri_id')->filter()->all()
+            ));
+
+            if (! $satir) {
+                continue;
+            }
+
+            $gorsel = collect((array) ($satir['image'] ?? []))->first();
+
+            $degisen = array_filter([
+                // Personel fiyat belirleyemez
+                'price' => Yetki::yonetici() && filled($satir['price'] ?? null) ? (float) $satir['price'] : null,
+                'compare_at_price' => Yetki::yonetici() && filled($satir['compare_at_price'] ?? null) ? (float) $satir['compare_at_price'] : null,
+                'stock' => filled($satir['stock'] ?? null) ? max(0, (int) $satir['stock']) : null,
+                'image' => $gorsel ?: null,
+            ], fn ($v) => $v !== null);
+
+            if (array_key_exists('is_active', $satir)) {
+                $degisen['is_active'] = (bool) $satir['is_active'];
+            }
+
+            if ($degisen !== []) {
+                $varyant->update($degisen);
+            }
         }
     }
 }

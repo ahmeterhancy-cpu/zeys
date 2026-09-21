@@ -57,6 +57,59 @@ class UrunVaryantlari
     }
 
     /**
+     * Formdaki çip seçimi (ozellik_id => [değer id]) → eksen listesi,
+     * kütüphane sırasıyla (vitrinde seçiciler bu sırayla görünür).
+     *
+     * @return list<array{ozellik_id: int, degerler: list<string>}>
+     */
+    public static function seciminEksenleri(array $secim): array
+    {
+        $secim = array_filter($secim, fn ($degerler) => ! empty($degerler));
+
+        return Ozellik::whereIn('id', array_keys($secim))->orderBy('sira')->orderBy('ad')->pluck('id')
+            ->map(fn ($id) => ['ozellik_id' => $id, 'degerler' => array_values(array_map('strval', (array) $secim[$id]))])
+            ->all();
+    }
+
+    /** Kombinasyonun sırasız kimliği: kütüphane değer id'leri, sıralı. */
+    public static function kombinasyonAnahtari(array $degerIdleri): string
+    {
+        $ids = array_map('intval', $degerIdleri);
+        sort($ids);
+
+        return implode('-', $ids);
+    }
+
+    /**
+     * Seçime göre oluşacak kombinasyonlar — kaydetmeden önce formda
+     * tablo olarak gösterilir.
+     *
+     * @return list<array{anahtar: string, etiket: string}>
+     */
+    public function onizleme(array $secim): array
+    {
+        $eksenler = static::seciminEksenleri($secim);
+
+        if ($eksenler === []) {
+            return [];
+        }
+
+        $tumu = OzellikDegeri::whereIn('id', collect($eksenler)->pluck('degerler')->flatten()->all())
+            ->orderBy('sira')->orderBy('id')->get();
+
+        $listeler = collect($eksenler)
+            ->map(fn ($e) => $tumu->where('ozellik_id', $e['ozellik_id'])->values()->all())
+            ->filter()
+            ->values()
+            ->all();
+
+        return array_map(fn (array $kombinasyon) => [
+            'anahtar' => static::kombinasyonAnahtari(array_map(fn (OzellikDegeri $d) => $d->id, $kombinasyon)),
+            'etiket' => implode(' / ', array_map(fn (OzellikDegeri $d) => $d->deger, $kombinasyon)),
+        ], $this->matris->cartesian($listeler));
+    }
+
+    /**
      * @param  list<array{ozellik_id: int|string|null, degerler: list<int|string>}>  $eksenler
      * @param  array{fiyat?: float|string|null, eski_fiyat?: float|string|null, stok?: int|string|null}  $varsayilan
      * @return array{toplam: int, eklenen: int, silinen: int, kaldirilan: int}

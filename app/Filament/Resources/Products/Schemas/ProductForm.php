@@ -8,11 +8,15 @@ use App\Filament\Resources\Products\RelationManagers\VariantsRelationManager;
 use App\Models\Ozellik;
 use App\Models\OzellikDegeri;
 use App\Models\Product;
+use App\Services\UrunVaryantlari;
 use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -138,6 +142,7 @@ class ProductForm
                         ->columns(3)
                         ->schema([
                             TextInput::make('varsayilan_fiyat')
+                                ->live(onBlur: true)
                                 ->label('Satış fiyatı (TL)')
                                 ->numeric()
                                 ->minValue(0)
@@ -148,6 +153,7 @@ class ProductForm
                                 ->helperText(fn () => Yetki::yonetici() ? null : 'Fiyatı yalnız yönetici belirler; mevcut en düşük fiyat kullanılır.'),
 
                             TextInput::make('varsayilan_eski_fiyat')
+                                ->live(onBlur: true)
                                 ->label('Eski fiyat (TL, isteğe bağlı)')
                                 ->numeric()
                                 ->minValue(0)
@@ -156,6 +162,7 @@ class ProductForm
                                 ->helperText('Doluysa vitrinde üstü çizili gösterilir.'),
 
                             TextInput::make('varsayilan_stok')
+                                ->live(onBlur: true)
                                 ->label('Stok (her kombinasyona)')
                                 ->numeric()
                                 ->minValue(0)
@@ -178,9 +185,57 @@ class ProductForm
                             ])->key('varyant-tablosu'),
                         ]),
 
-                    Text::make('Kaydettiğinizde her kombinasyonun fiyatı, stoğu ve görseli bu sekmede tablo olarak açılır.')
-                        ->color('gray')
-                        ->visible(fn (string $operation) => $operation === 'create'),
+                    /*
+                     * Oluştururken kombinasyon tablosu KAYDETMEDEN görünür: çiplere
+                     * tıkladıkça satırlar oluşur, fiyat/stok/görsel hemen girilir.
+                     * Kayıtta bu değerler oluşan varyantlara yazılır
+                     * (VaryantlariEsitler::satirlariUygula).
+                     */
+                    Section::make('Kombinasyonlar — fiyat, stok, görsel')
+                        ->description('Seçim yaptıkça satırlar burada oluşur. Boş bıraktığınız hücreye yukarıdaki başlangıç değeri yazılır.')
+                        ->visible(fn (string $operation) => $operation === 'create')
+                        ->schema([
+                            Text::make('Yukarıdan en az bir değer seçin; kombinasyonlar burada listelenecek.')
+                                ->color('gray')
+                                ->visible(fn (Get $get) => blank($get('kombinasyonlar'))),
+
+                            Repeater::make('kombinasyonlar')
+                                ->hiddenLabel()
+                                ->addable(false)
+                                ->deletable(false)
+                                ->reorderable(false)
+                                ->default([])
+                                ->visible(fn (Get $get) => filled($get('kombinasyonlar')))
+                                ->table([
+                                    TableColumn::make('Kombinasyon')->width('9rem'),
+                                    TableColumn::make('Fiyat (TL)'),
+                                    TableColumn::make('Eski fiyat'),
+                                    TableColumn::make('Stok')->width('7rem'),
+                                    TableColumn::make('Görsel')->width('10rem'),
+                                    TableColumn::make('Satışta')->width('5rem'),
+                                ])
+                                ->schema([
+                                    Hidden::make('anahtar'),
+                                    Hidden::make('etiket'),
+                                    Text::make(fn (Get $get) => $get('etiket'))->weight('medium'),
+                                    TextInput::make('price')->hiddenLabel()->numeric()->minValue(0)
+                                        ->placeholder(fn (Get $get) => filled($get('../../varsayilan_fiyat')) ? (string) $get('../../varsayilan_fiyat') : '0,00')
+                                        ->disabled(fn () => ! Yetki::yonetici()),
+                                    TextInput::make('compare_at_price')->hiddenLabel()->numeric()->minValue(0)
+                                        ->placeholder(fn (Get $get) => filled($get('../../varsayilan_eski_fiyat')) ? (string) $get('../../varsayilan_eski_fiyat') : '—')
+                                        ->disabled(fn () => ! Yetki::yonetici()),
+                                    TextInput::make('stock')->hiddenLabel()->numeric()->minValue(0)
+                                        ->placeholder(fn (Get $get) => (string) ($get('../../varsayilan_stok') ?: 0)),
+                                    FileUpload::make('image')
+                                        ->hiddenLabel()
+                                        ->disk('public') // vitrin storage/ altından okur
+                                        ->directory('urunler/varyant')
+                                        ->image()
+                                        ->maxSize(4096)
+                                        ->panelLayout('compact'),
+                                    Toggle::make('is_active')->hiddenLabel()->default(true),
+                                ]),
+                        ]),
                 ]),
 
                 Tab::make('Görsel')->id('gorsel')->schema([
@@ -285,6 +340,7 @@ class ProductForm
             ->bulkToggleable()
             ->live()
             ->default([])
+            ->afterStateUpdated(fn (Get $get, Set $set) => static::kombinasyonlariKur($get, $set))
             ->extraAttributes(['class' => 'zeys-cipler'])
             ->hintAction(
                 Action::make('degerEkle'.$ozellik->id)
@@ -306,7 +362,35 @@ class ProductForm
 
                         // Eklenen değer seçili gelsin
                         $set($yol, array_values(array_unique([...(array) $get($yol), (string) $deger->id])));
+                        static::kombinasyonlariKur($get, $set);
                     }),
             );
+    }
+
+    /**
+     * Oluşturma ekranında seçime göre tablo satırlarını kur; önceden
+     * girilen satır değerleri (anahtar aynıysa) korunur. Düzenlemede
+     * bu tablo yok (varyant tablosu kayıtlı satırlarla çalışır).
+     */
+    protected static function kombinasyonlariKur(Get $get, Set $set): void
+    {
+        $mevcut = collect((array) $get('kombinasyonlar'))->keyBy('anahtar');
+        $satirlar = [];
+
+        foreach (app(UrunVaryantlari::class)->onizleme((array) $get('secim')) as $k) {
+            $satirlar['k'.$k['anahtar']] = [
+                ...($mevcut->get($k['anahtar']) ?? [
+                    'price' => null,
+                    'compare_at_price' => null,
+                    'stock' => null,
+                    'image' => [],
+                    'is_active' => true,
+                ]),
+                'anahtar' => $k['anahtar'],
+                'etiket' => $k['etiket'],
+            ];
+        }
+
+        $set('kombinasyonlar', $satirlar);
     }
 }
