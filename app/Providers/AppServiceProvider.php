@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\MenuOgesi;
 use App\Models\Setting;
 use App\Services\Cart;
 use Illuminate\Pagination\Paginator;
@@ -37,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layout.vitrin', function ($view) {
             $view->with('sepetAdedi', app(Cart::class)->count());
             $view->with('menuKategorileri', $this->menuKategorileri());
+
+            // Panelden düzenlenen menüler (Vitrin → Menüler); boş konum varsayılana döner
+            $ogeler = $this->istekBasina('menuOgeleri', fn () => MenuOgesi::where('aktif', true)->orderBy('sira')->get());
+            $view->with('menuler', collect(array_keys(MenuOgesi::KONUMLAR))
+                ->mapWithKeys(fn ($k) => [$k => MenuOgesi::baglantilar($k, $ogeler)])
+                ->all());
         });
 
         // Mağaza sayfalarının yan sütunu: aynı kategori ağacı + koleksiyonlar

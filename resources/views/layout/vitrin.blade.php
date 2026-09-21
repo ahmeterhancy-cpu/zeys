@@ -64,7 +64,9 @@
                         {{ number_format((float) config('shop.kargo.ucretsiz_esigi'), 0, ',', '.') }} TL ve üzeri kargo ücretsiz
                     </li>
                 @endif
-                <li><a href="{{ route('order.lookup.form') }}">Sipariş Sorgula</a></li>
+                @foreach ($menuler['ust-serit'] as $bag)
+                    <li><a href="{{ $bag['adres'] }}" @if ($bag['yeni_sekme']) target="_blank" rel="noopener" @endif>{{ $bag['etiket'] }}</a></li>
+                @endforeach
                 <li>
                     <a href="https://instagram.com/{{ config('shop.sosyal.instagram') }}" rel="noopener noreferrer" target="_blank">
                         @include('vitrin.parca.ikon', ['ad' => 'instagram']) Instagram
@@ -89,21 +91,20 @@
                         <span>Menü</span>
                     </div>
                     <nav aria-label="Mobil menü">
-                        <a href="{{ url('/') }}">Ana Sayfa</a>
-                        <a href="{{ url('/koleksiyonlar') }}">Tüm Ürünler</a>
+                        @foreach ($menuler['ana'] as $bag)
+                            <a href="{{ $bag['adres'] }}" @if ($bag['yeni_sekme']) target="_blank" rel="noopener" @endif>{{ $bag['etiket'] }}</a>
+                        @endforeach
                         @foreach ($menuKategorileri as $kat)
                             <a href="{{ route('catalog.category', $kat->slug) }}">{{ $kat->name }}</a>
                             @foreach ($kat->children as $alt)
                                 <a class="mobil-menu-alt" href="{{ route('catalog.category', $alt->slug) }}">{{ $alt->name }}</a>
                             @endforeach
                         @endforeach
-                        <a href="{{ route('order.lookup.form') }}">Sipariş Sorgula</a>
                         @auth
                             <a href="{{ route('account.index') }}">Hesabım</a>
                         @else
                             <a href="{{ route('login') }}">Giriş / Üye Ol</a>
                         @endauth
-                        <a href="{{ url('/iletisim') }}">İletişim</a>
                     </nav>
                 </div>
             </details>
@@ -193,11 +194,15 @@
 
                 <nav aria-label="Ana menü">
                     <ul class="ana-menu">
-                        <li><a href="{{ url('/') }}" @class(['aktif' => request()->is('/')])>Ana Sayfa</a></li>
-                        <li><a href="{{ url('/koleksiyonlar') }}" @class(['aktif' => request()->is('koleksiyon*')])>Koleksiyonlar</a></li>
-                        <li><a href="{{ url('/koleksiyonlar?sirala=yeni') }}">Yeni Gelenler</a></li>
-                        <li><a href="{{ route('order.lookup.form') }}" @class(['aktif' => request()->is('siparis-sorgula')])>Sipariş Sorgula</a></li>
-                        <li><a href="{{ url('/iletisim') }}" @class(['aktif' => request()->is('iletisim')])>İletişim</a></li>
+                        @foreach ($menuler['ana'] as $bag)
+                            @php
+                                $yol = parse_url($bag['adres'], PHP_URL_PATH) ?: '/';
+                                $aktifMi = rtrim($bag['adres'], '/') === rtrim(url()->full(), '/')
+                                    || ($yol !== '/' && ! parse_url($bag['adres'], PHP_URL_QUERY) && request()->is(ltrim($yol, '/') . '*'));
+                            @endphp
+                            <li><a href="{{ $bag['adres'] }}" @class(['aktif' => $aktifMi])
+                                   @if ($bag['yeni_sekme']) target="_blank" rel="noopener" @endif>{{ $bag['etiket'] }}</a></li>
+                        @endforeach
                     </ul>
                 </nav>
 
@@ -260,9 +265,9 @@
                 <div>
                     <h3>Yardım</h3>
                     <ul>
-                        <li><a href="{{ url('/siparis-sorgula') }}">Sipariş Sorgula</a></li>
-                        <li><a href="{{ url('/sayfa/iade-degisim') }}">İade ve Değişim</a></li>
-                        <li><a href="{{ url('/iletisim') }}">İletişim</a></li>
+                        @foreach ($menuler['alt-yardim'] as $bag)
+                            <li><a href="{{ $bag['adres'] }}" @if ($bag['yeni_sekme']) target="_blank" rel="noopener" @endif>{{ $bag['etiket'] }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
 
