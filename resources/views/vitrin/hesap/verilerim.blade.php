@@ -20,8 +20,8 @@
 
         <p style="color: var(--ink-soft); max-width: var(--measure)">
             KVKK kapsamında hakkınızda tuttuğumuz kişisel verilerin bir kopyasını
-            indirebilirsiniz: hesap bilgileri, adresler, siparişler, iade talepleri
-            ve stok bildirim kayıtları.
+            indirebilirsiniz: hesap bilgileri, adresler, siparişler, iade talepleri,
+            ürün değerlendirmeleri ve stok bildirim kayıtları.
         </p>
 
         <a class="dugme dugme-cizgi" href="{{ route('account.data.export') }}">Verilerimi indir (JSON)</a>
@@ -31,7 +31,7 @@
         <div class="bolum-basi"><h2>Hesabımı sil</h2></div>
 
         <div class="uyari">
-            <p style="margin:0 0 8px"><strong>Silinecekler:</strong> hesabınız, kayıtlı adresleriniz ve stok bildirim kayıtlarınız.</p>
+            <p style="margin:0 0 8px"><strong>Silinecekler:</strong> hesabınız, kayıtlı adresleriniz, ürün değerlendirmeleriniz ve stok bildirim kayıtlarınız.</p>
             <p style="margin:0">
                 <strong>Silinmeyecekler:</strong> sipariş ve fatura kayıtları. Vergi mevzuatı
                 gereği yasal süre boyunca saklanmak zorundadır; hesabınızdan ayrılır ama

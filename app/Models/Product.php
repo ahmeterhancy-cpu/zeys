@@ -62,6 +62,11 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class)->orderBy('position');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
     public function media(): HasMany
     {
         return $this->hasMany(ProductMedia::class)->orderBy('position');

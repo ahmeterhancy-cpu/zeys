@@ -116,6 +116,75 @@
         </div>
     </section>
 
+    {{-- Değerlendirme — yalnız teslim edilmiş siparişte --}}
+    @if ($degerlendirme->isNotEmpty())
+        <section class="bolum" id="degerlendirme">
+            <div class="bolum-basi">
+                <h2>Ürünleri Değerlendirin</h2>
+            </div>
+
+            @foreach ($degerlendirme as $d)
+                <div class="degerlendir">
+                    <p class="degerlendir-ad">{{ $d['ad'] }}</p>
+
+                    @if ($d['yorum'])
+                        <p class="degerlendir-durum">
+                            <span class="yildiz" aria-label="{{ $d['yorum']->rating }} / 5">{{ str_repeat('★', $d['yorum']->rating) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - $d['yorum']->rating) }}</span></span>
+                            {{ $d['yorum']->status === 'approved' ? 'Yayında — teşekkürler.' : ($d['yorum']->status === 'rejected' ? 'Yayımlanmadı.' : 'Onay bekliyor.') }}
+                        </p>
+                    @else
+                        <details class="degerlendir-ac" @if (old('product_id') == $d['product_id']) open @endif>
+                            <summary>Değerlendirme yaz</summary>
+
+                            <form method="POST"
+                                  action="{{ \Illuminate\Support\Facades\URL::signedRoute('order.review', ['order' => $order->number]) }}"
+                                  class="degerlendir-formu">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $d['product_id'] }}">
+
+                                <fieldset class="puan-sec">
+                                    <legend class="etiket">Puanınız</legend>
+                                    {{-- Sağdan sola dizilir: CSS ~ seçicisiyle üzerine gelinen
+                                         yıldız ve solundakiler dolu görünür. JS gerekmez. --}}
+                                    @for ($p = 5; $p >= 1; $p--)
+                                        <input type="radio" name="puan" value="{{ $p }}"
+                                               id="puan-{{ $d['product_id'] }}-{{ $p }}"
+                                               @checked(old('product_id') == $d['product_id'] && old('puan') == $p) required>
+                                        <label for="puan-{{ $d['product_id'] }}-{{ $p }}" title="{{ $p }} / 5">
+                                            <span class="gorunmez">{{ $p }} yıldız</span>★
+                                        </label>
+                                    @endfor
+                                </fieldset>
+
+                                <div class="alan">
+                                    <label for="baslik-{{ $d['product_id'] }}">Başlık (isteğe bağlı)</label>
+                                    <input type="text" id="baslik-{{ $d['product_id'] }}" name="baslik" maxlength="120" class="metin-girdi"
+                                           value="{{ old('product_id') == $d['product_id'] ? old('baslik') : '' }}">
+                                </div>
+
+                                <div class="alan">
+                                    <label for="yorum-{{ $d['product_id'] }}">Yorumunuz</label>
+                                    <textarea id="yorum-{{ $d['product_id'] }}" name="yorum" rows="4" minlength="10" maxlength="1500" required class="metin-girdi">{{ old('product_id') == $d['product_id'] ? old('yorum') : '' }}</textarea>
+                                </div>
+
+                                @if (old('product_id') == $d['product_id'] && $errors->any())
+                                    <p class="uyari uyari-hata">{{ $errors->first() }}</p>
+                                @endif
+
+                                <p class="degerlendir-not">
+                                    Ürün sayfasında adınız "{{ \App\Models\ProductReview::gorunenAd($order->customer_name) }}" olarak görünür.
+                                    Yorumlar onaydan sonra yayımlanır.
+                                </p>
+
+                                <button type="submit" class="dugme">Gönder</button>
+                            </form>
+                        </details>
+                    @endif
+                </div>
+            @endforeach
+        </section>
+    @endif
+
     {{-- Mevcut talepler --}}
     @if ($order->returnRequests->isNotEmpty())
         <section class="bolum">

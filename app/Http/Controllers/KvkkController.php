@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\ProductReview;
 use App\Models\StockInquiry;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,7 +49,7 @@ class KvkkController extends Controller
                 ->map(fn (Address $a) => $a->toSnapshot() + ['baslik' => $a->title])
                 ->all(),
             'siparisler' => Order::where('user_id', $k->id)
-                ->with(['items', 'returnRequests.items'])
+                ->with(['items', 'returnRequests.items', 'reviews.product'])
                 ->get()
                 ->map(fn (Order $o) => [
                     'numara' => $o->number,
@@ -69,6 +70,14 @@ class KvkkController extends Controller
                         'numara' => $r->number,
                         'tur' => $r->type,
                         'durum' => $r->status_label,
+                    ])->all(),
+                    'degerlendirmeler' => $o->reviews->map(fn ($y) => [
+                        'urun' => $y->product?->name,
+                        'puan' => $y->rating,
+                        'baslik' => $y->title,
+                        'yorum' => $y->body,
+                        'gorunen_ad' => $y->author_name,
+                        'durum' => $y->status_label,
                     ])->all(),
                 ])->all(),
             'stok_bildirimleri' => StockInquiry::where('email', mb_strtolower($k->email))
@@ -129,6 +138,15 @@ class KvkkController extends Controller
         $request->session()->regenerateToken();
 
         DB::transaction(function () use ($kimlik, $eposta) {
+            /*
+             * Yorumlar saklama yükümlülüğü olan bir kayıt değil, müşterinin
+             * kendi içeriği: silinir. Model üzerinden (sorgu değil) — ürün
+             * puan önbelleği her silmede yeniden hesaplansın.
+             */
+            ProductReview::whereIn('order_id', Order::where('user_id', $kimlik)->select('id'))
+                ->get()
+                ->each->delete();
+
             // Siparişler SİLİNMEZ, hesaptan ayrılır (yasal saklama)
             Order::where('user_id', $kimlik)->update(['user_id' => null]);
 

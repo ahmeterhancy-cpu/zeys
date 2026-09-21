@@ -13,6 +13,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PaymentSimulationController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StockInquiryController;
@@ -49,6 +50,9 @@ Route::post('/siparis-sorgula', [OrderLookupController::class, 'lookup'])->name(
 Route::middleware('signed')->group(function () {
     Route::get('/siparis/{order:number}', [OrderLookupController::class, 'show'])->name('order.show');
     Route::post('/siparis/{order:number}/iade', [OrderLookupController::class, 'storeReturn'])->name('order.return');
+    Route::post('/siparis/{order:number}/degerlendirme', [ReviewController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('order.review');
 });
 
 Route::post('/stok-haber-ver', [StockInquiryController::class, 'store'])->name('stock.inquiry');

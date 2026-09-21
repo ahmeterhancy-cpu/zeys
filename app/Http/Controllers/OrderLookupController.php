@@ -56,10 +56,28 @@ class OrderLookupController extends Controller
 
     public function show(Order $order, Returns $returns)
     {
-        $order->load(['items.variant.product', 'returnRequests.items.orderItem']);
+        $order->load(['items.variant.product', 'returnRequests.items.orderItem', 'reviews']);
+
+        /*
+         * Değerlendirilebilecek ürünler: teslim edilmiş siparişteki her
+         * ÜRÜN bir kez (iki bedeni alınmış elbise tek yorum). Silinmiş
+         * ürün (product_id boş) atlanır.
+         */
+        $degerlendirme = $order->delivered_at
+            ? $order->items
+                ->whereNotNull('product_id')
+                ->unique('product_id')
+                ->map(fn ($kalem) => [
+                    'product_id' => $kalem->product_id,
+                    'ad' => $kalem->name,
+                    'yorum' => $order->reviews->firstWhere('product_id', $kalem->product_id),
+                ])
+                ->values()
+            : collect();
 
         return view('vitrin.siparis', [
             'order' => $order,
+            'degerlendirme' => $degerlendirme,
             'iadeEdilebilir' => $order->items->mapWithKeys(
                 fn ($kalem) => [$kalem->id => $returns->returnableQuantity($kalem)]
             ),

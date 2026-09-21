@@ -9,7 +9,7 @@
 @endif
 
 @push('yapisal_veri')
-    @include('vitrin.parca.jsonld', ['tur' => 'urun', 'urun' => $urun])
+    @include('vitrin.parca.jsonld', ['tur' => 'urun', 'urun' => $urun, 'yorumlar' => $yorumlar])
 @endpush
 
 @section('icerik')
@@ -74,6 +74,13 @@
             @endif
 
             <h1>{{ $urun->name }}</h1>
+
+            @if ($urun->review_count > 0)
+                <a href="#yorumlar" class="puan-ozet">
+                    <span class="yildiz" aria-hidden="true">{{ str_repeat('★', (int) round((float) $urun->rating)) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - (int) round((float) $urun->rating)) }}</span></span>
+                    <span>{{ number_format((float) $urun->rating, 1, ',', '') }} / 5 · {{ $urun->review_count }} değerlendirme</span>
+                </a>
+            @endif
 
             <p class="urun-panel-fiyat" id="secim-fiyat">
                 @if ($urun->has_price_range)
@@ -219,6 +226,36 @@
                 @endif
             </div>
         </dialog>
+    @endif
+
+    @if ($yorumlar->isNotEmpty())
+        <section class="bolum yorumlar" id="yorumlar">
+            <div class="bolum-basi">
+                <h2>Değerlendirmeler</h2>
+                <p class="yorumlar-ozet">
+                    <strong>{{ number_format((float) $urun->rating, 1, ',', '') }}</strong> / 5
+                    · {{ $urun->review_count }} değerlendirme
+                </p>
+            </div>
+
+            <ul class="yorum-liste">
+                @foreach ($yorumlar as $yorum)
+                    <li class="yorum">
+                        <p class="yorum-ust">
+                            <span class="yildiz" aria-label="{{ $yorum->rating }} / 5">{{ str_repeat('★', $yorum->rating) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - $yorum->rating) }}</span></span>
+                            @if ($yorum->title)
+                                <strong>{{ $yorum->title }}</strong>
+                            @endif
+                        </p>
+                        <p class="yorum-metin">{!! nl2br(e($yorum->body)) !!}</p>
+                        <p class="yorum-alt">
+                            {{ $yorum->author_name }} · {{ ($yorum->approved_at ?? $yorum->created_at)->translatedFormat('d F Y') }}
+                            · <span class="yorum-dogrulandi">Satın aldı</span>
+                        </p>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
     @endif
 
     @if ($urun->related->isNotEmpty())

@@ -65,8 +65,14 @@ class ProductController extends Controller
             $genelYollar = $urun->media->pluck('path')->take(1)->values();
         }
 
+        // Yalnız onaylı yorumlar; en yeni 20'si (ürün sayfası sonsuz uzamasın)
+        $yorumlar = $urun->review_count > 0
+            ? $urun->reviews()->yayinda()->latest('approved_at')->limit(20)->get()
+            : collect();
+
         return view('vitrin.urun', [
             'urun' => $urun,
+            'yorumlar' => $yorumlar,
             'varyantlar' => $varyantlar,
             'renkGalerisi' => $renkGalerisi,
             'bedenTablosu' => $urun->resolvedSizeChart(),

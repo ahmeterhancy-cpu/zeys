@@ -41,6 +41,11 @@ class Order extends Model
         return $this->hasMany(ReturnRequest::class)->latest();
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
     /** Vitrinde ve e-postada gösterilecek Türkçe durum. */
     public function getStatusLabelAttribute(): string
     {

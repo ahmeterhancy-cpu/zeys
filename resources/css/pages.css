@@ -1090,3 +1090,118 @@
 }
 
 .bakim-seridi a { color: #ffffff; margin-left: 10px; }
+
+/* --- Ürün yorumları --- */
+
+/*
+ * Yıldızlar koyu altın: parlak --gold beyaz zeminde 2.62:1, grafik öğe
+ * için gereken 3:1'in altında. Puan ayrıca metin olarak da yazılıyor.
+ */
+.yildiz { color: var(--gold-deep); letter-spacing: 1px; white-space: nowrap; }
+.yildiz-bos { color: var(--line-strong); }
+
+.puan-ozet {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: -6px 0 14px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+}
+.puan-ozet:hover span:last-child { text-decoration: underline; }
+
+.yorumlar-ozet { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.yorumlar-ozet strong { color: var(--ink); font-size: 18px; font-weight: 500; }
+
+.yorum-liste { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+
+.yorum {
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+}
+.yorum:last-child { border-bottom: 1px solid var(--line); }
+
+.yorum-ust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 8px;
+}
+.yorum-ust strong { font-weight: 500; }
+
+.yorum-metin {
+    margin: 0 0 10px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+.yorum-alt { margin: 0; font-size: 12px; color: var(--ink-faint); }
+.yorum-dogrulandi { color: var(--gold-ink); }
+
+/* Sipariş sayfasında değerlendirme */
+
+.degerlendir {
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+}
+
+.degerlendir-ad { margin: 0 0 6px; font-weight: 500; }
+
+.degerlendir-durum {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.degerlendir-ac summary {
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--gold-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.degerlendir-formu { margin-top: 16px; max-width: 560px; }
+
+.degerlendir-not { font-size: 12px; color: var(--ink-faint); margin: 0 0 14px; }
+
+/*
+ * Yıldız seçici — JS'siz. Girdiler 5→1 sırasıyla yazılıp ters dizilir;
+ * böylece "seçilenin ve sağındaki kardeşlerin" (~) boyanması ekranda
+ * seçilen ve SOLUNDAKİLER olarak görünür.
+ */
+.puan-sec {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 2px;
+    border: 0;
+    margin: 0 0 16px;
+    padding: 0;
+}
+.puan-sec legend { width: 100%; margin-bottom: 6px; }
+.puan-sec input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+.puan-sec label {
+    font-size: 30px;
+    line-height: 1;
+    padding: 4px 3px;
+    color: var(--line-strong);
+    cursor: pointer;
+}
+.puan-sec input:checked ~ label,
+.puan-sec label:hover,
+.puan-sec label:hover ~ label { color: var(--gold-deep); }
+.puan-sec input:focus-visible + label { outline: 2px solid var(--gold-ink); outline-offset: 2px; }

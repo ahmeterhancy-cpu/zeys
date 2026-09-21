@@ -39,6 +39,29 @@
         if ($urun->material) {
             $jsonLd['material'] = $urun->material;
         }
+
+        /*
+         * Puan yalnız GERÇEK, onaylı yorum varsa basılır. Yorumsuz ürüne
+         * uydurma puan koymak Google'ın yapısal veri kurallarına aykırı
+         * (elle işlem cezası) ve tüketici mevzuatı açısından yanıltıcı.
+         */
+        if ($urun->review_count > 0 && $urun->rating !== null) {
+            $jsonLd['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => number_format((float) $urun->rating, 1, '.', ''),
+                'reviewCount' => (int) $urun->review_count,
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ];
+
+            $jsonLd['review'] = collect($yorumlar ?? [])->take(5)->map(fn ($y) => [
+                '@type' => 'Review',
+                'author' => ['@type' => 'Person', 'name' => $y->author_name],
+                'datePublished' => ($y->approved_at ?? $y->created_at)->toDateString(),
+                'reviewRating' => ['@type' => 'Rating', 'ratingValue' => $y->rating, 'bestRating' => 5],
+                'reviewBody' => $y->body,
+            ])->values()->all();
+        }
     }
 
     if (($tur ?? null) === 'magaza') {
