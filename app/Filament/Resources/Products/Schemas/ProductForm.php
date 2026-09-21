@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Filament\Resources\Products\RelationManagers\MediaRelationManager;
+use App\Filament\Resources\Products\RelationManagers\VariantsRelationManager;
 use App\Models\Ozellik;
 use App\Models\OzellikDegeri;
 use App\Models\Product;
@@ -14,6 +17,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -41,7 +45,7 @@ class ProductForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Tabs::make()->columnSpanFull()->tabs([
+            Tabs::make()->columnSpanFull()->persistTabInQueryString()->tabs([
 
                 Tab::make('Genel')->schema([
                     TextInput::make('name')
@@ -83,7 +87,7 @@ class ProductForm
                         ->columnSpanFull(),
                 ])->columns(2),
 
-                Tab::make('Varyantlar')->schema([
+                Tab::make('Varyantlar')->id('varyantlar')->schema([
                     Section::make('Özellikler')
                         ->description(
                             'Ortak listeden özellik (Beden, Renk…) ve değerlerini seçin. Kaydettiğinizde '
@@ -214,9 +218,29 @@ class ProductForm
                                 ->minValue(0)
                                 ->default(0),
                         ]),
+
+                    /*
+                     * Varyant tablosu sekmenin İÇİNDE (WooCommerce gibi): her
+                     * kombinasyonun fiyatı, stoğu ve görseli seçimin hemen altında.
+                     * Önceden sayfanın en altında, sekmelerin dışındaydı ve
+                     * gözden kaçıyordu.
+                     */
+                    Section::make('Kombinasyonlar — fiyat, stok, görsel')
+                        ->description('Hücreye tıklayıp yazın. Görsel ve barkod için satırdaki "Ayrıntı"; birden çok satır için soldaki kutuları işaretleyip "Toplu işlemler".')
+                        ->visible(fn (string $operation) => $operation === 'edit')
+                        ->schema([
+                            Livewire::make(VariantsRelationManager::class, fn (?Product $record) => [
+                                'ownerRecord' => $record,
+                                'pageClass' => EditProduct::class,
+                            ])->key('varyant-tablosu'),
+                        ]),
+
+                    Text::make('Kaydettiğinizde her kombinasyonun fiyatı, stoğu ve görseli bu sekmede tablo olarak açılır.')
+                        ->color('gray')
+                        ->visible(fn (string $operation) => $operation === 'create'),
                 ]),
 
-                Tab::make('Görsel')->schema([
+                Tab::make('Görsel')->id('gorsel')->schema([
                     FileUpload::make('hero_image')
                         ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                         ->label('Kapak görseli')
@@ -240,6 +264,18 @@ class ProductForm
 
                     Toggle::make('is_featured')
                         ->label('Öne çıkar'),
+
+                    // Galeri (genel + renk başına fotoğraflar) da bu sekmede
+                    Section::make('Galeri')
+                        ->description('Renge bağlı fotoğraf, o renk seçilince vitrinde ana görsel olur. Birden çok fotoğraf için "Toplu yükle".')
+                        ->visible(fn (string $operation) => $operation === 'edit')
+                        ->columnSpanFull()
+                        ->schema([
+                            Livewire::make(MediaRelationManager::class, fn (?Product $record) => [
+                                'ownerRecord' => $record,
+                                'pageClass' => EditProduct::class,
+                            ])->key('galeri-tablosu'),
+                        ]),
                 ])->columns(2),
 
                 Tab::make('Ürün bilgisi')->schema([

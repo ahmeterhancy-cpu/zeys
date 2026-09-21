@@ -43,10 +43,15 @@ class EditProduct extends EditRecord
         return $record;
     }
 
-    /** Varyant tablosu yeni kombinasyonlarla hemen görünsün diye sayfa yenilenir. */
+    /**
+     * Kombinasyonlar değiştiyse sayfa Varyantlar sekmesinde yeniden açılır
+     * (tablo yeni satırlarla görünsün); değişmediyse sayfada kalınır.
+     */
     protected function getRedirectUrl(): ?string
     {
-        return static::getResource()::getUrl('edit', ['record' => $this->record]);
+        return $this->varyantDegisti
+            ? static::getResource()::getUrl('edit', ['record' => $this->record, 'tab' => 'varyantlar'])
+            : null;
     }
 
     protected function getHeaderActions(): array

@@ -299,4 +299,53 @@ class VaryantYonetimiTest extends TestCase
         $this->actingAs($this->yonetici)->get('/admin/ozellikler')->assertOk()->assertSee('Beden')->assertSee('Siyah');
         $this->actingAs(User::factory()->create(['role' => 'staff']))->get('/admin/ozellikler')->assertForbidden();
     }
+
+    public function test_varyant_tablosu_ve_galeri_kendi_sekmelerinde(): void
+    {
+        $urun = Product::create(['name' => 'Tunik', 'base_sku' => 'ZEYS-110', 'is_active' => true]);
+        app(UrunVaryantlari::class)->esitle($urun, [
+            ['ozellik_id' => $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['S', 'M'])],
+        ], ['fiyat' => 990]);
+
+        $html = $this->actingAs($this->yonetici)
+            ->get('/admin/products/'.$urun->id.'/edit?tab=varyantlar')
+            ->assertOk()
+            ->assertSee('Kombinasyonlar — fiyat, stok, görsel')
+            ->assertSee('ZEYS-110-S')
+            ->assertSee('Galeri')
+            ->getContent();
+
+        // Sekmelerin dışında (sayfanın altında) ikinci bir varyant tablosu olmamalı
+        $this->assertSame(1, substr_count($html, 'ZEYS-110-S'));
+    }
+
+    public function test_olusturunca_varyantlar_sekmesine_gider(): void
+    {
+        Livewire::actingAs($this->yonetici)->test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Yelek',
+                'is_active' => true,
+                'eksenler' => [['ozellik_id' => (string) $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['M'])]],
+                'varsayilan_fiyat' => 500,
+            ])
+            ->call('create')
+            ->assertRedirectContains('tab=varyantlar');
+    }
+
+    public function test_varyant_degismeyen_kayitta_sayfada_kalinir(): void
+    {
+        $urun = Product::create(['name' => 'Hırka', 'base_sku' => 'ZEYS-111', 'is_active' => true]);
+        app(UrunVaryantlari::class)->esitle($urun, [
+            ['ozellik_id' => $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['M'])],
+        ], ['fiyat' => 500]);
+
+        Livewire::actingAs($this->yonetici)->test(EditProduct::class, ['record' => $urun->id])
+            ->fillForm(['name' => 'Uzun Hırka'])
+            ->call('save')
+            ->assertHasNoFormErrors()
+            ->assertNoRedirect();
+
+        $this->assertSame('Uzun Hırka', $urun->fresh()->name);
+        $this->assertSame(1, $urun->variants()->count());
+    }
 }

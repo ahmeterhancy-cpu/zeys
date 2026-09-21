@@ -17,6 +17,12 @@ class CreateProduct extends CreateRecord
         return $this->varyantAlanlariniAyir($data);
     }
 
+    /** Oluşturunca doğrudan Varyantlar sekmesi: fiyat, stok ve görsel orada. */
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('edit', ['record' => $this->record, 'tab' => 'varyantlar']);
+    }
+
     /** Ürün ve bütün kombinasyonları tek adımda (WooCommerce gibi). */
     protected function handleRecordCreation(array $data): Model
     {

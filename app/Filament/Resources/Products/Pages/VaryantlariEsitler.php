@@ -17,6 +17,9 @@ trait VaryantlariEsitler
     /** @var array{eksenler: array, varsayilan: array}|null */
     protected ?array $varyantVerisi = null;
 
+    /** Bu kayıtta kombinasyon eklendi/silindi/satıştan kalktı mı */
+    protected bool $varyantDegisti = false;
+
     /** Form verisinden varyant alanlarını ayır; kalan veri modele yazılır. */
     protected function varyantAlanlariniAyir(array $data): array
     {
@@ -52,6 +55,8 @@ trait VaryantlariEsitler
             $sonuc['silinen'] ? $sonuc['silinen'].' kombinasyon silindi' : null,
             $sonuc['kaldirilan'] ? $sonuc['kaldirilan'].' kombinasyon satıştan kaldırıldı (sipariş geçmişi var)' : null,
         ]);
+
+        $this->varyantDegisti = $degisiklik !== [];
 
         if ($degisiklik !== []) {
             Notification::make()
