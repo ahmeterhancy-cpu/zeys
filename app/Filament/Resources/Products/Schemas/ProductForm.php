@@ -12,7 +12,7 @@ use App\Support\Yetki;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -88,105 +88,48 @@ class ProductForm
                 ])->columns(2),
 
                 Tab::make('Varyantlar')->id('varyantlar')->schema([
-                    Section::make('Özellikler')
-                        ->description(
-                            'Ortak listeden özellik (Beden, Renk…) ve değerlerini seçin. Kaydettiğinizde '
-                            .'bütün kombinasyonlar kendiliğinden oluşur; fiyat ve stok aşağıdaki varyant '
-                            .'tablosunda satır satır ya da toplu düzenlenir. Listede olmayan değeri buradan '
-                            .'ekleyebilirsiniz; özellikleri Katalog → Özellikler ekranından yönetin.'
-                        )
-                        ->schema([
-                            Repeater::make('eksenler')
-                                ->hiddenLabel()
-                                ->addActionLabel('Özellik ekle')
-                                ->reorderable()
-                                ->collapsible()
-                                ->defaultItems(0)
-                                ->itemLabel(function (array $state): ?string {
-                                    $ozellik = filled($state['ozellik_id'] ?? null) ? Ozellik::find($state['ozellik_id']) : null;
-
-                                    return $ozellik
-                                        ? $ozellik->ad.' · '.count($state['degerler'] ?? []).' değer'
-                                        : 'Yeni özellik';
-                                })
-                                ->columns(3)
+                    /*
+                     * Çip seçimi: kütüphanedeki her özelliğin bütün değerleri
+                     * tek bakışta, tıklayıp aç/kapat. Önceki "özellik ekle →
+                     * özellik seç → açılır listeden değer seç" akışı fazla adımdı.
+                     */
+                    Section::make('Hangi beden ve renkler var?')
+                        ->key('secenekler')
+                        ->description('Üründe olanlara tıklayın; kaydedince bütün kombinasyonlar kendiliğinden oluşur. Kullanmadığınız özelliği boş bırakın.')
+                        ->headerActions([
+                            Action::make('yeniOzellik')
+                                ->label('Yeni özellik')
+                                ->icon('heroicon-m-plus')
+                                ->link()
+                                ->modalHeading('Yeni özellik')
+                                ->modalDescription('Ör. Numara, Kumaş, Boy. Bütün ürünlerde kullanılabilir.')
                                 ->schema([
-                                    Select::make('ozellik_id')
-                                        ->label('Özellik')
-                                        ->options(fn () => Ozellik::orderBy('sira')->orderBy('ad')->pluck('ad', 'id'))
-                                        ->required()
-                                        ->live()
-                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->afterStateUpdated(fn (Set $set) => $set('degerler', []))
-                                        ->createOptionForm([
-                                            TextInput::make('ad')->label('Özellik adı')->placeholder('Numara, Kumaş, Boy…')->required()->unique('ozellikler', 'ad'),
-                                            Select::make('tur')->label('Gösterim')->options(Ozellik::TURLER)->default('text')->required(),
-                                        ])
-                                        ->createOptionUsing(fn (array $data) => Ozellik::create([
-                                            'ad' => $data['ad'],
-                                            'tur' => $data['tur'],
-                                            'sira' => (int) Ozellik::max('sira') + 1,
-                                        ])->id)
-                                        ->columnSpan(1),
-
-                                    Select::make('degerler')
-                                        ->label('Değerler')
-                                        ->multiple()
-                                        ->searchable()
-                                        ->preload()
-                                        ->allowHtml()
-                                        ->required()
-                                        ->live()
-                                        ->options(fn (Get $get) => filled($get('ozellik_id'))
-                                            ? OzellikDegeri::where('ozellik_id', $get('ozellik_id'))->orderBy('sira')->orderBy('id')->get()
-                                                ->mapWithKeys(fn (OzellikDegeri $d) => [(string) $d->id => $d->etiket_html])->all()
-                                            : [])
-                                        ->disabled(fn (Get $get) => blank($get('ozellik_id')))
-                                        ->placeholder('Önce özelliği seçin')
-                                        ->hintActions([
-                                            Action::make('tumunuSec')
-                                                ->label('Tümünü seç')
-                                                ->link()
-                                                ->visible(fn (Get $get) => filled($get('ozellik_id')))
-                                                ->action(fn (Get $get, Set $set) => $set('degerler', OzellikDegeri::where('ozellik_id', $get('ozellik_id'))
-                                                    ->pluck('id')->map(fn ($id) => (string) $id)->all())),
-                                            Action::make('temizle')
-                                                ->label('Temizle')
-                                                ->link()
-                                                ->color('gray')
-                                                ->visible(fn (Get $get) => filled($get('degerler')))
-                                                ->action(fn (Set $set) => $set('degerler', [])),
-                                        ])
-                                        ->createOptionForm(fn (Get $get) => [
-                                            TextInput::make('deger')->label('Yeni değer')->required()->maxLength(40),
-                                            ColorPicker::make('renk_kodu')
-                                                ->label('Renk')
-                                                ->visible(fn () => Ozellik::find($get('ozellik_id'))?->tur === 'color'),
-                                        ])
-                                        ->createOptionUsing(function (array $data, Get $get) {
-                                            $ozellikId = $get('ozellik_id');
-
-                                            return (string) OzellikDegeri::firstOrCreate(
-                                                ['ozellik_id' => $ozellikId, 'deger' => trim($data['deger'])],
-                                                ['renk_kodu' => $data['renk_kodu'] ?? null, 'sira' => (int) OzellikDegeri::where('ozellik_id', $ozellikId)->max('sira') + 1],
-                                            )->id;
-                                        })
-                                        ->columnSpan(2),
-                                ]),
+                                    TextInput::make('ad')->label('Özellik adı')->required()->maxLength(40)->unique('ozellikler', 'ad'),
+                                    Select::make('tur')->label('Gösterim')->options(Ozellik::TURLER)->default('text')->required(),
+                                ])
+                                ->action(fn (array $data) => Ozellik::create([
+                                    'ad' => trim($data['ad']),
+                                    'tur' => $data['tur'],
+                                    'sira' => (int) Ozellik::max('sira') + 1,
+                                ])),
+                        ])
+                        ->schema(fn () => [
+                            ...Ozellik::orderBy('sira')->orderBy('ad')->get()
+                                ->map(fn (Ozellik $o) => static::degerCipleri($o))
+                                ->all(),
 
                             // Seçime göre kaç kombinasyon oluşacağı — kaydetmeden önce görünsün
                             Text::make(function (Get $get) {
-                                $sayilar = collect($get('eksenler') ?? [])
-                                    ->map(fn ($e) => count($e['degerler'] ?? []))
-                                    ->filter();
+                                $sayilar = collect($get('secim') ?? [])->map(fn ($d) => count((array) $d))->filter();
 
                                 if ($sayilar->isEmpty()) {
-                                    return 'Henüz özellik seçilmedi. Satışa çıkmak için en az bir özellik (ör. Beden) gerekir.';
+                                    return 'Henüz seçim yok. Satışa çıkmak için en az bir değer (ör. bir beden) seçin.';
                                 }
 
-                                return $sayilar->implode(' × ').' = '.$sayilar->reduce(fn ($c, $n) => $c * $n, 1)
-                                    .' kombinasyon. Kaydettiğinizde eksik olanlar eklenir; seçimden çıkanlar '
-                                    .'hiç satılmadıysa silinir, satıldıysa satıştan kaldırılır.';
+                                $toplam = $sayilar->reduce(fn ($c, $n) => $c * $n, 1);
+
+                                return ($sayilar->count() > 1 ? $sayilar->implode(' × ').' = ' : '').$toplam
+                                    .' kombinasyon. Seçimden çıkardığınız hiç satılmadıysa silinir, satıldıysa satıştan kaldırılır.';
                             })->color('gray'),
                         ]),
 
@@ -324,5 +267,46 @@ class ProductForm
                 ]),
             ]),
         ]);
+    }
+
+    /**
+     * Bir özelliğin değerleri çip olarak (renkte nokta ile). Durum yolu
+     * secim.{ozellik_id}; sayfa sınıfları bunu eksenlere çevirir.
+     */
+    protected static function degerCipleri(Ozellik $ozellik): CheckboxList
+    {
+        $yol = 'secim.'.$ozellik->id;
+
+        return CheckboxList::make($yol)
+            ->label($ozellik->ad)
+            ->options(fn () => OzellikDegeri::where('ozellik_id', $ozellik->id)->orderBy('sira')->orderBy('id')->get()
+                ->mapWithKeys(fn (OzellikDegeri $d) => [(string) $d->id => $d->etiket_html])->all())
+            ->allowHtml()
+            ->bulkToggleable()
+            ->live()
+            ->default([])
+            ->extraAttributes(['class' => 'zeys-cipler'])
+            ->hintAction(
+                Action::make('degerEkle'.$ozellik->id)
+                    ->label('Değer ekle')
+                    ->icon('heroicon-m-plus')
+                    ->link()
+                    ->modalHeading($ozellik->ad.' — yeni değer')
+                    ->modalWidth('sm')
+                    ->schema([
+                        TextInput::make('deger')->label('Değer')->required()->maxLength(40)
+                            ->placeholder($ozellik->tur === 'color' ? 'Zümrüt' : '3XL'),
+                        ColorPicker::make('renk_kodu')->label('Renk')->visible($ozellik->tur === 'color'),
+                    ])
+                    ->action(function (array $data, Get $get, Set $set) use ($ozellik, $yol) {
+                        $deger = OzellikDegeri::firstOrCreate(
+                            ['ozellik_id' => $ozellik->id, 'deger' => trim($data['deger'])],
+                            ['renk_kodu' => $data['renk_kodu'] ?? null, 'sira' => (int) OzellikDegeri::where('ozellik_id', $ozellik->id)->max('sira') + 1],
+                        );
+
+                        // Eklenen değer seçili gelsin
+                        $set($yol, array_values(array_unique([...(array) $get($yol), (string) $deger->id])));
+                    }),
+            );
     }
 }

@@ -67,9 +67,9 @@ class VaryantYonetimiTest extends TestCase
                 'name' => 'Saten Gömlek',
                 'base_sku' => 'ZEYS-100',
                 'is_active' => true,
-                'eksenler' => [
-                    ['ozellik_id' => (string) $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['S', 'M', 'L'])],
-                    ['ozellik_id' => (string) $this->ozellik('Renk')->id, 'degerler' => $this->degerler('Renk', ['Siyah', 'Bej'])],
+                'secim' => [
+                    $this->ozellik('Renk')->id => $this->degerler('Renk', ['Siyah', 'Bej']),
+                    $this->ozellik('Beden')->id => $this->degerler('Beden', ['S', 'M', 'L']),
                 ],
                 'varsayilan_fiyat' => 1890,
                 'varsayilan_eski_fiyat' => 2290,
@@ -103,15 +103,14 @@ class VaryantYonetimiTest extends TestCase
 
         $sayfa = Livewire::actingAs($this->yonetici)->test(EditProduct::class, ['record' => $urun->id]);
 
-        // Form mevcut seçimle açılır (tekrarlayıcı satırları UUID anahtarlı)
-        $eksenler = array_values($sayfa->get('data.eksenler'));
-        $this->assertCount(1, $eksenler);
-        $this->assertEquals($this->ozellik('Beden')->id, $eksenler[0]['ozellik_id']);
-        $this->assertEqualsCanonicalizing($this->degerler('Beden', ['S', 'M']), $eksenler[0]['degerler']);
+        // Form mevcut seçimle açılır: yalnız Beden çipleri seçili
+        $secim = array_filter($sayfa->get('data.secim'));
+        $this->assertSame([$this->ozellik('Beden')->id], array_keys($secim));
+        $this->assertEqualsCanonicalizing($this->degerler('Beden', ['S', 'M']), $secim[$this->ozellik('Beden')->id]);
 
         $sayfa
             ->fillForm([
-                'eksenler' => [['ozellik_id' => (string) $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['S', 'M', 'L'])]],
+                'secim' => [$this->ozellik('Beden')->id => $this->degerler('Beden', ['S', 'M', 'L'])],
                 'varsayilan_fiyat' => 1500,
                 'varsayilan_stok' => 1,
             ])
@@ -325,7 +324,7 @@ class VaryantYonetimiTest extends TestCase
             ->fillForm([
                 'name' => 'Yelek',
                 'is_active' => true,
-                'eksenler' => [['ozellik_id' => (string) $this->ozellik('Beden')->id, 'degerler' => $this->degerler('Beden', ['M'])]],
+                'secim' => [$this->ozellik('Beden')->id => $this->degerler('Beden', ['M'])],
                 'varsayilan_fiyat' => 500,
             ])
             ->call('create')
@@ -347,5 +346,29 @@ class VaryantYonetimiTest extends TestCase
 
         $this->assertSame('Uzun Hırka', $urun->fresh()->name);
         $this->assertSame(1, $urun->variants()->count());
+    }
+
+    public function test_cipten_yeni_deger_eklenir_ve_secili_gelir(): void
+    {
+        $beden = $this->ozellik('Beden');
+
+        $sayfa = Livewire::actingAs($this->yonetici)->test(CreateProduct::class)
+            ->callAction(
+                TestAction::make('degerEkle'.$beden->id)->schemaComponent('secenekler.secim.'.$beden->id),
+                ['deger' => '3XL'],
+            )
+            ->assertHasNoFormErrors();
+
+        $yeni = OzellikDegeri::where('ozellik_id', $beden->id)->where('deger', '3XL')->firstOrFail();
+        $this->assertContains((string) $yeni->id, $sayfa->get('data.secim.'.$beden->id));
+    }
+
+    public function test_formdan_yeni_ozellik_eklenir(): void
+    {
+        Livewire::actingAs($this->yonetici)->test(CreateProduct::class)
+            ->callAction(TestAction::make('yeniOzellik')->schemaComponent('secenekler', 'form'), ['ad' => 'Kumaş', 'tur' => 'text'])
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('ozellikler', ['ad' => 'Kumaş', 'tur' => 'text']);
     }
 }

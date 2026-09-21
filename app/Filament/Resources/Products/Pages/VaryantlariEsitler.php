@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Pages;
 
+use App\Models\Ozellik;
 use App\Models\Product;
 use App\Services\UrunVaryantlari;
 use App\Support\Yetki;
@@ -9,7 +10,7 @@ use Filament\Notifications\Notification;
 
 /**
  * Ürün oluştur/düzenle sayfalarında Varyantlar sekmesi: form verisinden
- * "eksenler" ve "varsayilan_*" alanları ayrılır (modelde sütun değiller),
+ * "secim" ve "varsayilan_*" alanları ayrılır (modelde sütun değiller),
  * ürün kaydedildikten sonra matris eşitlenir.
  */
 trait VaryantlariEsitler
@@ -24,7 +25,7 @@ trait VaryantlariEsitler
     protected function varyantAlanlariniAyir(array $data): array
     {
         $this->varyantVerisi = [
-            'eksenler' => $data['eksenler'] ?? [],
+            'eksenler' => static::seciminEksenleri($data['secim'] ?? []),
             'varsayilan' => [
                 // Personel fiyat belirleyemez (alan kilitli; yine de sunucuda da yok sayılır)
                 'fiyat' => Yetki::yonetici() ? ($data['varsayilan_fiyat'] ?? null) : null,
@@ -33,9 +34,22 @@ trait VaryantlariEsitler
             ],
         ];
 
-        unset($data['eksenler'], $data['varsayilan_fiyat'], $data['varsayilan_eski_fiyat'], $data['varsayilan_stok']);
+        unset($data['secim'], $data['varsayilan_fiyat'], $data['varsayilan_eski_fiyat'], $data['varsayilan_stok']);
 
         return $data;
+    }
+
+    /**
+     * Çip seçimi (secim.{ozellik_id} => [değer id]) → eksen listesi,
+     * kütüphane sırasıyla (vitrinde seçiciler bu sırayla görünür).
+     */
+    public static function seciminEksenleri(array $secim): array
+    {
+        $secim = array_filter($secim, fn ($degerler) => ! empty($degerler));
+
+        return Ozellik::whereIn('id', array_keys($secim))->orderBy('sira')->orderBy('ad')->pluck('id')
+            ->map(fn ($id) => ['ozellik_id' => $id, 'degerler' => array_values((array) $secim[$id])])
+            ->all();
     }
 
     protected function varyantlariEsitle(Product $product): void

@@ -19,7 +19,9 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['eksenler'] = app(UrunVaryantlari::class)->formDurumu($this->record);
+        $data['secim'] = collect(app(UrunVaryantlari::class)->formDurumu($this->record))
+            ->mapWithKeys(fn ($e) => [$e['ozellik_id'] => $e['degerler']])
+            ->all();
         $data['varsayilan_stok'] = 0;
 
         return $data;

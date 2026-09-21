@@ -9,6 +9,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -54,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                     950 => '51, 42, 24',
                 ],
             ])
+            ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.cipler-stil'))
             ->navigationGroups([
                 'Katalog',
                 'Satış',
