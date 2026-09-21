@@ -180,20 +180,24 @@
         }
     }
 
-    /* Renk seçilince galeri o renge geçer */
+    /*
+     * Renk seçilince ana görsel o rengin ilk fotoğrafına geçer.
+     * Seçili rengin fotoğrafı yoksa açılış görseline döner — önceki
+     * rengin fotoğrafında takılı kalmasın.
+     */
     function renkGaleriGuncelle(secili) {
         const ana = document.getElementById('galeri-ana');
-        if (!ana) return;
+        if (!ana || !ana.dataset.taban) return;
 
         for (const deger of secili) {
             const yollar = galeri[deger];
             if (yollar && yollar.length) {
-                ana.src = ana.dataset.taban
-                    ? ana.dataset.taban + yollar[0]
-                    : ana.src.replace(/\/storage\/.*$/, '/storage/' + yollar[0]);
+                ana.src = ana.dataset.taban + yollar[0];
                 return;
             }
         }
+
+        if (ana.dataset.ilk) ana.src = ana.dataset.ilk;
     }
 
     girdiler.forEach((g) => g.addEventListener('change', tazele));

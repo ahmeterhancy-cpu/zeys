@@ -211,6 +211,22 @@ https://ALANADI/paytr/callback
 
 Bu yapılmazsa ödemeler alınır ama sipariş "ödendi" olmaz.
 
+### 3.11 Zamanlanmış işler (cron) — ZORUNLU
+
+cPanel → **Cron Jobs** → her dakika çalışacak şu satırı ekleyin:
+
+```
+cd /home/KULLANICI/public_html/zeys_app && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Bu olmazsa **takılı rezervler temizlenmez**: müşteri PayTR sayfasını
+kapatıp giderse o siparişin rezervi sonsuza kadar stok tutar, beden
+vitrinde "tükendi" görünür ama rafta durur. `zeys:rezerv-temizle` 15
+dakikada bir 90 dakikadan eski bekleyen ödemelerin rezervini bırakır.
+
+Cron'un çalıştığını panonun **"Takılı rezerv"** kartından izleyin;
+sürekli sıfırdan büyükse cron çalışmıyordur.
+
 ---
 
 ## 4. Kurulum sonrası kontrol listesi
@@ -237,6 +253,13 @@ Bu yapılmazsa ödemeler alınır ama sipariş "ödendi" olmaz.
 - [ ] Sipariş "ödendi" oluyor ve stok düşüyor
 - [ ] Onay e-postası geliyor
 - [ ] `PAYTR_TEST_MODE=0` yapıldı
+
+**Zamanlanmış işler**
+- [ ] Cron kuruldu (3.11), panodaki "Takılı rezerv" kartı 0
+
+**Ayarlar**
+- [ ] Panel → Site Ayarları'nda satıcı bilgileri girildi
+- [ ] "Yasal metinleri doldur" ile `[GİRİLMEDİ]` yer tutucuları kapatıldı
 
 **Yasal**
 - [ ] Metinlerde `[GİRİLMEDİ]` yer tutucusu kalmadı

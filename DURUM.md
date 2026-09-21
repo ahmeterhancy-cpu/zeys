@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **198 test, 726 iddia** (1 atlanan)
+Son güncelleme: 2026-09-21 · **216 test, 784 iddia** (1 atlanan)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -40,23 +40,34 @@ Toplam yük: **23 kB CSS + 0,43 kB genel JS + 3 kB ürün JS**.
 
 ### Panel
 
-Ürünler (matris üretimi, rezerv onarma) · Siparişler (kargola/teslim/
-iptal, takılı rezerv süzgeci) · İade kuyruğu (durum makinesi eylemleri) ·
-Beden tabloları · Kuponlar · Kategoriler · Koleksiyonlar · Yasal metinler
-(sürüm yayımlama).
+**Pano**: bugünkü sipariş/ciro, kargolanacak, açık iade, stoğu biten,
+beden bekleyen müşteri, takılı rezerv — her kart ilgili listeye gider.
+
+Ürünler (matris üretimi, **galeri + renk başına fotoğraf, toplu yükleme**,
+rezerv onarma) · Siparişler (kargola/teslim/iptal, takılı rezerv süzgeci) ·
+İade kuyruğu (durum makinesi eylemleri) · **Stok talepleri** · Beden
+tabloları · Kuponlar · Kategoriler · Koleksiyonlar · Yasal metinler (sürüm
+yayımlama) · **Kullanıcılar** (kendini/son yöneticiyi silme ve kendi rolünü
+düşürme kilitli) · **Site ayarları** (kargo, bildirim, satıcı bilgileri;
+yasal metinlerdeki yer tutucuları yeni sürümle doldurma).
+
+Zamanlanmış iş: `zeys:rezerv-temizle` — yarıda kalan ödemelerin rezervini
+15 dakikada bir bırakır. **Sunucuda cron kurulmalı** (DEPLOY.md 3.11).
 
 ---
 
 ## Bekleyenler — sensiz ilerleyemez
 
-1. **Ürün fotoğrafları.** Galeri, renk başına galeri ve yükleme akışı
-   hazır; tek fotoğraf yok. Konfeksiyon sitesinin asıl içeriği bu ve
-   vitrin şu an demo ürünlerle, yer tutucu görsellerle duruyor.
+1. **Ürün fotoğrafları.** Panelde galeri ve renk başına toplu yükleme
+   hazır (önceki sürümde bu belge "hazır" diyordu ama panelde yükleme
+   ekranı YOKTU — düzeltildi). Tek fotoğraf yok; vitrin demo ürünlerle,
+   yer tutucu görsellerle duruyor.
 2. **GitHub deposu onayı.** SSH'sız cPanel klonlaması yüzünden depo
    pratikte public olmak zorunda; `.env` asla commit'lenmemeli.
 3. **PayTR** mağaza no / anahtar / salt.
 4. **Firma bilgileri**: unvan, telefon, e-posta, MERSİS, vergi
-   dairesi/no. Yasal metinlerde şu an `[GİRİLMEDİ]` yer tutucuları var.
+   dairesi/no. Artık panelde **Site Ayarları**'ndan girilebiliyor; sonra
+   "Yasal metinleri doldur" düğmesi `[GİRİLMEDİ]` yer tutucularını kapatır.
 5. **Alan adı.**
 6. **cPanel erişimi**: kök dizin değiştirilebiliyor mu, hangi PHP sürümü.
 
@@ -122,3 +133,11 @@ Hepsi sessizdi; not düşülüyor ki tekrar edilmesin.
     "KOLEKSİYONLARİ" üretiyordu.
 12. **Blade `@context`'i yiyor** — JSON-LD PHP dizisinden üretiliyor.
 13. **Beden tablosu düğmesi** eksen adı tam "Beden" olmak zorundaydı.
+14. **Panelde galeri yükleme ekranı yoktu** — bu belge "hazır" diyordu.
+15. **Ürün sayfası kapak görselini hiç kullanmıyordu**; renk değişimi de
+    yalnızca "genel" görsel varsa çalışıyordu.
+16. **Takılı rezervleri kimse temizlemiyordu** — PayTR sayfası kapatılınca
+    beden sonsuza kadar "tükendi" görünürdü.
+17. **Rezervi bırakılmış siparişe geç ödeme gelirse** stok düşmeden
+    "ödendi" oluyordu → fazla satış. Artık yeniden rezerve ediliyor, stok
+    yoksa sipariş incelemeye düşüyor.

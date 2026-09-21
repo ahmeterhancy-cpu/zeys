@@ -30,6 +30,37 @@ class OrderPayments
             return;
         }
 
+        /*
+         * GECİKMELİ ÖDEME: rezervi zeys:rezerv-temizle tarafından
+         * bırakılmış (ya da ödemesi "başarısız" düşmüş) bir siparişe
+         * sonradan "başarılı" bildirimi gelebilir. Para gelmiştir ama
+         * stok artık rezerve DEĞİL.
+         *
+         * Düz devam edilseydi sipariş "ödendi" olur, commit rezerv
+         * olmadığı için stoğu düşürmez ve aynı parça iki kişiye satılırdı.
+         * Önce yeniden rezerve etmeyi deniyoruz; stok yetmezse sipariş
+         * elle incelenmek üzere işaretleniyor.
+         */
+        if ($order->stock_state === 'none') {
+            $eksik = $this->stock->reserve($order->fresh('items'));
+
+            if ($eksik !== []) {
+                $order->forceFill([
+                    'payment_status' => 'paid',
+                    'status' => 'cancelled',
+                    'paid_at' => now(),
+                    'payment_meta' => array_merge($order->payment_meta ?? [], $meta, ['gecikmeli_odeme' => true]),
+                    'admin_note' => trim(($order->admin_note ?? '')
+                        ."\nİPTAL EDİLMİŞ SİPARİŞE GECİKMELİ ÖDEME GELDİ, stok yetmiyor: "
+                        .implode(', ', $eksik).'. Müşteriye iade ya da tedarik — elle incelenmeli.'),
+                ])->save();
+
+                Log::error('Gecikmeli ödeme: stok yok, elle incelenmeli', ['order' => $order->number]);
+
+                return;
+            }
+        }
+
         $order->forceFill([
             'payment_status' => 'paid',
             'status' => 'paid',

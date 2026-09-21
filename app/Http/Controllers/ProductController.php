@@ -44,12 +44,33 @@ class ProductController extends Controller
             ->groupBy('product_option_value_id')
             ->map(fn ($grup) => $grup->pluck('path')->values()->all());
 
+        /*
+         * Açılışta gösterilecek görseller: kapak + genel galeri.
+         *
+         * Önceden yalnızca genel galeri kullanılıyordu; kapak görseli ürün
+         * sayfasında HİÇ görünmüyordu. Üstelik renk değişiminde görseli
+         * değiştiren <img> ancak genel görsel varsa çiziliyordu — kapak +
+         * renk fotoğrafı olan bir ürün "Z" yer tutucusuyla açılıyor, renk
+         * seçince de hiçbir şey olmuyordu.
+         *
+         * Hiç genel görsel yoksa ilk renk fotoğrafı açılış görseli olur.
+         */
+        $genelYollar = collect([$urun->hero_image])
+            ->merge($urun->media->whereNull('product_option_value_id')->pluck('path'))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($genelYollar->isEmpty()) {
+            $genelYollar = $urun->media->pluck('path')->take(1)->values();
+        }
+
         return view('vitrin.urun', [
             'urun' => $urun,
             'varyantlar' => $varyantlar,
             'renkGalerisi' => $renkGalerisi,
             'bedenTablosu' => $urun->resolvedSizeChart(),
-            'genelGorseller' => $urun->media->whereNull('product_option_value_id')->values(),
+            'genelYollar' => $genelYollar,
         ]);
     }
 }

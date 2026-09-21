@@ -18,7 +18,7 @@
     // Değerler burada hazırlanıp aşağıda tek değişken olarak veriliyor.
     $varyantVerisi = $varyantlar->all();
     $galeriVerisi = $renkGalerisi->all();
-    $ilkGorsel = $genelGorseller->first();
+    $ilkGorsel = $genelYollar->first();
 @endphp
 
 <div class="kap urun-sayfa">
@@ -39,19 +39,27 @@
         <div class="urun-galeri" id="galeri">
             <div class="urun-galeri-ana {{ $ilkGorsel ? '' : 'urun-gorsel-yok' }}">
                 @if ($ilkGorsel)
-                    <img id="galeri-ana" src="{{ asset('storage/' . $ilkGorsel->path) }}"
+                    {{--
+                        data-taban: renk degisiminde JS yeni yolu bunun ustune ekler.
+                        Onceden src icindeki "/storage/" parcasi regex'le degistiriliyordu;
+                        CDN ya da farkli disk yolunda sessizce bozulurdu.
+                    --}}
+                    <img id="galeri-ana"
+                         src="{{ asset('storage/' . $ilkGorsel) }}"
+                         data-taban="{{ rtrim(asset('storage'), '/') }}/"
+                         data-ilk="{{ asset('storage/' . $ilkGorsel) }}"
                          alt="{{ $urun->name }}">
                 @else
                     <span class="urun-harf" aria-hidden="true">Z</span>
                 @endif
             </div>
 
-            @if ($genelGorseller->count() > 1)
+            @if ($genelYollar->count() > 1)
                 <div class="urun-galeri-kucuk">
-                    @foreach ($genelGorseller as $gorsel)
+                    @foreach ($genelYollar as $yol)
                         <button type="button" class="galeri-kucuk-dugme"
-                                data-gorsel="{{ asset('storage/' . $gorsel->path) }}">
-                            <img src="{{ asset('storage/' . $gorsel->path) }}"
+                                data-gorsel="{{ asset('storage/' . $yol) }}">
+                            <img src="{{ asset('storage/' . $yol) }}"
                                  alt="{{ $urun->name }} görsel {{ $loop->iteration }}" loading="lazy">
                         </button>
                     @endforeach
