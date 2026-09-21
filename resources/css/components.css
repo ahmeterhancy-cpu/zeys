@@ -218,3 +218,12 @@
     .urun-izgara { grid-template-columns: repeat(2, 1fr); gap: 26px 16px; }
     .urun-ad { font-size: 18px; }
 }
+
+/* Geri alinamaz islem dugmesi — kirmizi zemin, beyaz yazi (7.5:1) */
+.dugme-sil {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #ffffff;
+}
+
+.dugme-sil:hover { background: #7d2020; border-color: #7d2020; }

@@ -24,6 +24,7 @@
     <nav class="hesap-menu">
         <a href="{{ route('account.index') }}" class="hesap-menu-aktif">Siparişlerim</a>
         <a href="{{ route('account.addresses') }}">Adreslerim</a>
+        <a href="{{ route('account.data') }}">Verilerim</a>
     </nav>
 
     @if ($siparisler->isEmpty())

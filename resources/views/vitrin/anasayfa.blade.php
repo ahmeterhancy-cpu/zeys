@@ -9,6 +9,10 @@
 
 @section('icerik')
 
+    @if (session('bilgi'))
+        <div class="kap"><p class="uyari">{{ session('bilgi') }}</p></div>
+    @endif
+
     {{-- Açılış: dev bir stok fotoğrafı yerine markanın kendi işareti --}}
     <section class="acilis bolum-ilk">
         <div class="kap">

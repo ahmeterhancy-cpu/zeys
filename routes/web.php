@@ -7,6 +7,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KvkkController;
 use App\Http\Controllers\OrderLookupController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PasswordResetController;
@@ -94,4 +95,9 @@ Route::middleware('auth')->prefix('hesap')->group(function () {
     Route::get('/adresler', [AccountController::class, 'addresses'])->name('account.addresses');
     Route::post('/adresler', [AccountController::class, 'storeAddress'])->name('account.address.store');
     Route::delete('/adresler/{address}', [AccountController::class, 'destroyAddress'])->name('account.address.destroy');
+
+    // KVKK md. 11
+    Route::get('/verilerim', [KvkkController::class, 'index'])->name('account.data');
+    Route::get('/verilerim/indir', [KvkkController::class, 'export'])->name('account.data.export');
+    Route::delete('/', [KvkkController::class, 'destroy'])->middleware('throttle:5,1')->name('account.destroy');
 });

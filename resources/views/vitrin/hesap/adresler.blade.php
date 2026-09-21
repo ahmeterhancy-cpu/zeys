@@ -16,6 +16,7 @@
     <nav class="hesap-menu">
         <a href="{{ route('account.index') }}">Siparişlerim</a>
         <a href="{{ route('account.addresses') }}" class="hesap-menu-aktif">Adreslerim</a>
+        <a href="{{ route('account.data') }}">Verilerim</a>
     </nav>
 
     @foreach ($adresler as $adres)
