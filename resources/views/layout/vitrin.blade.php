@@ -296,7 +296,7 @@
                 <span class="alt-imza">
                     Web Site by
                     <a href="https://maysila.com" rel="noopener" target="_blank">Maysila Digital Agency</a>
-                    &amp; Amesis 360
+                    &amp; <a href="https://www.amesis.com.tr" rel="noopener" target="_blank">Amesis 360</a>
                 </span>
                 <span class="alt-odeme">
                     @include('vitrin.parca.ikon', ['ad' => 'kalkan'])
