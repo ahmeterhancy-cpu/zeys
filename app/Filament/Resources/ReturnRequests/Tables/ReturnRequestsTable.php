@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ReturnRequests\Tables;
 
 use App\Models\ReturnRequest;
+use App\Services\PaymentRefunds;
 use App\Services\Returns;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -182,13 +183,36 @@ class ReturnRequestsTable
                         'Talep reddedildi'
                     )),
 
-                Action::make('tamamla')
-                    ->label('Tamamla')
-                    ->icon('heroicon-o-flag')
+                Action::make('paytrIade')
+                    ->label('Parayı PayTR ile iade et')
+                    ->icon('heroicon-o-banknotes')
                     ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Parayı müşterinin kartına iade et')
+                    ->modalDescription(fn (ReturnRequest $kayit) => number_format((float) $kayit->refund_amount, 2, ',', '.')
+                        .' TL, PayTR üzerinden müşterinin ödeme yaptığı karta iade edilecek. '
+                        .'Bu işlem geri alınamaz; talep "tamamlandı" olur ve müşteriye e-posta gider.')
+                    ->modalSubmitActionLabel('İade et')
+                    ->visible(fn (ReturnRequest $kayit) => $kayit->status === 'approved'
+                        && ! $kayit->is_exchange
+                        && ! $kayit->payment_refunded_at
+                        && app(PaymentRefunds::class)->kullanilabilir())
+                    ->action(fn (ReturnRequest $record) => static::yurut(
+                        fn () => app(PaymentRefunds::class)->refundReturn($record),
+                        'Para iade edildi, talep tamamlandı'
+                    )),
+
+                Action::make('tamamla')
+                    ->label(fn (ReturnRequest $kayit) => $kayit->is_exchange ? 'Tamamla' : 'Elle iade ettim')
+                    ->icon('heroicon-o-flag')
+                    ->color(fn (ReturnRequest $kayit) => $kayit->is_exchange ? 'success' : 'gray')
                     ->modalHeading(fn (ReturnRequest $kayit) => $kayit->is_exchange
                         ? 'Değişim ürünü kargolandı'
                         : 'İade tutarı gönderildi')
+                    ->modalDescription(fn (ReturnRequest $kayit) => $kayit->is_exchange
+                        ? null
+                        : 'Parayı PayTR panelinden ya da havaleyle ELLE gönderdiyseniz işaretleyin. '
+                            .'Sistem para göndermez; yalnızca talebi kapatır ve müşteriye bildirir.')
                     ->schema(fn (ReturnRequest $kayit) => $kayit->is_exchange ? [
                         TextInput::make('kargo')->label('Kargo firması')->required(),
                         TextInput::make('takip')->label('Takip numarası')->required(),

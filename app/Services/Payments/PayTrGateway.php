@@ -120,6 +120,68 @@ class PayTrGateway
         return hash_equals($expected, (string) ($payload['hash'] ?? ''));
     }
 
+    /**
+     * Ödeme kuruluşu üzerinden para iadesi.
+     *
+     * Referans: Kıbrıs Biletcim'de üretimde çalışan uygulama
+     * (src/lib/paytr.ts → refundPayTRPayment).
+     *
+     * TUZAK: iadede `return_amount` KURUŞ DEĞİL, "2890.00" biçiminde TL
+     * dizgisidir — ödeme isteğindeki `payment_amount` ise kuruştu.
+     * Karıştırılırsa 100 kat hatalı iade olur.
+     *
+     *   paytr_token = base64(hmac_sha256(merchant_id + merchant_oid
+     *                 + return_amount + merchant_salt, merchant_key))
+     *
+     * @return array{ok: bool, error: string|null}
+     */
+    public function refund(Order $order, float $tutar): array
+    {
+        if (! $this->isConfigured()) {
+            return ['ok' => false, 'error' => 'PayTR kimlik bilgileri tanımlı değil.'];
+        }
+
+        if (! $order->payment_ref) {
+            return ['ok' => false, 'error' => 'Siparişin PayTR ödeme referansı yok.'];
+        }
+
+        if ($tutar <= 0) {
+            return ['ok' => false, 'error' => 'İade tutarı sıfırdan büyük olmalı.'];
+        }
+
+        $tutarDizgi = number_format($tutar, 2, '.', '');
+
+        $token = base64_encode(hash_hmac(
+            'sha256',
+            config('paytr.merchant_id').$order->payment_ref.$tutarDizgi.config('paytr.merchant_salt'),
+            config('paytr.merchant_key'),
+            true
+        ));
+
+        try {
+            $yanit = $this->http()->asForm()->post(config('paytr.refund_endpoint'), [
+                'merchant_id' => config('paytr.merchant_id'),
+                'merchant_oid' => $order->payment_ref,
+                'return_amount' => $tutarDizgi,
+                'paytr_token' => $token,
+            ]);
+
+            $govde = $yanit->json() ?? [];
+
+            Log::info('PayTR iade yanıtı', ['order' => $order->number, 'tutar' => $tutarDizgi, 'yanit' => $govde]);
+
+            if (($govde['status'] ?? '') === 'success') {
+                return ['ok' => true, 'error' => null];
+            }
+
+            return ['ok' => false, 'error' => $govde['err_msg'] ?? $govde['reason'] ?? 'PayTR iadeyi reddetti.'];
+        } catch (Throwable $e) {
+            Log::error('PayTR iade isteği başarısız: '.$e->getMessage(), ['order' => $order->number]);
+
+            return ['ok' => false, 'error' => $e->getMessage()];
+        }
+    }
+
     public function iframeUrl(string $token): string
     {
         return rtrim(config('paytr.iframe_url'), '/').'/'.$token;

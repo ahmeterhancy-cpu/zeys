@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Orders\Tables;
 use App\Models\Order;
 use App\Services\OrderShipping;
 use App\Services\OrderStock;
+use App\Services\PaymentRefunds;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -190,9 +192,42 @@ class OrdersTable
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalDescription('Rezerve ya da düşülmüş stok varsa geri verilir.')
+                    ->modalDescription(fn (Order $kayit) => $kayit->payment_status === 'paid'
+                        ? 'Rezerve ya da düşülmüş stok geri verilir. ÖDEME ALINMIŞ: parayı iade etmeyi unutmayın.'
+                        : 'Rezerve ya da düşülmüş stok varsa geri verilir.')
+                    /*
+                     * Ödenmiş siparişi iptal etmek önceden parayı geri VERMİYORDU;
+                     * stok dönüyor, para mağazada kalıyordu. Artık iptal ekranında
+                     * PayTR iadesi seçilebiliyor (varsayılan açık).
+                     */
+                    ->schema(fn (Order $kayit) => $kayit->payment_status === 'paid' && app(PaymentRefunds::class)->kullanilabilir()
+                        ? [
+                            Toggle::make('para_iade')
+                                ->label(number_format((float) $kayit->grand_total, 2, ',', '.').' TL PayTR ile karta iade edilsin')
+                                ->default(true),
+                        ]
+                        : [])
                     ->visible(fn (Order $kayit) => ! in_array($kayit->status, ['cancelled', 'delivered'], true))
-                    ->action(function (Order $record) {
+                    ->action(function (Order $record, array $data) {
+                        /*
+                         * Önce para: iade başarısız olursa iptal DE yapılmaz —
+                         * "iptal edildi ama para mağazada" yarım durumu olmasın.
+                         */
+                        if (! empty($data['para_iade'])) {
+                            try {
+                                app(PaymentRefunds::class)->refundOrder($record);
+                            } catch (RuntimeException $e) {
+                                Notification::make()
+                                    ->title('İptal yapılmadı')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->persistent()
+                                    ->send();
+
+                                return;
+                            }
+                        }
+
                         $stock = app(OrderStock::class);
 
                         /*
@@ -204,7 +239,11 @@ class OrdersTable
 
                         $record->update(['status' => 'cancelled']);
 
-                        Notification::make()->title('Sipariş iptal edildi')->success()->send();
+                        Notification::make()
+                            ->title('Sipariş iptal edildi')
+                            ->body(! empty($data['para_iade']) ? 'Tutar PayTR ile iade edildi.' : null)
+                            ->success()
+                            ->send();
                     }),
 
                 EditAction::make()->label('Detay'),

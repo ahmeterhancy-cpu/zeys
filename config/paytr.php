@@ -10,6 +10,7 @@ return [
 
     'token_endpoint' => 'https://www.paytr.com/odeme/api/get-token',
     'iframe_url' => 'https://www.paytr.com/odeme/guvenli/',
+    'refund_endpoint' => 'https://www.paytr.com/odeme/iade',
 
     'timeout_limit' => 30,
     'no_installment' => (int) env('PAYTR_NO_INSTALLMENT', 0),
