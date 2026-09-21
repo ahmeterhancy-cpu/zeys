@@ -33,7 +33,32 @@
 
     <header class="ust">
         <div class="kap ust-ic">
-            <nav aria-label="Ana menü">
+            {{--
+                Mobil menu. <details> ile: JS calismasa da acilir/kapanir.
+                Onceden 860px altinda ust menu gizleniyor ama yerine hicbir
+                sey konmuyordu — telefonda sayfalara yalniz alt bilgiden
+                ulasilabiliyordu.
+            --}}
+            <details class="mobil-menu">
+                <summary aria-label="Menüyü aç">
+                    <span class="mobil-menu-cizgi" aria-hidden="true"></span>
+                    <span class="mobil-menu-metin">Menü</span>
+                </summary>
+                <nav class="mobil-menu-panel" aria-label="Mobil menü">
+                    <a href="{{ url('/') }}">Ana Sayfa</a>
+                    <a href="{{ url('/koleksiyonlar') }}">Koleksiyonlar</a>
+                    <a href="{{ url('/ara') }}">Ara</a>
+                    <a href="{{ route('order.lookup.form') }}">Sipariş Sorgula</a>
+                    @auth
+                        <a href="{{ route('account.index') }}">Hesabım</a>
+                    @else
+                        <a href="{{ route('login') }}">Giriş</a>
+                    @endauth
+                    <a href="{{ url('/iletisim') }}">İletişim</a>
+                </nav>
+            </details>
+
+            <nav aria-label="Ana menü" class="ust-menu-kap">
                 <ul class="ust-menu">
                     <li><a href="{{ url('/') }}">Ana Sayfa</a></li>
                     <li><a href="{{ url('/koleksiyonlar') }}">Koleksiyonlar</a></li>

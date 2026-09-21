@@ -117,3 +117,13 @@ textarea {
     clip-path: inset(50%);
     white-space: nowrap;
 }
+
+/*
+ * IZGARA KURALI: fr kolonlari daima minmax(0, Nfr).
+ *
+ * Duz "1fr" aslinda minmax(auto, 1fr): kolon, icindeki ogenin en kucuk
+ * icerik genisliginin altina inemez. Mobilde sepet ozeti ve satirlari
+ * bu yuzden ekrandan 9px tasiyordu. Ustelik html { overflow-x: clip }
+ * tasan kismi sessizce kirptigi icin kaydirma cubugu da cikmiyor —
+ * scrollWidth olcumu tasmayi GORMUYOR, icerik kenarda kesik kaliyor.
+ */

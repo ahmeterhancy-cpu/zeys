@@ -534,8 +534,8 @@
 .odeme-donus p { color: var(--ink-soft); }
 
 @media (max-width: 900px) {
-    .urun-duzen { grid-template-columns: 1fr; gap: 30px; }
-    .sepet-duzen { grid-template-columns: 1fr; gap: 28px; }
+    .urun-duzen { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+    .sepet-duzen { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .sepet-ozet { position: static; }
 }
 
@@ -599,8 +599,8 @@
     gap: 16px;
 }
 
-.alan-ikili { grid-template-columns: 1fr 1fr; }
-.alan-uclu { grid-template-columns: 1fr 1fr 0.7fr; }
+.alan-ikili { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.alan-uclu { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.7fr); }
 
 .odeme-ozet {
     border: 1px solid var(--line);
@@ -678,13 +678,13 @@
 }
 
 @media (max-width: 900px) {
-    .odeme-duzen { grid-template-columns: 1fr; gap: 28px; }
+    .odeme-duzen { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .odeme-ozet { position: static; }
 }
 
 @media (max-width: 560px) {
     .alan-ikili,
-    .alan-uclu { grid-template-columns: 1fr; }
+    .alan-uclu { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* --- Sipariş sorgulama / detay --- */
