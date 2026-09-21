@@ -21,22 +21,27 @@
     $ilkGorsel = $genelYollar->first();
 @endphp
 
-<div class="kap urun-sayfa">
-
-    <nav class="iz" aria-label="Konum">
+{{-- Ürün sayfasında gri bant yok (referansta da yok): ince konum satırı --}}
+<div class="kap">
+    <nav class="iz iz-sol" aria-label="Konum">
         <a href="{{ route('home') }}">Ana Sayfa</a>
         <span aria-hidden="true">/</span>
         @if ($urun->collection)
             <a href="{{ route('collections.show', $urun->collection->slug) }}">{{ $urun->collection->name }}</a>
-            <span aria-hidden="true">/</span>
+        @else
+            <a href="{{ route('collections.index') }}">Mağaza</a>
         @endif
-        <span>{{ $urun->name }}</span>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ $urun->name }}</span>
     </nav>
+</div>
+
+<div class="kap urun-sayfa">
 
     <div class="urun-duzen">
 
-        {{-- Galeri --}}
-        <div class="urun-galeri" id="galeri">
+        {{-- Galeri: solda küçük görseller, sağda büyük görsel --}}
+        <div class="urun-galeri {{ $genelYollar->count() > 1 ? 'urun-galeri-coklu' : '' }}" id="galeri">
             <div class="urun-galeri-ana {{ $ilkGorsel ? '' : 'urun-gorsel-yok' }}">
                 @if ($ilkGorsel)
                     {{--
@@ -52,6 +57,12 @@
                 @else
                     <span class="urun-harf" aria-hidden="true">Z</span>
                 @endif
+
+                <div class="urun-rozetler">
+                    @if ($urun->badge)
+                        <span class="rozet rozet-yeni">{{ $urun->badge }}</span>
+                    @endif
+                </div>
             </div>
 
             @if ($genelYollar->count() > 1)
@@ -67,20 +78,21 @@
             @endif
         </div>
 
-        {{-- Bilgi ve seçim --}}
+        {{-- Özet ve seçim --}}
         <div class="urun-panel">
-            @if ($urun->collection)
-                <span class="etiket">{{ $urun->collection->name }}</span>
-            @endif
-
             <h1>{{ $urun->name }}</h1>
 
-            @if ($urun->review_count > 0)
-                <a href="#yorumlar" class="puan-ozet">
-                    <span class="yildiz" aria-hidden="true">{{ str_repeat('★', (int) round((float) $urun->rating)) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - (int) round((float) $urun->rating)) }}</span></span>
-                    <span>{{ number_format((float) $urun->rating, 1, ',', '') }} / 5 · {{ $urun->review_count }} değerlendirme</span>
-                </a>
-            @endif
+            <div class="urun-panel-ust">
+                @if ($urun->review_count > 0)
+                    <a href="#urun-sekmeler" class="puan-ozet" data-sekme-ac="sekme-yorumlar">
+                        <span class="yildiz" aria-hidden="true">{{ str_repeat('★', (int) round((float) $urun->rating)) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - (int) round((float) $urun->rating)) }}</span></span>
+                        <span>{{ number_format((float) $urun->rating, 1, ',', '') }} / 5 · {{ $urun->review_count }} değerlendirme</span>
+                    </a>
+                @endif
+                @if ($urun->base_sku)
+                    <span class="urun-panel-sku">Ürün kodu: {{ $urun->base_sku }}</span>
+                @endif
+            </div>
 
             <p class="urun-panel-fiyat" id="secim-fiyat">
                 @if ($urun->has_price_range)
@@ -106,7 +118,7 @@
                 @foreach ($urun->options as $eksen)
                     <fieldset class="eksen" data-eksen="{{ $eksen->id }}">
                         <legend class="eksen-baslik">
-                            {{ $eksen->name }}
+                            <span>{{ $eksen->name }}</span>
                             {{--
                                 Beden tablosu dugmesi ilk METIN ekseninde gosteriliyor.
                                 Onceden eksen adi tam olarak "Beden" olmak zorundaydi;
@@ -171,28 +183,108 @@
                 <p class="uyari">{{ session('bilgi') }}</p>
             @endif
 
-            <dl class="urun-detay">
-                @if ($urun->material)
-                    <dt>Kumaş</dt><dd>{{ $urun->material }}</dd>
+            <ul class="urun-meta">
+                @if ($urun->collection)
+                    <li><span>Koleksiyon:</span> <a href="{{ route('collections.show', $urun->collection->slug) }}">{{ $urun->collection->name }}</a></li>
                 @endif
-                @if ($urun->model_note)
-                    <dt>Model ölçüsü</dt><dd>{{ $urun->model_note }}</dd>
+                @if ($urun->categories->isNotEmpty())
+                    <li><span>Kategori:</span>
+                        @foreach ($urun->categories as $kat)
+                            <a href="{{ route('catalog.category', $kat->slug) }}">{{ $kat->name }}</a>@if (! $loop->last),@endif
+                        @endforeach
+                    </li>
                 @endif
-                @if ($urun->care_notes)
-                    <dt>Bakım</dt><dd>{{ $urun->care_notes }}</dd>
-                @endif
-                <dt>Kargo ve iade</dt>
-                <dd>
-                    {{ number_format((float) config('shop.kargo.ucretsiz_esigi'), 0, ',', '.') }} TL üzeri kargo ücretsiz.
-                    Teslimden sonra {{ config('shop.cayma_hakki_gun') }} gün iade hakkınız var.
-                </dd>
-            </dl>
+            </ul>
 
-            @if ($urun->description)
-                <div class="urun-aciklama">{!! nl2br(e($urun->description)) !!}</div>
-            @endif
+            <ul class="urun-guvence">
+                <li>@include('vitrin.parca.ikon', ['ad' => 'kamyon'])
+                    @if ((float) config('shop.kargo.ucretsiz_esigi') > 0)
+                        {{ number_format((float) config('shop.kargo.ucretsiz_esigi'), 0, ',', '.') }} TL üzeri kargo ücretsiz
+                    @else
+                        Türkiye geneli kargo
+                    @endif
+                </li>
+                <li>@include('vitrin.parca.ikon', ['ad' => 'iade']) Teslimden sonra {{ config('shop.cayma_hakki_gun') }} gün iade hakkı</li>
+                <li>@include('vitrin.parca.ikon', ['ad' => 'kalkan']) PayTR ile güvenli ödeme</li>
+            </ul>
         </div>
     </div>
+
+    {{-- Sekmeler: Açıklama / Ek bilgi / Değerlendirmeler --}}
+    <section class="urun-sekmeler bolum" id="urun-sekmeler" data-sekmeler>
+        <div class="sekmeler" role="tablist" aria-label="Ürün bilgileri">
+            <button type="button" class="sekme" role="tab" id="sekme-aciklama" aria-controls="panel-aciklama" aria-selected="true">Açıklama</button>
+            <button type="button" class="sekme" role="tab" id="sekme-bilgi" aria-controls="panel-bilgi" aria-selected="false">Ek Bilgi</button>
+            <button type="button" class="sekme" role="tab" id="sekme-yorumlar" aria-controls="panel-yorumlar" aria-selected="false">Değerlendirmeler ({{ $urun->review_count }})</button>
+        </div>
+
+        <div class="sekme-panel" role="tabpanel" id="panel-aciklama" aria-labelledby="sekme-aciklama">
+            @if ($urun->description)
+                <div class="urun-aciklama">{!! nl2br(e($urun->description)) !!}</div>
+            @else
+                <p class="urun-aciklama">{{ $urun->short_description ?: 'Bu ürün için ayrıntılı açıklama henüz eklenmedi.' }}</p>
+            @endif
+        </div>
+
+        <div class="sekme-panel" role="tabpanel" id="panel-bilgi" aria-labelledby="sekme-bilgi">
+            <table class="urun-detay">
+                <tbody>
+                    @foreach ($urun->options as $eksen)
+                        <tr><th scope="row">{{ $eksen->name }}</th><td>{{ $eksen->values->pluck('value')->implode(', ') }}</td></tr>
+                    @endforeach
+                    @if ($urun->material)
+                        <tr><th scope="row">Kumaş</th><td>{{ $urun->material }}</td></tr>
+                    @endif
+                    @if ($urun->model_note)
+                        <tr><th scope="row">Model ölçüsü</th><td>{{ $urun->model_note }}</td></tr>
+                    @endif
+                    @if ($urun->care_notes)
+                        <tr><th scope="row">Bakım</th><td>{{ $urun->care_notes }}</td></tr>
+                    @endif
+                    <tr>
+                        <th scope="row">Kargo ve iade</th>
+                        <td>
+                            {{ number_format((float) config('shop.kargo.ucretsiz_esigi'), 0, ',', '.') }} TL üzeri kargo ücretsiz.
+                            Teslimden sonra {{ config('shop.cayma_hakki_gun') }} gün iade hakkınız var.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sekme-panel yorumlar" role="tabpanel" id="panel-yorumlar" aria-labelledby="sekme-yorumlar">
+            <div id="yorumlar"></div>
+            @if ($yorumlar->isNotEmpty())
+                <p class="yorumlar-ozet">
+                    <strong>{{ number_format((float) $urun->rating, 1, ',', '') }}</strong> / 5
+                    · {{ $urun->review_count }} değerlendirme
+                </p>
+
+                <ul class="yorum-liste">
+                    @foreach ($yorumlar as $yorum)
+                        <li class="yorum">
+                            <p class="yorum-ust">
+                                <span class="yildiz" aria-label="{{ $yorum->rating }} / 5">{{ str_repeat('★', $yorum->rating) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - $yorum->rating) }}</span></span>
+                                @if ($yorum->title)
+                                    <strong>{{ $yorum->title }}</strong>
+                                @endif
+                            </p>
+                            <p class="yorum-metin">{!! nl2br(e($yorum->body)) !!}</p>
+                            <p class="yorum-alt">
+                                {{ $yorum->author_name }} · {{ ($yorum->approved_at ?? $yorum->created_at)->translatedFormat('d F Y') }}
+                                · <span class="yorum-dogrulandi">Satın aldı</span>
+                            </p>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p>Bu ürün için henüz değerlendirme yok.</p>
+            @endif
+            <p class="yorum-not">
+                Değerlendirmeyi yalnız ürünü satın alan müşterilerimiz, teslimattan sonra sipariş sayfalarından yazabilir.
+            </p>
+        </div>
+    </section>
 
     @if ($bedenTablosu)
         <dialog class="beden-tablosu" id="beden-tablosu">
@@ -228,46 +320,17 @@
         </dialog>
     @endif
 
-    @if ($yorumlar->isNotEmpty())
-        <section class="bolum yorumlar" id="yorumlar">
-            <div class="bolum-basi">
-                <h2>Değerlendirmeler</h2>
-                <p class="yorumlar-ozet">
-                    <strong>{{ number_format((float) $urun->rating, 1, ',', '') }}</strong> / 5
-                    · {{ $urun->review_count }} değerlendirme
-                </p>
-            </div>
-
-            <ul class="yorum-liste">
-                @foreach ($yorumlar as $yorum)
-                    <li class="yorum">
-                        <p class="yorum-ust">
-                            <span class="yildiz" aria-label="{{ $yorum->rating }} / 5">{{ str_repeat('★', $yorum->rating) }}<span class="yildiz-bos">{{ str_repeat('★', 5 - $yorum->rating) }}</span></span>
-                            @if ($yorum->title)
-                                <strong>{{ $yorum->title }}</strong>
-                            @endif
-                        </p>
-                        <p class="yorum-metin">{!! nl2br(e($yorum->body)) !!}</p>
-                        <p class="yorum-alt">
-                            {{ $yorum->author_name }} · {{ ($yorum->approved_at ?? $yorum->created_at)->translatedFormat('d F Y') }}
-                            · <span class="yorum-dogrulandi">Satın aldı</span>
-                        </p>
-                    </li>
-                @endforeach
-            </ul>
+    @if ($urun->related->isNotEmpty())
+        <section class="bolum">
+            <div class="bolum-baslik"><h2>Birlikte kullanın</h2></div>
+            @include('vitrin.parca.urun-serit', ['urunler' => $urun->related])
         </section>
     @endif
 
-    @if ($urun->related->isNotEmpty())
-        <section class="bolum belir">
-            <div class="bolum-basi">
-                <h2>Birlikte kullanın</h2>
-            </div>
-            <div class="urun-izgara">
-                @foreach ($urun->related as $oneri)
-                    @include('vitrin.parca.urun-kart', ['urun' => $oneri])
-                @endforeach
-            </div>
+    @if ($benzerler->isNotEmpty())
+        <section class="bolum">
+            <div class="bolum-baslik"><h2>Benzer ürünler</h2></div>
+            @include('vitrin.parca.urun-serit', ['urunler' => $benzerler])
         </section>
     @endif
 </div>

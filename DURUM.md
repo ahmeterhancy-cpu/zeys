@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **305 test, 1110 iddia** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-21 · **316 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -31,6 +31,27 @@ Son güncelleme: 2026-09-21 · **305 test, 1110 iddia** (1 atlanan, kasıtlı)
 | Bakım perdesi | ✅ Panelden aç/kapa; yönetici siteyi görür, PayTR etkilenmez |
 | Yasal metinler | ⚠️ Sürümlü altyapı hazır, **hukukçu onayından geçmedi** |
 
+### Tasarım
+
+Vitrin **PressMart (presslayouts.com, home-2)** düzenine göre baştan giydirildi:
+üst şerit, arama çubuklu başlık (kategori seçimli), renkli menü bandı +
+"Kategoriler" açılır menüsü, slayt, kategori daireleri, koleksiyon afişleri,
+sekmeli ürünler, özellik şeridi, küçük listeler, açık gri alt bilgi, mobilde
+sabit alt çubuk ve yan açılır menü. Mağaza sayfaları sol yan sütunlu (kategori,
+koleksiyon, fiyat süzgeci) + sıralama çubuklu; ürün sayfası dikey küçük
+görselli galeri + Açıklama/Ek Bilgi/Değerlendirmeler sekmeleri + benzer ürünler;
+hesap sayfaları sol menülü. Yazı Poppins.
+
+**Renk bilerek referanstan farklı**: referansın yeşili yerine logodan ölçülen
+koyu altın (`--vurgu: #7d6840`, beyaz yazıyla 5.4:1). Tek jeton —
+`resources/css/base.css`. Yeşil istenirse orası değişir.
+
+**Referanstan bilerek alınmayanlar**: geri sayımlı "günün fırsatı" (gerçek süre
+sınırı yok → yanıltıcı olur), istek listesi / karşılaştırma / döviz-dil seçici
+(altyapısı yok), bülten formu (altyapısı yok; yerine Instagram bandı). Ana
+sayfa bölümleri yalnız veri varsa çizilir: indirim yoksa "Fırsat Ürünleri",
+satış yoksa "Çok Satanlar" sekmesi görünmez.
+
 ### Vitrin
 
 Ana sayfa · koleksiyonlar · koleksiyon detayı · kategori sayfaları ·
@@ -42,7 +63,7 @@ hesap sayfaları (verilerim dahil) · yasal sayfalar · iletişim · **mobil men
 SEO: sitemap.xml, robots.txt (ortama duyarlı), ürün ve mağaza JSON-LD
 (**aggregateRating yalnız gerçek, onaylı yorum varken**), canonical, Açık Grafik.
 
-Toplam yük: **27 kB CSS + 7 kB yazı tipi CSS + 0,43 kB genel JS + 3 kB ürün JS**.
+Toplam yük: sıfır kütüphane, elle yazılmış CSS/JS (Poppins derleme anında kendi sunucumuza alınır).
 
 ### Panel
 
@@ -174,3 +195,5 @@ Hepsi sessizdi; not düşülüyor ki tekrar edilmesin.
 23. **Müşterinin iade formu her gönderimde 403 veriyordu** — rota `signed`
     grubunda, form imzasız `route()` adresine post ediyordu. Testler adresi
     elle imzaladığı için görünmedi; yeni test adresi sayfadaki formdan okuyor.
+24. **Ödeme dönüş sayfası ASCII Türkçeydi** ("Siparisiniz alindi") — 11.
+    maddedeki hatanın gözden kaçan son örneği; düzeltildi.

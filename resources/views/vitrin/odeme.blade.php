@@ -3,11 +3,9 @@
 @section('baslik', 'Ödeme — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap odeme-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Ödeme', 'konum' => ['Sepetim' => route('cart.index'), 'Ödeme' => null]])
 
-    <div class="bolum-basi">
-        <h2>Ödeme</h2>
-    </div>
+<div class="kap odeme-sayfa">
 
     @guest
         <p class="uyari">

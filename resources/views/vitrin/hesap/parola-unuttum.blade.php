@@ -3,8 +3,9 @@
 @section('baslik', 'Parolamı Unuttum — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar yasal-sayfa">
-    <h1>Parolamı Unuttum</h1>
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Parolamı Unuttum', 'konum' => ['Hesabım' => route('account.index'), 'Parolamı Unuttum' => null]])
+
+<div class="kap kap-dar yasal-sayfa kutu-sayfa">
 
     <p style="color: var(--ink-soft); margin-bottom: 28px">
         Hesabınızın e-posta adresini girin; parola sıfırlama bağlantısı gönderelim.

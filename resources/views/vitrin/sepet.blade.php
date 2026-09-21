@@ -3,11 +3,9 @@
 @section('baslik', 'Sepetim — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap sepet-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Sepetim'])
 
-    <div class="bolum-basi">
-        <h2>Sepetim</h2>
-    </div>
+<div class="kap sepet-sayfa">
 
     @if (session('bilgi'))
         <p class="uyari uyari-bilgi">{{ session('bilgi') }}</p>

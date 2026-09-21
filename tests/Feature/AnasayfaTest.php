@@ -23,7 +23,8 @@ class AnasayfaTest extends TestCase
     public function test_urun_yokken_de_acilir(): void
     {
         // Bos katalog cokmemeli — mağaza ilk kurulduğunda bu hâlde olacak
-        $this->get('/')->assertOk()->assertDontSee('Yeni Gelenler');
+        // Ürün yoksa sekmeli ürün bölümü hiç çizilmez
+        $this->get('/')->assertOk()->assertDontSee('Moda Ürünleri');
     }
 
     public function test_aktif_urunler_listelenir_pasifler_gizlenir(): void

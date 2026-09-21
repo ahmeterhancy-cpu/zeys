@@ -1,54 +1,38 @@
-/* Zeys Fashion House — bilesenler */
+/* Zeys Fashion House — bileşenler (PressMart dili) */
 
-/* --- Etiket: logodaki "-FASHION HOUSE-" yazisinin yankisi --- */
+/* --- Küçük başlık etiketi --- */
 
 .etiket {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
-    letter-spacing: var(--tracking-wider);
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     color: var(--gold-ink);
 }
 
-.etiket-cizgili {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    justify-content: center;
-}
-
-.etiket-cizgili::before,
-.etiket-cizgili::after {
-    content: '';
-    height: 1px;
-    width: 34px;
-    background: var(--gold);
-}
-
-/* --- Dugmeler --- */
+/* --- Düğmeler --- */
 
 .dugme {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 15px 34px;
-    border: 1px solid var(--ink);
-    background: var(--ink);
-    /* Koyu zeminde beyaz yazi — 17:1 */
+    gap: 8px;
+    min-height: 46px;
+    padding: 10px 28px;
+    border: 1px solid var(--vurgu);
+    background: var(--vurgu);
+    /* Vurgu zemininde beyaz — 5.4:1 */
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .dugme:hover {
-    background: var(--gold-ink);
-    border-color: var(--gold-ink);
+    background: var(--vurgu-koyu);
+    border-color: var(--vurgu-koyu);
 }
 
 .dugme-cizgi {
@@ -58,168 +42,29 @@
 }
 
 .dugme-cizgi:hover {
-    background: transparent;
-    color: var(--gold-ink);
-    border-color: var(--gold);
+    background: var(--vurgu);
+    border-color: var(--vurgu);
+    color: #ffffff;
 }
+
+.dugme-koyu { background: var(--ink); border-color: var(--ink); }
+.dugme-koyu:hover { background: var(--vurgu); border-color: var(--vurgu); }
+
+.dugme-beyaz {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: var(--vurgu-koyu);
+}
+
+.dugme-beyaz:hover { background: var(--ink); border-color: var(--ink); color: #ffffff; }
 
 .dugme[disabled],
 .dugme[aria-disabled='true'] {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* --- Sepet sayaci --- */
-
-.sepet-bag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    font-size: 12px;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--ink-soft);
-}
-
-.sepet-bag:hover { color: var(--gold-ink); }
-
-.sepet-sayi {
-    min-width: 19px;
-    height: 19px;
-    padding-inline: 5px;
-    display: inline-grid;
-    place-items: center;
-    background: var(--gold-ink);
-    /* Koyu altin zemin uzerinde beyaz — 6.6:1 */
-    color: #ffffff;
-    font-size: 11px;
-    line-height: 1;
-}
-
-/* --- Urun karti --- */
-
-.urun-kart {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-.urun-gorsel {
-    position: relative;
-    aspect-ratio: 3 / 4;
-    background: var(--paper-alt);
-    border: 1px solid var(--line);
-    overflow: clip;
-}
-
-.urun-gorsel img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
-
-.urun-kart:hover .urun-gorsel img { transform: scale(1.04); }
-
-/*
- * Fotografi olmayan urun. Bos gri kutu yerine markanin harfini tasiyan
- * kagit yuzey — izgara "bozuk" degil "henuz fotograflanmamis" okunsun.
- */
-.urun-gorsel-yok {
-    display: grid;
-    place-items: center;
-    background:
-        linear-gradient(var(--gold-wash), var(--paper-alt));
-}
-
-/*
- * DIKKAT: burada `.urun-gorsel-yok span` yazmak rozeti de yakaliyordu
- * (rozet ayni kabin icinde bir span). "YENI" rozeti 64px italik altina
- * donusup karti ele geciriyordu. Seciciyi daima sinifa bagla.
- */
-.urun-harf {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 64px;
-    font-style: italic;
-    color: var(--gold);
-    opacity: 0.45;
-    line-height: 1;
-    user-select: none;
-}
-
-.urun-rozet {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: var(--paper);
-    border: 1px solid var(--gold);
-    color: var(--gold-ink);
-    font-size: 10px;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    padding: 5px 10px;
-}
-
-.urun-bilgi { padding-top: 14px; }
-
-.urun-ad {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 21px;
-    line-height: 1.25;
-    margin: 0 0 5px;
-}
-
-.urun-fiyat {
-    font-size: 14px;
-    color: var(--ink-soft);
-    letter-spacing: 0.04em;
-}
-
-.urun-fiyat del {
-    color: var(--ink-faint);
-    margin-right: 8px;
-}
-
-.urun-renkler {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.urun-renk {
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    border: 1px solid var(--line-strong);
-}
-
-.urun-tukendi {
-    margin-top: 8px;
-    font-size: 11px;
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--ink-faint);
-}
-
-/* --- Urun izgarasi --- */
-
-.urun-izgara {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 34px 26px;
-}
-
-@media (max-width: 1000px) {
-    .urun-izgara { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 720px) {
-    .urun-izgara { grid-template-columns: repeat(2, 1fr); gap: 26px 16px; }
-    .urun-ad { font-size: 18px; }
-}
-
-/* Geri alinamaz islem dugmesi — kirmizi zemin, beyaz yazi (7.5:1) */
+/* Geri alınamaz işlem düğmesi — kırmızı zemin, beyaz yazı (7.5:1) */
 .dugme-sil {
     background: var(--danger);
     border-color: var(--danger);
@@ -227,3 +72,439 @@
 }
 
 .dugme-sil:hover { background: #7d2020; border-color: #7d2020; }
+
+/* Referanstaki gri "Select options" düğmesi */
+.dugme-kucuk {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    background: #f5f5f5;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.dugme-kucuk:hover { background: var(--vurgu); color: #ffffff; }
+
+/* Metin görünümlü küçük düğme */
+.metin-dugme {
+    border: 0;
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.metin-dugme:hover { color: var(--vurgu); }
+.metin-dugme-sil:hover { color: var(--danger); }
+
+/* --- Form alanları --- */
+
+.metin-girdi,
+.alan input:not([type='checkbox']):not([type='radio']),
+.alan select,
+.alan textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font-size: 14px;
+    color: var(--ink);
+    border-radius: var(--radius);
+    transition: border-color 0.2s;
+}
+
+textarea.metin-girdi { min-height: 110px; resize: vertical; }
+
+.metin-girdi:focus,
+.alan input:focus,
+.alan select:focus,
+.alan textarea:focus {
+    outline: none;
+    border-color: var(--vurgu);
+}
+
+.adet-girdi {
+    width: 76px;
+    min-height: 46px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.adet-girdi:focus { outline: none; border-color: var(--vurgu); }
+
+/* --- Uyarı ve boş durum --- */
+
+.uyari {
+    margin: 0 0 20px;
+    padding: 13px 18px;
+    background: var(--vurgu-acik);
+    border-left: 3px solid var(--vurgu);
+    color: var(--ink);
+}
+
+.uyari-hata {
+    background: #fbeeee;
+    border-left-color: var(--danger);
+    color: #7d2020;
+}
+
+.bos-durum {
+    text-align: center;
+    padding: 60px 20px;
+    border: 1px dashed var(--line-strong);
+    background: var(--paper-alt);
+}
+
+.bos-durum p { margin: 0 0 18px; font-size: 15px; color: var(--ink); }
+
+/* --- Sayfa başlığı bandı + konum --- */
+
+.sayfa-basi {
+    background: var(--paper-alt);
+    border-bottom: 1px solid var(--line);
+    padding-block: 34px;
+    text-align: center;
+    margin-bottom: 44px;
+}
+
+.sayfa-basi h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.iz {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.iz a { text-decoration: none; color: var(--ink-soft); }
+.iz a:hover { color: var(--vurgu); }
+.iz [aria-current] { color: var(--ink); }
+
+/* --- Bölüm başlığı: ortalı, altında vurgu çizgisi --- */
+
+.bolum-baslik {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.bolum-baslik h2 {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: 600;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--vurgu);
+}
+
+.bolum-baslik p { margin: 12px 0 0; }
+
+/* Solda başlık, sağda bağlantı */
+.bolum-basi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--line);
+}
+
+.bolum-basi h2 {
+    font-size: 20px;
+    font-weight: 600;
+    padding-bottom: 12px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid var(--vurgu);
+}
+
+.bolum-basi a {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vurgu);
+    white-space: nowrap;
+    padding-bottom: 12px;
+}
+
+.bolum-basi a:hover { color: var(--ink); }
+
+/* --- Sekmeler --- */
+
+.sekmeler {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 34px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 30px;
+}
+
+.sekme {
+    border: 0;
+    background: none;
+    padding: 0 0 12px;
+    margin-bottom: -1px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.sekme:hover { color: var(--ink); }
+.sekme[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--vurgu); }
+
+/* JS yoksa tüm paneller alt alta görünür; JS [hidden] koyar */
+.sekme-panel[hidden] { display: none; }
+
+/* --- Yıldız --- */
+
+/*
+ * Referansın turuncu yıldızı yerine logo altını. Dekoratif; puan her
+ * yerde ayrıca metin/aria olarak da veriliyor.
+ */
+.yildiz { color: var(--gold); letter-spacing: 1px; white-space: nowrap; }
+.yildiz-bos { color: #d9d9d9; }
+
+/* --- Rozetler --- */
+
+.urun-rozetler {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    z-index: 2;
+}
+
+.rozet {
+    padding: 3px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.rozet-indirim { background: var(--rozet-indirim); color: #ffffff; }
+.rozet-yeni { background: var(--rozet-yeni); color: var(--ink); }
+.rozet-tukendi { background: var(--ink); color: #ffffff; }
+
+/* --- Ürün kartı --- */
+
+.urun-kart {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.urun-gorsel {
+    position: relative;
+    aspect-ratio: 430 / 502;   /* referans görsel oranı */
+    background: var(--paper-alt);
+    overflow: clip;
+}
+
+.urun-gorsel-bag {
+    position: absolute;
+    inset: 0;
+    text-decoration: none;
+    display: grid;
+    place-items: center;
+}
+
+.urun-gorsel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.45s ease, transform 0.8s ease;
+}
+
+.urun-gorsel-arka { opacity: 0; }
+.urun-kart:hover .urun-gorsel-arka { opacity: 1; }
+.urun-kart:hover .urun-gorsel-on:only-of-type { transform: scale(1.05); }
+
+.urun-gorsel-yok { background: linear-gradient(160deg, var(--gold-wash), var(--paper-sunken)); }
+
+.urun-harf {
+    font-family: var(--font-vurgu);
+    font-size: 72px;
+    font-style: italic;
+    color: var(--gold);
+    opacity: 0.5;
+    line-height: 1;
+    user-select: none;
+}
+
+/* Alttan kayan "Hızlı incele" şeridi */
+.urun-incele {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(33, 33, 33, 0.85);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.urun-incele .ikon { width: 18px; height: 18px; }
+.urun-kart:hover .urun-incele { transform: none; }
+.urun-incele:hover { background: var(--vurgu); }
+
+.urun-bilgi {
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1;
+}
+
+.urun-kat {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ink-faint);
+}
+
+.urun-ad {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.45;
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.urun-ad a { text-decoration: none; color: var(--ink); }
+.urun-ad a:hover { color: var(--vurgu); }
+
+/* Kartın tamamı tıklanabilir: başlık bağlantısı kartı kaplar */
+.urun-ad a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.urun-kart .dugme-kucuk,
+.urun-kart .urun-incele { position: relative; z-index: 3; }
+.urun-kart .urun-incele { position: absolute; }
+
+.urun-puan {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.urun-fiyat {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+}
+
+.urun-fiyat strong { font-size: 15px; font-weight: 600; color: var(--ink); }
+.urun-fiyat del { font-size: 13px; color: var(--ink-faint); }
+
+.urun-renkler { display: flex; gap: 5px; margin-top: 2px; }
+
+.urun-renk {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    box-shadow: inset 0 0 0 2px #ffffff;
+}
+
+.urun-kart .dugme-kucuk { margin-top: 8px; }
+
+.urun-tukendi {
+    margin: 6px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+}
+
+/* --- Ürün ızgarası --- */
+
+.urun-izgara {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 34px 24px;
+}
+
+.urun-izgara-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+@media (max-width: 1100px) {
+    .urun-izgara,
+    .urun-izgara-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+    .urun-izgara,
+    .urun-izgara-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; }
+    .urun-ad { font-size: 14px; }
+    .urun-incele { display: none; }
+}
+
+/* --- Sayfalama --- */
+
+.sayfalama { margin-top: 40px; }
+
+.sayfalar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
+.sayfa {
+    min-width: 40px;
+    height: 40px;
+    padding-inline: 8px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--ink);
+}
+
+.sayfa .ikon { width: 16px; height: 16px; }
+a.sayfa:hover { border-color: var(--vurgu); color: var(--vurgu); }
+.sayfa-aktif { background: var(--vurgu); border-color: var(--vurgu); color: #ffffff; }
+.sayfa-pasif { color: var(--line-strong); }

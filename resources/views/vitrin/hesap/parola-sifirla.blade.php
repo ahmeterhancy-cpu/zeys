@@ -3,8 +3,9 @@
 @section('baslik', 'Yeni Parola — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar yasal-sayfa">
-    <h1>Yeni Parola</h1>
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Yeni Parola', 'konum' => ['Hesabım' => route('account.index'), 'Yeni Parola' => null]])
+
+<div class="kap kap-dar yasal-sayfa kutu-sayfa">
 
     <form method="POST" action="{{ route('password.update') }}">
         @csrf

@@ -3,6 +3,8 @@
 @section('baslik', 'Ödeme (benzetim) — ' . config('shop.ad'))
 
 @section('icerik')
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Ödeme benzetimi'])
+
 <div class="kap kap-dar odeme-cerceve-sayfa">
     <p class="uyari uyari-hata">
         <strong>Bu ekran yalnızca yerel geliştirme içindir.</strong>
@@ -10,7 +12,6 @@
         açılamadı. Canlı ortamda bu ekran görünmez.
     </p>
 
-    <h1>Ödeme benzetimi</h1>
 
     <p class="odeme-cerceve-not">
         Sipariş <strong>{{ $order->number }}</strong> ·

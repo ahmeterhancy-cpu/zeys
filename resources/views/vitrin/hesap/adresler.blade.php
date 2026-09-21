@@ -3,21 +3,17 @@
 @section('baslik', 'Adreslerim — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar hesap-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Adreslerim', 'konum' => ['Hesabım' => route('account.index'), 'Adreslerim' => null]])
 
-    <div class="hesap-basi">
-        <h1>Adreslerim</h1>
-    </div>
+<div class="kap hesap-duzen">
+    @include('vitrin.parca.hesap-menu', ['aktif' => 'adresler'])
+
+<div class="hesap-icerik">
 
     @if (session('bilgi'))
         <p class="uyari">{{ session('bilgi') }}</p>
     @endif
 
-    <nav class="hesap-menu">
-        <a href="{{ route('account.index') }}">Siparişlerim</a>
-        <a href="{{ route('account.addresses') }}" class="hesap-menu-aktif">Adreslerim</a>
-        <a href="{{ route('account.data') }}">Verilerim</a>
-    </nav>
 
     @foreach ($adresler as $adres)
         <div class="adres-karti">
@@ -112,5 +108,6 @@
             <button type="submit" class="dugme" style="margin-top:12px">Adresi kaydet</button>
         </form>
     </section>
+</div>
 </div>
 @endsection

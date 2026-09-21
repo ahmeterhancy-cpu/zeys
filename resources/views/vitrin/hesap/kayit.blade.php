@@ -3,8 +3,9 @@
 @section('baslik', 'Hesap Oluştur — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar yasal-sayfa">
-    <h1>Hesap Oluştur</h1>
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Hesap Oluştur', 'konum' => ['Hesabım' => route('account.index'), 'Hesap Oluştur' => null]])
+
+<div class="kap kap-dar yasal-sayfa kutu-sayfa">
 
     <p style="color: var(--ink-soft); margin-bottom: 28px">
         Hesap alışveriş için zorunlu değil; siparişlerinizi ve adreslerinizi

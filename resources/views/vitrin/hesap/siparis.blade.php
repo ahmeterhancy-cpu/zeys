@@ -3,17 +3,16 @@
 @section('baslik', 'Sipariş ' . $order->number . ' — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar siparis-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Sipariş ' . $order->number, 'konum' => ['Hesabım' => route('account.index'), $order->number => null]])
 
-    <nav class="iz" aria-label="Konum">
-        <a href="{{ route('account.index') }}">Hesabım</a>
-        <span aria-hidden="true">/</span>
-        <span>{{ $order->number }}</span>
-    </nav>
+<div class="kap hesap-duzen">
+    @include('vitrin.parca.hesap-menu', ['aktif' => 'siparisler'])
+
+<div class="hesap-icerik siparis-sayfa">
 
     <div class="siparis-basi">
         <div>
-            <h1>Sipariş {{ $order->number }}</h1>
+            <h2>{{ $order->number }}</h2>
             <p class="siparis-tarih">{{ $order->created_at->format('d.m.Y H:i') }}</p>
         </div>
         <span class="siparis-durum siparis-durum-{{ $order->status }}">{{ $order->status_label }}</span>
@@ -72,5 +71,6 @@
             </a>
         </p>
     @endif
+</div>
 </div>
 @endsection

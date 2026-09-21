@@ -220,8 +220,8 @@ class PayTrCallbackTest extends TestCase
 
         $this->get($imzali)
             ->assertOk()
-            ->assertSee('isleniyor', false)
-            ->assertDontSee('Siparisiniz alindi', false);
+            ->assertSee('işleniyor', false)
+            ->assertDontSee('Siparişiniz alındı', false);
     }
 
     public function test_token_imzasi_paytr_formuluyle_uyusur(): void

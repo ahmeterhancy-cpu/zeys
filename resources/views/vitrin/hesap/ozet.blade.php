@@ -3,29 +3,18 @@
 @section('baslik', 'Hesabım — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar hesap-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Hesabım', 'konum' => ['Hesabım' => route('account.index'), 'Hesabım' => null]])
 
-    <div class="hesap-basi">
-        <div>
-            <h1>Hesabım</h1>
-            <p class="hesap-eposta">{{ auth()->user()->name }} · {{ auth()->user()->email }}</p>
-        </div>
+<div class="kap hesap-duzen">
+    @include('vitrin.parca.hesap-menu', ['aktif' => 'siparisler'])
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="metin-dugme">Çıkış yap</button>
-        </form>
-    </div>
+<div class="hesap-icerik">
 
     @if (session('bilgi'))
         <p class="uyari">{{ session('bilgi') }}</p>
     @endif
 
-    <nav class="hesap-menu">
-        <a href="{{ route('account.index') }}" class="hesap-menu-aktif">Siparişlerim</a>
-        <a href="{{ route('account.addresses') }}">Adreslerim</a>
-        <a href="{{ route('account.data') }}">Verilerim</a>
-    </nav>
+    <h2>Siparişlerim</h2>
 
     @if ($siparisler->isEmpty())
         <div class="bos-durum">
@@ -55,5 +44,6 @@
 
         <div class="sayfalama">{{ $siparisler->links() }}</div>
     @endif
+</div>
 </div>
 @endsection

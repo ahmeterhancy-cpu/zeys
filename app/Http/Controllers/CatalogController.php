@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Support\Katalog;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
-    public function category(string $slug)
+    public function category(Request $request, string $slug)
     {
         $kategori = Category::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
@@ -19,13 +20,13 @@ class CatalogController extends Controller
          */
         $kategoriIdleri = $kategori->children()->pluck('id')->push($kategori->id);
 
-        $urunler = Product::query()
-            ->where('is_active', true)
-            ->whereHas('categories', fn ($q) => $q->whereIn('categories.id', $kategoriIdleri))
-            ->with(['options.values'])
-            ->orderBy('position')
-            ->paginate(24)
-            ->withQueryString();
+        $urunler = Katalog::uygula(
+            Product::query()
+                ->where('is_active', true)
+                ->whereHas('categories', fn ($q) => $q->whereIn('categories.id', $kategoriIdleri))
+                ->kartIcin(),
+            $request,
+        )->paginate(24)->withQueryString();
 
         return view('vitrin.kategori', compact('kategori', 'urunler'));
     }
@@ -34,9 +35,15 @@ class CatalogController extends Controller
     {
         $veri = $request->validate([
             'q' => ['nullable', 'string', 'max:120'],
+            'kategori' => ['nullable', 'string', 'max:120'],
         ]);
 
         $sorgu = trim($veri['q'] ?? '');
+
+        // Başlıktaki arama kutusunun kategori seçimi
+        $kategori = filled($veri['kategori'] ?? null)
+            ? Category::where('slug', $veri['kategori'])->where('is_active', true)->first()
+            : null;
 
         $urunler = null;
 
@@ -50,7 +57,7 @@ class CatalogController extends Controller
              */
             $kalip = '%'.mb_strtolower($sorgu).'%';
 
-            $urunler = Product::query()
+            $q = Product::query()
                 ->where('is_active', true)
                 ->where(function ($q) use ($kalip) {
                     $q->whereRaw('LOWER(name) LIKE ?', [$kalip])
@@ -58,12 +65,16 @@ class CatalogController extends Controller
                         ->orWhereRaw('LOWER(COALESCE(base_sku, \'\')) LIKE ?', [$kalip])
                         ->orWhereHas('variants', fn ($v) => $v->whereRaw('LOWER(sku) LIKE ?', [$kalip]));
                 })
-                ->with(['options.values'])
-                ->orderBy('position')
-                ->paginate(24)
-                ->withQueryString();
+                ->kartIcin();
+
+            if ($kategori) {
+                $idler = $kategori->children()->pluck('id')->push($kategori->id);
+                $q->whereHas('categories', fn ($c) => $c->whereIn('categories.id', $idler));
+            }
+
+            $urunler = Katalog::uygula($q, $request)->paginate(24)->withQueryString();
         }
 
-        return view('vitrin.arama', compact('sorgu', 'urunler'));
+        return view('vitrin.arama', compact('sorgu', 'urunler', 'kategori'));
     }
 }

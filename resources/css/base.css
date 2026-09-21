@@ -1,46 +1,51 @@
 /*
  * Zeys Fashion House — temel jetonlar
  *
- * Palet logodan ÖLÇÜLEREK çıkarıldı (resources/marka/logo-kaynak.png),
- * gözle tahmin edilmedi. Altın rampası, logonun el yazısı vuruşundaki
- * gerçek piksellerin doygunluk sıralamasıdır.
+ * DÜZEN: PressMart (presslayouts.com, home-2) referans alındı — üst şerit,
+ * arama çubuklu başlık, renkli menü bandı, kategori daireleri, sekmeli
+ * ürün ızgarası, özellik şeridi, açık gri alt bilgi, mobil alt menü.
+ *
+ * RENK: referansın yeşili (#059473) markaya yabancı; yerine logodan
+ * ÖLÇÜLMÜŞ altının koyu tonları geçti. Referansta yeşil nerede kullanılıyorsa
+ * burada --vurgu kullanılır. Tek jeton değişirse bütün site değişir.
  *
  * KONTRAST — beyaz zemin üzerinde ölçülen oranlar:
- *   #ECDFB7  1.33:1   yalnız dekor
- *   #BC9C51  2.62:1   yalnız dekor   ← logonun parlak altını, METİN OLMAZ
- *   #9F9363  3.08:1   yalnız kenarlık / çok büyük başlık
- *   #816C44  5.05:1   metin için sınırda yeterli (AA)
- *   #6E5A33  6.62:1   metin için rahat (AA)
- *
- * Bu yüzden altın İKİYE ayrılır: --gold çizgi/dekor içindir, metinde
- * --gold-ink kullanılır. İkisi karıştırılırsa yazı okunmaz hâle gelir.
- *
- * Altın ZEMİN üzerinde beyaz yazı 2.62:1 ile kalır; koyu mürekkep
- * 6.63:1 ile geçer. Koyu marka zeminlerindeki "yazı beyaz" alışkanlığı
- * burada geçerli DEĞİL — altın açık bir renk.
+ *   #BC9C51  2.62:1   yalnız dekor (logo altını) — METİN OLMAZ
+ *   #7D6840  5.43:1   --vurgu: bant, düğme zemini (üstünde beyaz yazı)
+ *   #5F4E2E  8.40:1   --vurgu-koyu: bant içindeki koyu blok, hover
+ *   #6E5A33  6.62:1   --gold-ink: altın renkli metin
  */
 
 :root {
-    /* Yüzeyler — logonun zemini saf beyaz, sıcak kırıklar ondan türetildi */
+    /* Yüzeyler — referanstaki beyaz + #f8f8f8 gri ikilisi */
     --paper: #ffffff;
-    --paper-alt: #faf7f0;
-    --paper-sunken: #f2ece1;
+    --paper-alt: #f8f8f8;
+    --paper-sunken: #f2f0ec;
 
-    /* Metin — nötr siyah değil, altınla uyumlu sıcak koyu */
-    --ink: #1c1a15;
-    --ink-soft: #554f44;
-    --ink-faint: #8a8275;
+    /* Metin — referans: gövde #545454, başlık #212121 */
+    --ink: #212121;
+    --ink-soft: #545454;
+    --ink-faint: #767676;    /* 4.54:1 — küçük metinde sınır */
 
-    /* Çizgi */
-    --line: #e6dfd2;
-    --line-strong: #cdc2ad;
+    /* Çizgi — referans: #e9e9e9 */
+    --line: #e9e9e9;
+    --line-strong: #d6d6d6;
+
+    /* Marka vurgusu (referanstaki yeşilin yerine) */
+    --vurgu: #7d6840;
+    --vurgu-koyu: #5f4e2e;
+    --vurgu-acik: #f6f1e6;
 
     /* Altın — logodan ölçüldü */
-    --gold: #bc9c51;         /* parlak altın: çizgi, çerçeve, işaret. METİN DEĞİL. */
-    --gold-deep: #816c44;    /* koyu altın: küçük metin sınırda geçer */
+    --gold: #bc9c51;         /* dekor: yıldız, çizgi, rozet zemini. METİN DEĞİL. */
+    --gold-deep: #816c44;
     --gold-ink: #6e5a33;     /* altın metin rengi — okunaklı */
-    --gold-pale: #ecdfb7;    /* soluk altın: zemin vurgusu */
-    --gold-wash: #faf6ea;    /* en hafif altın yıkama */
+    --gold-pale: #ecdfb7;
+    --gold-wash: #faf6ea;
+
+    /* Rozetler — referans: indirim yeşil, öne çıkan turuncu */
+    --rozet-indirim: #2f6f4a;
+    --rozet-yeni: #bc9c51;   /* üstünde koyu yazı (7.9:1) */
 
     /* Durum */
     --ok: #2f6f4a;
@@ -49,12 +54,18 @@
 
     /* Ölçü */
     --gutter: 20px;
-    --radius: 0px;           /* logo keskin ve zarif; yuvarlatma markaya yabancı */
+    --kap: 1300px;
+    --radius: 0px;           /* referans köşeleri keskin */
     --measure: 68ch;
+    --golge: 0 4px 18px rgba(0, 0, 0, 0.08);
 
-    /* Tipografi — logodaki geniş aralıklı "-FASHION HOUSE-" yankısı */
-    --tracking-wide: 0.18em;
-    --tracking-wider: 0.32em;
+    /* Yazı */
+    --font: 'Poppins', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    --font-vurgu: 'Cormorant Garamond', Georgia, serif;
+
+    /* Geriye dönük adlar */
+    --tracking-wide: 0.06em;
+    --tracking-wider: 0.1em;
 }
 
 *,
@@ -70,15 +81,30 @@ html {
      * sessizce bozar.
      */
     overflow-x: clip;
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
 }
 
 body {
     margin: 0;
     background: var(--paper);
-    color: var(--ink);
-    font-size: 16px;
-    line-height: 1.6;
+    color: var(--ink-soft);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font);
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0;
 }
 
 img,
@@ -102,8 +128,8 @@ textarea {
 }
 
 :focus-visible {
-    outline: 2px solid var(--gold-ink);
-    outline-offset: 3px;
+    outline: 2px solid var(--vurgu);
+    outline-offset: 2px;
 }
 
 /* Ekran okuyucuya açık, gözden gizli */
@@ -116,6 +142,20 @@ textarea {
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+}
+
+/* Çizgi ikonlar (resources/views/vitrin/parca/ikon.blade.php) */
+.ikon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
 }
 
 /*

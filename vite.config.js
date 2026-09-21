@@ -11,12 +11,13 @@ export default defineConfig({
              * Fontlar derleme aninda indirilip kendi sunucumuzdan servis edilir.
              * Calisma aninda hicbir dis istege cikilmaz (gizlilik + hiz).
              *
-             * Cormorant Garamond: logonun el yazisina eslik eden zarif serif.
-             * Jost: logodaki genis aralikli "FASHION HOUSE" geometrik sans.
+             * Poppins: PressMart referansinin govde ve baslik yazisi.
+             * Cormorant Garamond italik: yalnizca vurgu satiri (referanstaki
+             * el yazisi "Summer Sale" satirinin markaya uyarlanmis hali).
              */
             fonts: [
-                bunny('Cormorant Garamond', { weights: [400, 500, 600], styles: ['normal', 'italic'] }),
-                bunny('Jost', { weights: [300, 400, 500, 600] }),
+                bunny('Poppins', { weights: [300, 400, 500, 600, 700] }),
+                bunny('Cormorant Garamond', { weights: [500], styles: ['italic'] }),
             ],
         }),
     ],

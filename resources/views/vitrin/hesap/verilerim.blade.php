@@ -3,17 +3,13 @@
 @section('baslik', 'Verilerim — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar hesap-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Verilerim', 'konum' => ['Hesabım' => route('account.index'), 'Verilerim' => null]])
 
-    <div class="hesap-basi">
-        <h1>Verilerim</h1>
-    </div>
+<div class="kap hesap-duzen">
+    @include('vitrin.parca.hesap-menu', ['aktif' => 'verilerim'])
 
-    <nav class="hesap-menu">
-        <a href="{{ route('account.index') }}">Siparişlerim</a>
-        <a href="{{ route('account.addresses') }}">Adreslerim</a>
-        <a href="{{ route('account.data') }}" class="hesap-menu-aktif">Verilerim</a>
-    </nav>
+<div class="hesap-icerik">
+
 
     <section class="bolum bolum-ilk">
         <div class="bolum-basi"><h2>Verilerimi indir</h2></div>
@@ -60,5 +56,6 @@
             <button type="submit" class="dugme dugme-sil" style="margin-top:14px">Hesabımı sil</button>
         </form>
     </section>
+</div>
 </div>
 @endsection

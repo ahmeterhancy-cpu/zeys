@@ -3,8 +3,9 @@
 @section('baslik', 'Giriş Yap — ' . config('shop.ad'))
 
 @section('icerik')
-<div class="kap kap-dar yasal-sayfa">
-    <h1>Giriş Yap</h1>
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Giriş Yap', 'konum' => ['Hesabım' => route('account.index'), 'Giriş Yap' => null]])
+
+<div class="kap kap-dar yasal-sayfa kutu-sayfa">
 
     <p style="color: var(--ink-soft); margin-bottom: 28px">
         Hesabınız yoksa <a href="{{ route('register') }}">hesap oluşturabilirsiniz</a>.

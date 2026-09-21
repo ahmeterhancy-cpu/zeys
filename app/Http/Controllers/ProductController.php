@@ -18,9 +18,33 @@ class ProductController extends Controller
                 'categories.sizeChart',
                 'sizeChart',
                 'collection',
-                'related' => fn ($q) => $q->where('is_active', true)->with('options.values'),
+                'related' => fn ($q) => $q->where('is_active', true)->kartIcin(),
             ])
             ->firstOrFail();
+
+        /*
+         * "Benzer ürünler": aynı koleksiyondan, yoksa aynı kategorilerden.
+         * Elle seçilmiş kombin önerileri (related) tekrar edilmez.
+         */
+        $haric = $urun->related->pluck('id')->push($urun->id);
+        $benzerler = Product::query()
+            ->where('is_active', true)
+            ->whereNotIn('id', $haric)
+            ->where(function ($q) use ($urun) {
+                if ($urun->collection_id) {
+                    $q->where('collection_id', $urun->collection_id);
+                }
+                if ($urun->categories->isNotEmpty()) {
+                    $q->orWhereHas('categories', fn ($c) => $c->whereIn('categories.id', $urun->categories->pluck('id')));
+                }
+                if (! $urun->collection_id && $urun->categories->isEmpty()) {
+                    $q->whereRaw('1 = 0');
+                }
+            })
+            ->kartIcin()
+            ->orderBy('position')
+            ->limit(8)
+            ->get();
 
         /*
          * Varyant tablosu tarayıcıya veri olarak gider; beden/renk seçimi
@@ -73,6 +97,7 @@ class ProductController extends Controller
         return view('vitrin.urun', [
             'urun' => $urun,
             'yorumlar' => $yorumlar,
+            'benzerler' => $benzerler,
             'varyantlar' => $varyantlar,
             'renkGalerisi' => $renkGalerisi,
             'bedenTablosu' => $urun->resolvedSizeChart(),

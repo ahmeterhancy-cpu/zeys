@@ -3,8 +3,9 @@
 @section('baslik', $belge->title . ' — ' . config('shop.ad'))
 
 @section('icerik')
+@include('vitrin.parca.sayfa-basi', ['baslik' => $belge->title])
+
 <div class="kap kap-dar yasal-sayfa">
-    <h1>{{ $belge->title }}</h1>
 
     <p class="yasal-surum">
         Yürürlük sürümü: {{ $belge->version }}

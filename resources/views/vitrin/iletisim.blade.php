@@ -4,8 +4,9 @@
 @section('aciklama', 'Zeys Fashion House — Edirne mağaza adresi ve iletişim bilgileri.')
 
 @section('icerik')
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'İletişim'])
+
 <div class="kap kap-dar yasal-sayfa">
-    <h1>İletişim</h1>
 
     <div class="iletisim-blok">
         <h2>Mağaza</h2>

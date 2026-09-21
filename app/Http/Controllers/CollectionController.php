@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection;
 use App\Models\Product;
+use App\Support\Katalog;
+use Illuminate\Http\Request;
 
 class CollectionController extends Controller
 {
-    /** Tüm ürünler + koleksiyon şeritleri. */
-    public function index()
+    /** Tüm ürünler (mağaza sayfası) + koleksiyon afişleri. */
+    public function index(Request $request)
     {
-        $urunler = Product::query()
-            ->where('is_active', true)
-            ->with(['options.values'])
-            ->orderBy('position')
-            ->paginate(24);
+        $urunler = Katalog::uygula(
+            Product::query()->where('is_active', true)->kartIcin(),
+            $request,
+        )->paginate(24)->withQueryString();
 
         $koleksiyonlar = Collection::query()
             ->where('is_active', true)
@@ -25,15 +26,14 @@ class CollectionController extends Controller
         return view('vitrin.koleksiyonlar', compact('urunler', 'koleksiyonlar'));
     }
 
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $koleksiyon = Collection::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        $urunler = $koleksiyon->products()
-            ->where('is_active', true)
-            ->with(['options.values'])
-            ->orderBy('position')
-            ->paginate(24);
+        $urunler = Katalog::uygula(
+            $koleksiyon->products()->where('is_active', true)->kartIcin(),
+            $request,
+        )->paginate(24)->withQueryString();
 
         return view('vitrin.koleksiyon', compact('koleksiyon', 'urunler'));
     }

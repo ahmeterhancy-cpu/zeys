@@ -4,8 +4,9 @@
 @section('aciklama', 'Sipariş numaranız ve e-posta adresinizle siparişinizi sorgulayın.')
 
 @section('icerik')
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Sipariş Sorgula'])
+
 <div class="kap kap-dar yasal-sayfa">
-    <h1>Sipariş Sorgula</h1>
 
     <p style="color: var(--ink-soft); margin-bottom: 28px">
         Sipariş numaranızı ve sipariş sırasında kullandığınız e-posta adresini girin.

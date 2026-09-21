@@ -3,8 +3,9 @@
 @section('baslik', 'Ödeme — ' . config('shop.ad'))
 
 @section('icerik')
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Ödeme'])
+
 <div class="kap kap-dar odeme-cerceve-sayfa">
-    <h1>Ödeme</h1>
 
     <p class="odeme-cerceve-not">
         Sipariş numaranız <strong>{{ $order->number }}</strong>.

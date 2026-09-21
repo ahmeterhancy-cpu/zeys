@@ -17,17 +17,13 @@
     }
 @endphp
 
-<div class="kap kap-dar siparis-sayfa">
+@include('vitrin.parca.sayfa-basi', ['baslik' => 'Sipariş ' . $order->number, 'konum' => ['Sipariş Sorgula' => route('order.lookup.form'), $order->number => null]])
 
-    <nav class="iz" aria-label="Konum">
-        <a href="{{ route('home') }}">Ana Sayfa</a>
-        <span aria-hidden="true">/</span>
-        <span>Sipariş {{ $order->number }}</span>
-    </nav>
+<div class="kap kap-dar siparis-sayfa">
 
     <div class="siparis-basi">
         <div>
-            <h1>Sipariş {{ $order->number }}</h1>
+            <h2>{{ $order->number }}</h2>
             <p class="siparis-tarih">{{ $order->created_at->format('d.m.Y H:i') }}</p>
         </div>
         <span class="siparis-durum siparis-durum-{{ $order->status }}">{{ $order->status_label }}</span>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -60,6 +61,11 @@ class Product extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class)->orderBy('position');
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function reviews(): HasMany
@@ -128,5 +134,51 @@ class Product extends Model
     public function getHasPriceRangeAttribute(): bool
     {
         return $this->min_price != $this->max_price;
+    }
+
+    /**
+     * Ürün kartının ihtiyacı olan her şey tek seferde: renk noktaları,
+     * koleksiyon adı, üzerine gelince değişen ikinci görsel ve eski fiyat.
+     * Kart listeleyen her sorgu bunu kullanır; yoksa 24'lük ızgara ürün
+     * başına 3-4 sorgu atar.
+     */
+    public function scopeKartIcin(Builder $q): Builder
+    {
+        return $q
+            ->with([
+                'options.values',
+                'collection',
+                'media' => fn ($m) => $m->whereNull('product_option_value_id'),
+            ])
+            ->withMax(['variants as eski_fiyat' => fn ($v) => $v->where('is_active', true)], 'compare_at_price');
+    }
+
+    /**
+     * Kartta gösterilecek eski fiyat. Yalnız satış fiyatından BÜYÜKSE —
+     * aksi hâlde "indirim" yazmak yanıltıcı olur. Bedenler arasında fiyat
+     * farkı varsa en düşük fiyat baz alınır (kartta da o yazıyor).
+     */
+    public function getKartEskiFiyatAttribute(): ?float
+    {
+        $eski = (float) ($this->eski_fiyat ?? 0);
+
+        return $eski > (float) $this->min_price ? $eski : null;
+    }
+
+    public function getIndirimOraniAttribute(): ?int
+    {
+        $eski = $this->kart_eski_fiyat;
+
+        return $eski ? (int) round(($eski - (float) $this->min_price) / $eski * 100) : null;
+    }
+
+    /** Üzerine gelince gösterilecek ikinci görsel (kapaktan farklı ilk galeri görseli). */
+    public function getIkinciGorselAttribute(): ?string
+    {
+        if (! $this->relationLoaded('media')) {
+            return null;
+        }
+
+        return $this->media->pluck('path')->first(fn ($p) => $p !== $this->hero_image);
     }
 }
