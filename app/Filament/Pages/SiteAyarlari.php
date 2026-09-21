@@ -7,6 +7,7 @@ use App\Services\LegalPlaceholders;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -53,6 +54,16 @@ class SiteAyarlari extends Page
         return $schema
             ->statePath('data')
             ->components([
+                Section::make('Yayın durumu')
+                    ->schema([
+                        Toggle::make('bakim_modu')
+                            ->label('Bakım perdesi açık')
+                            ->helperText(
+                                'Açıkken ziyaretçiler "Çok yakında" sayfasını görür. Siz yönetici olarak '
+                                .'siteyi normal görmeye devam edersiniz. Ödeme bildirimleri etkilenmez.'
+                            ),
+                    ]),
+
                 Section::make('Kargo')
                     ->description('Sepette ve kasada anında geçerli olur. Verilmiş siparişlerin kargo bedeli değişmez.')
                     ->columns(3)

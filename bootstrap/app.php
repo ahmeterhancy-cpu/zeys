@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BakimPerdesi;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Oturum katmanı bu yollara zaten uygulanmıyor; yine de CSRF
         // listesinden düşürülür ki ileride biri bu rotaları `web` grubuna
         // taşırsa istek sessizce 419'a düşmesin.
+        // Bakım perdesi — yalnız `web` grubu; PayTR uçları (routes/paytr.php)
+        // bu grubun dışında olduğu için perde açıkken de ödeme işlenir.
+        $middleware->appendToGroup('web', BakimPerdesi::class);
+
         $middleware->validateCsrfTokens(except: [
             'paytr/callback',
             'odeme/donus/*',

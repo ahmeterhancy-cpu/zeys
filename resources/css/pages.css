@@ -1046,3 +1046,47 @@
 }
 
 .fatura-adres-alanlari { margin-top: 14px; }
+
+/* --- Bakım perdesi --- */
+
+.bakim {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px var(--gutter);
+    background: radial-gradient(120% 80% at 50% 0%, var(--gold-wash), var(--paper) 70%);
+}
+
+.bakim img { width: min(300px, 70vw); margin-bottom: 30px; }
+
+.bakim h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(32px, 6vw, 52px);
+    margin: 0 0 16px;
+}
+
+.bakim p { color: var(--ink-soft); max-width: 44ch; margin: 0 0 14px; }
+
+.bakim address {
+    font-style: normal;
+    font-size: 14px;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+}
+
+.bakim a { color: var(--gold-ink); }
+
+.bakim-seridi {
+    background: var(--danger);
+    /* Kırmızı zeminde beyaz — 7.5:1 */
+    color: #ffffff;
+    text-align: center;
+    font-size: 13px;
+    padding: 9px var(--gutter);
+}
+
+.bakim-seridi a { color: #ffffff; margin-left: 10px; }

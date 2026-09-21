@@ -25,6 +25,14 @@
 <body>
     <a href="#icerik" class="gorunmez">İçeriğe atla</a>
 
+    {{-- Perde açıkken siteyi gören tek kişi yönetici: unutulmasın diye uyarı --}}
+    @if (config('shop.bakim_modu') && auth()->user()?->isAdmin())
+        <div class="bakim-seridi">
+            Bakım perdesi AÇIK — ziyaretçiler "Çok yakında" sayfasını görüyor.
+            <a href="{{ url('/admin/site-ayarlari') }}">Ayarlardan kapat</a>
+        </div>
+    @endif
+
     @if ((float) config('shop.kargo.ucretsiz_esigi') > 0)
         <div class="duyuru">
             {{ number_format((float) config('shop.kargo.ucretsiz_esigi'), 0, ',', '.') }} TL ve üzeri kargo ücretsiz

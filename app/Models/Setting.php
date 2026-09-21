@@ -47,6 +47,7 @@ class Setting extends Model
         'satici_mersis' => 'shop.satici.mersis',
         'satici_vergi_dairesi' => 'shop.satici.vergi_dairesi',
         'satici_vergi_no' => 'shop.satici.vergi_no',
+        'bakim_modu' => 'shop.bakim_modu',
     ];
 
     /** Sayısal olması gereken ayarlar — config'e doğru türde girsin. */
@@ -54,6 +55,7 @@ class Setting extends Model
         'kargo_ucret' => 'float',
         'kargo_ucretsiz_esigi' => 'float',
         'dusuk_stok_esigi' => 'int',
+        'bakim_modu' => 'bool',
     ];
 
     /** @return array<string, string|null> */
@@ -75,6 +77,15 @@ class Setting extends Model
                 continue;
             }
 
+            /*
+             * Mantıksal değer açıkça '1'/'0' olarak saklanır: PHP'de
+             * (string) false === '' ve boş değer .env'ye düşer — "kapalı"
+             * seçilen perde panelden hiç kapatılamazdı.
+             */
+            if (is_bool($deger)) {
+                $deger = $deger ? '1' : '0';
+            }
+
             static::updateOrCreate(['key' => $anahtar], ['value' => $deger === null ? null : (string) $deger]);
         }
 
@@ -93,6 +104,7 @@ class Setting extends Model
             $deger = match (self::SAYISAL[$anahtar] ?? null) {
                 'float' => (float) $deger,
                 'int' => (int) $deger,
+                'bool' => $deger === '1',
                 default => $deger,
             };
 
