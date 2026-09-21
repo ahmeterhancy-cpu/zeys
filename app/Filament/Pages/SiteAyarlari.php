@@ -92,14 +92,14 @@ class SiteAyarlari extends Page
                         TextInput::make('siparis_bildirim_epostasi')
                             ->label('Yeni sipariş bildirimi')
                             ->email()
-                            ->helperText('Her ödenen siparişin kopyası bu adrese gider. Boşsa gönderilmez.'),
+                            ->helperText('Her ödenen siparişin kopyası ve düşük stok uyarıları bu adrese gider. Boşsa gönderilmez.'),
 
                         TextInput::make('dusuk_stok_esigi')
                             ->label('Düşük stok eşiği')
                             ->numeric()
                             ->minValue(0)
                             ->required()
-                            ->helperText('Panelde bu adet ve altı sarı gösterilir.'),
+                            ->helperText('Panelde bu adet ve altı sarı gösterilir. Raftaki stok bu eşiğe inince ya da bitince soldaki adrese uyarı gider.'),
                     ]),
 
                 Section::make('Satıcı bilgileri')
