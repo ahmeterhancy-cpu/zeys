@@ -5,10 +5,12 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Product;
+use App\Models\ProductMedia;
 use App\Models\ProductVariant;
 use App\Models\SizeChart;
 use App\Services\VariantMatrix;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -121,7 +123,106 @@ class DemoSeeder extends Seeder
             $sayac++;
         }
 
+        $gorselSayisi = $this->gorselleriYukle($renkler, $kategoriler, $koleksiyonlar);
+
         $this->command?->info('Demo: '.count($urunler).' ürün, '
-            .ProductVariant::count().' varyant oluşturuldu.');
+            .ProductVariant::count().' varyant, '.$gorselSayisi.' görsel.');
+    }
+
+    /**
+     * Demo fotoğrafları (database/seeders/demo-gorseller, kaynak: KAYNAK.md).
+     *
+     * Her ürünün iki rengi var, her renge bir fotoğraf: ilk renk kapak olur,
+     * ikinci renginki "genel" galeriye de eklenir ki kartın üzerine gelince
+     * ikinci görsel görünsün. Renk seçilince ürün sayfası o rengin
+     * fotoğrafına geçer.
+     *
+     * Tekrar çalıştırılabilir: yalnız urunler/demo/ altındaki kayıtlar
+     * silinip yeniden yazılır, mağazanın kendi yüklediği görsellere dokunulmaz.
+     */
+    private function gorselleriYukle(array $renkler, array $kategoriler, array $koleksiyonlar): int
+    {
+        $kaynak = database_path('seeders/demo-gorseller');
+
+        if (! is_dir($kaynak)) {
+            return 0;
+        }
+
+        $disk = Storage::disk('public');
+        $yol = fn (string $ad) => 'urunler/demo/'.$ad.'.jpg';
+        $kopyala = function (string $ad) use ($kaynak, $disk, $yol): ?string {
+            $dosya = $kaynak.'/'.$ad.'.jpg';
+            if (! is_file($dosya)) {
+                return null;
+            }
+            $disk->put($yol($ad), file_get_contents($dosya));
+
+            return $yol($ad);
+        };
+
+        $sayi = 0;
+
+        foreach (Product::with('options.values')->get() as $product) {
+            $renkEkseni = $product->options->firstWhere('kind', 'color');
+            if (! $renkEkseni) {
+                continue;
+            }
+
+            ProductMedia::where('product_id', $product->id)->where('path', 'like', 'urunler/demo/%')->delete();
+
+            $renkYollari = [];
+            foreach ($renkEkseni->values as $deger) {
+                // "Siyah" → "siyah" (dosya adındaki renk anahtarı)
+                $renkAnahtari = array_search($deger->value, array_map(fn ($r) => $r['value'], $renkler), true);
+                $p = $renkAnahtari !== false ? $kopyala($product->slug.'-'.$renkAnahtari) : null;
+
+                if ($p) {
+                    ProductMedia::create([
+                        'product_id' => $product->id,
+                        'product_option_value_id' => $deger->id,
+                        'path' => $p,
+                        'alt' => $product->name.' — '.$deger->value,
+                        'position' => count($renkYollari),
+                    ]);
+                    $renkYollari[] = $p;
+                    $sayi++;
+                }
+            }
+
+            if ($renkYollari === []) {
+                continue;
+            }
+
+            // Kart üzerine gelince ve ürün sayfası küçük görselleri için genel galeri
+            foreach (array_slice($renkYollari, 1) as $i => $p) {
+                ProductMedia::create([
+                    'product_id' => $product->id,
+                    'path' => $p,
+                    'alt' => $product->name,
+                    'position' => 10 + $i,
+                ]);
+            }
+
+            $product->forceFill([
+                'hero_image' => $renkYollari[0],
+                'short_description' => 'Demo ürün — fotoğraf temsilîdir, mağazanın gerçek ürün fotoğraflarıyla değiştirilecek.',
+            ])->saveQuietly();
+        }
+
+        foreach ($kategoriler as $slug => $kategori) {
+            if ($p = $kopyala('kategori-'.$slug)) {
+                $kategori->forceFill(['image' => $p])->save();
+                $sayi++;
+            }
+        }
+
+        foreach ($koleksiyonlar as $slug => $koleksiyon) {
+            if ($p = $kopyala('koleksiyon-'.$slug)) {
+                $koleksiyon->forceFill(['image' => $p])->save();
+                $sayi++;
+            }
+        }
+
+        return $sayi;
     }
 }

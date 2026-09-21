@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **316 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-21 · **319 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -91,8 +91,10 @@ Zamanlanmış iş: `zeys:rezerv-temizle` — yarıda kalan ödemelerin rezervini
 ## Bekleyenler — sensiz ilerleyemez
 
 1. **Ürün fotoğrafları.** Panelde galeri ve renk başına toplu yükleme
-   hazır. Tek fotoğraf yok; vitrin demo ürünlerle, yer tutucu
-   görsellerle duruyor.
+   hazır. Şimdilik `DemoSeeder` 8 demo ürüne Unsplash'tan seçilmiş
+   **temsilî** fotoğraflar bağlıyor (kaynak ve lisans:
+   `database/seeders/demo-gorseller/KAYNAK.md`). Bunlar Zeys'in ürünleri
+   değil — gerçek çekimlerle değiştirilmeli.
 2. **GitHub deposu onayı.** SSH'sız cPanel klonlaması yüzünden depo
    pratikte public olmak zorunda; `.env` asla commit'lenmemeli.
 3. **PayTR** mağaza no / anahtar / salt (ödeme ve iade aynı anahtarla).
