@@ -293,6 +293,11 @@
         <div class="alt-kunye">
             <div class="kap alt-kunye-ic">
                 <span>&copy; {{ now()->year }} {{ config('shop.ad') }} · Edirne / Türkiye</span>
+                <span class="alt-imza">
+                    Web Site by
+                    <a href="https://maysila.com" rel="noopener" target="_blank">Maysila Digital Agency</a>
+                    &amp; Amesis 360
+                </span>
                 <span class="alt-odeme">
                     @include('vitrin.parca.ikon', ['ad' => 'kalkan'])
                     Kredi ve banka kartıyla güvenli ödeme · PayTR

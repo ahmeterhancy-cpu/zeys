@@ -445,6 +445,10 @@
 }
 
 .alt-odeme { display: inline-flex; align-items: center; gap: 8px; }
+
+.alt-imza { color: var(--ink-faint); }
+.alt-imza a { color: var(--ink-soft); font-weight: 500; }
+.alt-imza a:hover { color: var(--vurgu); }
 .alt-odeme .ikon { width: 18px; height: 18px; color: var(--vurgu); }
 
 /* ------------------------------------------------------------------ */
