@@ -56,7 +56,7 @@ deployment:
     - echo "APPPATH icerigi=" >> $LOG 2>&1
     - /bin/ls -1 $APPPATH >> $LOG 2>&1
     - echo "--- 2/7 storage iskeleti ve izinler ---" >> $LOG 2>&1
-    - /bin/mkdir -p $APPPATH/storage/framework/cache/data $APPPATH/storage/framework/sessions $APPPATH/storage/framework/views $APPPATH/storage/logs $APPPATH/storage/app/public $APPPATH/bootstrap/cache >> $LOG 2>&1
+    - /bin/mkdir -p $APPPATH/storage/framework/cache/data $APPPATH/storage/framework/sessions $APPPATH/storage/framework/views $APPPATH/storage/logs $APPPATH/storage/app/public $APPPATH/storage/app/private $APPPATH/bootstrap/cache >> $LOG 2>&1
     - chmod -R 775 $APPPATH/storage $APPPATH/bootstrap/cache >> $LOG 2>&1
     - echo "--- 3/7 klasoru webe kapat ---" >> $LOG 2>&1
     - /bin/cp deploy/cpanel/app.htaccess $APPPATH/.htaccess >> $LOG 2>&1

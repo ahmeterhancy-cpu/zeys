@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **325 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-21 · **364 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -79,6 +79,29 @@ tabloları · Kuponlar · Kategoriler · Koleksiyonlar · Yasal metinler (sürü
 yayımlama) · Kullanıcılar · Site ayarları (bakım perdesi, kargo, bildirim
 adresi, düşük stok eşiği, satıcı bilgileri).
 
+**Vitrin grubu (yalnız yönetici)**: **Slayt ve Afişler** (ana slayt, üçlü
+afiş, ikili geniş afiş; görsel, metinler, bağlantı, sıra, başlangıç/bitiş
+takvimi — boşsa ana sayfa otomatik içeriğe döner) · **Menüler** (ana menü,
+üst şerit, alt bilgi "Yardım" sütunu; hazır sayfa seçici — boşsa varsayılan
+bağlantılar).
+
+**Ayarlar**: **E-posta Metinleri** — 11 müşteri e-postasının konu/başlık/
+metin/notu, `{ad}` `{siparis_no}` `{takip_no}` gibi değişkenler, önizleme,
+varsayılana döndür. Yapısal parçalar (sipariş tablosu, düğmeler) sabit.
+
+**Fatura**: siparişte numara + tarih + PDF (gizli diskte), PDF ekli
+e-posta, müşteri sipariş sayfasından imzalı bağlantıyla indirir; "faturası
+kesilmemiş" süzgeci; yöneticiye **muhasebe dökümü** (CSV). Fatura muhasebe
+programında kesilir — e-Arşiv entegratörü bağlı değil.
+
+**Roller**: *Yönetici* her şey. *Personel* (Kullanıcılar'dan atanır):
+sipariş hazırlama/kargo/fatura, iade lojistiği, stok, ürün bilgisi, yorum
+onayı, stok talepleri. Personel **yapamaz**: para iadesi, ödenmiş siparişi
+iptal, iade onay/ret, fiyat, silme, CSV yükleme, rapor, kupon, ayarlar,
+kullanıcılar, yasal metinler, katalog yapısı, vitrin içeriği; panoda ciroyu
+görmez. Kısıtlar eylem düzeyinde `authorize()` ile — gizleme değil, sunucu da
+reddeder.
+
 **CSV biçimi** Türkçe Excel'e göre: `;` ayraç, ondalık virgül, BOM.
 Yükleme hepsi-ya-da-hiçbiri — tek hatalı satırda hiçbir şey uygulanmaz.
 Yeni varyant CSV'den açılmaz; stok, ödemesi beklenen adedin altına inemez.
@@ -114,8 +137,10 @@ Zamanlanmış iş: `zeys:rezerv-temizle` — yarıda kalan ödemelerin rezervini
   sunucuda yapılacak.
 - **PayTR'nin gerçek sayfası ve iade uç noktası görülmedi.** İmzalar ve
   callback doğrulaması testli; ilk temas senin anahtarlarınla olacak.
-- **E-fatura/e-arşiv entegrasyonu yok.** Kasada fatura bilgisi toplanıyor,
-  panelde görünüyor; faturayı muhasebe programında kesmek gerekiyor.
+- **E-fatura/e-arşiv entegrasyonu yok.** Fatura muhasebe programında /
+  GİB portalında kesilip PDF'i panelden siparişe yüklenir (müşteriye gider).
+  Entegratör (Paraşüt, Logo, özel entegratör…) seçilirse kesme adımı
+  `App\Services\Faturalar`'a eklenir; hesap ve API anahtarı gerekir.
 - **Arama sade LIKE.** Ürün sayısı birkaç yüzü geçerse tam metin
   indeksi gerekecek.
 - **Kategori ağacı tek seviye** iniyor (kategori + doğrudan altları).

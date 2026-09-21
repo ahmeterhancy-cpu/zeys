@@ -359,6 +359,18 @@ gitmezse yalnızca günlüğe yazılıyor.
 
 ---
 
+### K. Yedeklenmesi gereken iki klasör
+
+Veritabanı dışında yeniden üretilemeyen dosyalar:
+
+- `zeys_app/storage/app/public/` — ürün, kategori, slayt fotoğrafları
+- `zeys_app/storage/app/private/` — **fatura PDF'leri** (kişisel veri;
+  herkese açık değildir, müşteri imzalı bağlantıyla indirir)
+
+Deploy bu klasörlere dokunmaz (`.cpanel.yml` `storage/`'ı kopyalamaz),
+ama sunucu taşınırken ya da hesap yenilenirken elle taşınmalı. cPanel
+yedeklemesi (Yedekleme Sihirbazı → Ana Dizin) ikisini de kapsar.
+
 ## 7. Deploy takılırsa
 
 İlk bakılacak yer:
