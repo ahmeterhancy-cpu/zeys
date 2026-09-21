@@ -21,6 +21,7 @@ class CollectionsTable
             ->defaultSort('position')
             ->columns([
                 ImageColumn::make('image')
+                    ->disk('public')
                     ->label('Görsel')
                     ->square()
                     ->toggleable(),

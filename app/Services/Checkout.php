@@ -90,7 +90,8 @@ class Checkout
                     'name' => $line['product']->name,
                     'variant_label' => $line['label'],
                     'sku' => $line['variant']->sku,
-                    'image' => $line['product']->hero_image,
+                    // Varyantın kendi görseli varsa o (müşteri hangi rengi aldığını görsün)
+                    'image' => $line['variant']->image ?: $line['product']->hero_image,
                     'unit_price' => $line['unit_price'],
                     'quantity' => $line['quantity'],
                     'line_total' => $line['line_total'],

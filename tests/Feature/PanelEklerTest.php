@@ -88,6 +88,13 @@ class PanelEklerTest extends TestCase
 
         // Kapak bossa ilk yuklenen kapak olmali — yoksa kart "Z" ile kalir
         $this->assertNotNull($this->urun->fresh()->hero_image);
+
+        /*
+         * GERILEME: FileUpload diski belirtilmemisti; Filament .env'deki
+         * FILESYSTEM_DISK'e (yerelde "local" = gizli depo) yaziyordu ve
+         * vitrin storage/ altindan okudugu icin fotograf hic gorunmuyordu.
+         */
+        Storage::disk('public')->assertExists($this->urun->fresh()->hero_image);
     }
 
     public function test_urun_sayfasi_yalniz_kapak_gorseli_varken_onu_gosterir(): void

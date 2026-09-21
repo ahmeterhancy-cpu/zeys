@@ -54,6 +54,7 @@ class CategoryForm
                 ->columns(2)
                 ->schema([
                     FileUpload::make('image')
+                        ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                         ->label('Kategori görseli')
                         ->image()
                         ->directory('kategoriler')

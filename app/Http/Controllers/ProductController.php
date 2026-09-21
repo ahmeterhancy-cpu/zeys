@@ -60,6 +60,8 @@ class ProductController extends Controller
                 'stok' => $v->available_stock,
                 'fiyat' => (float) $v->price,
                 'sku' => $v->sku,
+                // Varyanta özel görsel: seçilince ana görsel olur (bkz. urun.js)
+                'gorsel' => $v->image,
             ])->values();
 
         // Renk seçilince değişecek galeri: değer kimliği => görsel yolları
@@ -87,6 +89,11 @@ class ProductController extends Controller
 
         if ($genelYollar->isEmpty()) {
             $genelYollar = $urun->media->pluck('path')->take(1)->values();
+        }
+
+        // Hâlâ görsel yoksa ama varyant görseli varsa açılışta onu göster
+        if ($genelYollar->isEmpty()) {
+            $genelYollar = $urun->variants->where('is_active', true)->pluck('image')->filter()->take(1)->values();
         }
 
         // Yalnız onaylı yorumlar; en yeni 20'si (ürün sayfası sonsuz uzamasın)

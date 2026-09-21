@@ -55,6 +55,7 @@ class MediaRelationManager extends RelationManager
     {
         return $schema->components([
             FileUpload::make('path')
+                ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                 ->label('Görsel')
                 ->image()
                 ->directory('urunler/galeri')
@@ -110,6 +111,7 @@ class MediaRelationManager extends RelationManager
                     ->modalDescription('Seçtiğiniz dosyaların hepsi aynı renge atanır. Sonra sürükleyerek sıralayabilirsiniz.')
                     ->schema([
                         FileUpload::make('dosyalar')
+                            ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                             ->label('Görseller')
                             ->image()
                             ->multiple()

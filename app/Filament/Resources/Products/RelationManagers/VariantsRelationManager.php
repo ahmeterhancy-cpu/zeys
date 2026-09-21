@@ -8,12 +8,14 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,6 +69,16 @@ class VariantsRelationManager extends RelationManager
             Toggle::make('is_active')
                 ->label('Satışta')
                 ->default(true),
+
+            FileUpload::make('image')
+
+                ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
+                ->label('Varyant görseli')
+                ->helperText('İsteğe bağlı. Müşteri bu kombinasyonu seçince ana görsel olur; sepette ve siparişte de bu görünür. Boşsa renk galerisi / ürün kapağı kullanılır.')
+                ->image()
+                ->directory('urunler/varyant')
+                ->maxSize(4096)
+                ->columnSpanFull(),
         ])->columns(2);
     }
 
@@ -76,6 +88,13 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('sku')
             ->defaultSort('position')
             ->columns([
+                ImageColumn::make('image')
+                    ->disk('public')
+                    ->label('Görsel')
+                    ->square()
+                    ->size(44)
+                    ->placeholder('—'),
+
                 TextColumn::make('label')
                     ->label('Kombinasyon')
                     ->getStateUsing(fn (ProductVariant $kayit) => $kayit->label ?: '—')
@@ -151,11 +170,53 @@ class VariantsRelationManager extends RelationManager
                                 ->required()
                                 ->minValue(0),
                         ])
-                        ->action(function (Collection $kayitlar, array $veri) {
-                            $kayitlar->each->update(['stock' => (int) $veri['stok']]);
+                        ->action(function (Collection $kayitlar, array $data) {
+                            $kayitlar->each->update(['stock' => (int) $data['stok']]);
 
                             Notification::make()
                                 ->title($kayitlar->count().' varyantın stoğu güncellendi')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
+                    /*
+                     * Aynı rengin bütün bedenleri çoğu zaman aynı fotoğrafı
+                     * paylaşır: "Siyah" satırları seçilip tek yüklemeyle atanır.
+                     */
+                    BulkAction::make('gorselAta')
+                        ->label('Seçilenlere görsel ata')
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            FileUpload::make('gorsel')
+                                ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
+                                ->label('Görsel')
+                                ->image()
+                                ->directory('urunler/varyant')
+                                ->maxSize(4096)
+                                ->required(),
+                        ])
+                        ->action(function (Collection $kayitlar, array $data) {
+                            $kayitlar->each->update(['image' => $data['gorsel']]);
+
+                            Notification::make()
+                                ->title($kayitlar->count().' varyanta görsel atandı')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
+                    BulkAction::make('gorselKaldir')
+                        ->label('Seçilenlerin görselini kaldır')
+                        ->icon('heroicon-o-x-mark')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->modalDescription('Varyant görseli kaldırılır; vitrin renk galerisine / ürün kapağına döner. Dosya silinmez.')
+                        ->action(function (Collection $kayitlar) {
+                            $kayitlar->each->update(['image' => null]);
+
+                            Notification::make()
+                                ->title($kayitlar->count().' varyantın görseli kaldırıldı')
                                 ->success()
                                 ->send();
                         })

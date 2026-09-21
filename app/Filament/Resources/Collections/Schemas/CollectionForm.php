@@ -40,6 +40,7 @@ class CollectionForm
                 ->columns(2)
                 ->schema([
                     FileUpload::make('image')
+                        ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                         ->label('Koleksiyon görseli')
                         ->image()
                         ->directory('koleksiyonlar')

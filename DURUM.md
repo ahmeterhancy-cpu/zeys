@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **319 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-21 · **325 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -71,7 +71,7 @@ Toplam yük: sıfır kütüphane, elle yazılmış CSS/JS (Poppins derleme anın
 beden bekleyen müşteri, takılı rezerv — her kart ilgili listeye gider.
 
 Ürünler (matris üretimi, galeri + renk başına fotoğraf, toplu yükleme,
-rezerv onarma, **SKU bazında fiyat/stok CSV indir-yükle**) · Siparişler
+rezerv onarma, **varyant görseli** (tek tek ya da seçilenlere toplu), **SKU bazında fiyat/stok CSV indir-yükle**) · Siparişler
 (kargola/teslim/iptal + PayTR iadesi, fatura bilgisi) · İade kuyruğu (durum
 makinesi, PayTR iadesi) · **Satış raporu** (tarih aralığı, net ciro, en çok
 satanlar, CSV) · **Yorumlar** (yayımla/reddet) · Stok talepleri · Beden
@@ -199,3 +199,11 @@ Hepsi sessizdi; not düşülüyor ki tekrar edilmesin.
     elle imzaladığı için görünmedi; yeni test adresi sayfadaki formdan okuyor.
 24. **Ödeme dönüş sayfası ASCII Türkçeydi** ("Siparisiniz alindi") — 11.
     maddedeki hatanın gözden kaçan son örneği; düzeltildi.
+25. **Panelden yüklenen fotoğraflar vitrinde görünmüyordu** (yerelde ve
+    varsayılan .env'li her sunucuda): `FileUpload` diski belirtilmemişti,
+    Filament `FILESYSTEM_DISK`'e (`local` = gizli depo) yazıyordu. Bütün görsel
+    alanları ve tablo sütunları artık açıkça `public` diskte. Test dosyanın
+    NEREYE yazıldığına bakmadığı için kaçmıştı.
+26. **"Seçilenlere stok ata" toplu eylemi hiç çalışmıyordu**: kapanışta
+    `array $veri` yazılmıştı; Filament parametreyi ADIYLA (`$data`) enjekte
+    ediyor (6. maddedeki `$query` tuzağının aynısı).

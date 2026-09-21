@@ -31,9 +31,10 @@
             <div class="sepet-satirlar">
                 @foreach ($satirlar as $satir)
                     <div class="sepet-satir {{ $satir['adjusted'] ? 'sepet-satir-uyari' : '' }}">
-                        <div class="sepet-gorsel {{ $satir['product']->hero_image ? '' : 'urun-gorsel-yok' }}">
-                            @if ($satir['product']->hero_image)
-                                <img src="{{ asset('storage/' . $satir['product']->hero_image) }}"
+                        @php($satirGorsel = $satir['variant']->image ?: $satir['product']->hero_image)
+                        <div class="sepet-gorsel {{ $satirGorsel ? '' : 'urun-gorsel-yok' }}">
+                            @if ($satirGorsel)
+                                <img src="{{ asset('storage/' . $satirGorsel) }}"
                                      alt="{{ $satir['product']->name }}">
                             @else
                                 <span class="urun-harf" aria-hidden="true">Z</span>

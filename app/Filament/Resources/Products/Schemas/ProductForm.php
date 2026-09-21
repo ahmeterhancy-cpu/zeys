@@ -130,6 +130,7 @@ class ProductForm
 
                 Tab::make('Görsel')->schema([
                     FileUpload::make('hero_image')
+                        ->disk('public') // vitrin storage/ altından okur; .env'ye bırakılmaz
                         ->label('Kapak görseli')
                         ->image()
                         ->directory('urunler')

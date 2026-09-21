@@ -22,6 +22,7 @@ class ProductsTable
             ->defaultSort('position')
             ->columns([
                 ImageColumn::make('hero_image')
+                    ->disk('public')
                     ->label('Görsel')
                     ->square()
                     ->defaultImageUrl(asset('img/zeys-logo-sm.png')),

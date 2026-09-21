@@ -189,10 +189,36 @@
         const ana = document.getElementById('galeri-ana');
         if (!ana || !ana.dataset.taban) return;
 
+        const uyan = (v) => secili.every((s) => v.degerler.includes(s));
+
+        /*
+         * Öncelik:
+         *  1. Tam kombinasyon seçildiyse ve o varyantın kendi görseli varsa o.
+         *  2. Seçili rengin galerisi (panelde renk başına yüklenenler).
+         *  3. Kısmi seçimde, seçilenlerle uyuşan ilk varyantın görseli —
+         *     mağaza yalnız varyant görseli yüklediyse renk seçimi yine
+         *     görseli değiştirsin.
+         */
+        if (secili.length === eksenler.length) {
+            const tam = varyantlar.find((v) => v.degerler.length === secili.length && uyan(v));
+            if (tam && tam.gorsel) {
+                ana.src = ana.dataset.taban + tam.gorsel;
+                return;
+            }
+        }
+
         for (const deger of secili) {
             const yollar = galeri[deger];
             if (yollar && yollar.length) {
                 ana.src = ana.dataset.taban + yollar[0];
+                return;
+            }
+        }
+
+        if (secili.length) {
+            const gorselli = varyantlar.find((v) => v.gorsel && uyan(v));
+            if (gorselli) {
+                ana.src = ana.dataset.taban + gorselli.gorsel;
                 return;
             }
         }
