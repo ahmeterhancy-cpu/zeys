@@ -187,6 +187,28 @@ class SiparisSorgulaTest extends TestCase
         $this->assertSame('Bir beden büyük geldi.', $talep->customer_note);
     }
 
+    /**
+     * GERİLEME: sayfadaki form imzasız adrese post ediyordu → 403. Buradaki
+     * diğer testler adresi elle imzaladığı için hata görünmüyordu; bu test
+     * adresi SAYFADAKİ formdan okur.
+     */
+    public function test_sayfadaki_iade_formu_gercekten_gonderilebilir(): void
+    {
+        $order = $this->teslimEt($this->siparis(2));
+        $kalem = $order->items->first();
+
+        $html = $this->get(URL::signedRoute('order.show', ['order' => $order->number]))->getContent();
+        $this->assertSame(1, preg_match('/<form method="POST" action="([^"]+)" class="iade-formu"/', $html, $m));
+
+        $this->post(html_entity_decode($m[1]), [
+            'tur' => 'return',
+            'gerekce' => 'beden',
+            'kalemler' => [$kalem->id => ['sec' => '1', 'adet' => 1]],
+        ])->assertRedirect();
+
+        $this->assertSame(1, ReturnRequest::count());
+    }
+
     public function test_musteri_degisim_talebinde_hedef_beden_kaydedilir(): void
     {
         $order = $this->teslimEt($this->siparis(1));

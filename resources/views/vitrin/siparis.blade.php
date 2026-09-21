@@ -173,7 +173,10 @@
                 </p>
             @endif
 
-            <form method="POST" action="{{ route('order.return', $order->number) }}" class="iade-formu">
+            {{-- İmzalı adres şart: rota `signed` grubunda. route() ile üretilen
+                 imzasız adres her gönderimde 403 veriyordu (testler adresi elle
+                 imzaladığı için yakalanmamıştı). --}}
+            <form method="POST" action="{{ \Illuminate\Support\Facades\URL::signedRoute('order.return', ['order' => $order->number]) }}" class="iade-formu">
                 @csrf
 
                 <fieldset class="form-blok">
