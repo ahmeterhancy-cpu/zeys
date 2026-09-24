@@ -12,46 +12,57 @@ her değer buradan alınacak. Tarif: [DEPLOY.md](DEPLOY.md).
 
 ## 1. Sunucu (cPanel'e bakarak doldurun)
 
-| Bilgi | Nerede bakılır | Değer |
-|---|---|---|
-| cPanel kullanıcı adı | cPanel ana ekranı → "Kullanıcı Adı" | `________` |
-| Alan adı | Yayına çıkacak adres (https ile) | `________` |
-| Sunucu / paket | Turhost mu, başka mı | `________` |
-| **SSH var mı?** | Terminal ya da SSH Access simgesi | ☐ var ☐ yok |
-| **Composer var mı?** | SSH'de `composer -V` | ☐ var ☐ yok ☐ SSH yok, bilinmiyor |
-| **PHP sürümü** | MultiPHP Manager **ve** PHP Selector (ikisi ayrı) | `____` / `____` |
-| **Kök dizin değiştirilebiliyor mu?** | Domains → alan adının kök dizini | ☐ evet ☐ hayır |
-| Node / npm var mı? | Neredeyse hiçbir paylaşımlı pakette yok | ☐ var ☐ yok |
+Referans proje **Ay Parçası** (`ayparcasicicekci.com`) aynı yöntemle
+canlıda; oradaki kısıtlar burada da **varsayılan kabul edildi** ve kod ona
+göre hazırlandı. Farklı çıkarsa yalnız ilgili satır değişir.
 
-Bu satırların **neyi değiştirdiği**:
+| Bilgi | Nerede bakılır | Referansta | Bu hesapta |
+|---|---|---|---|
+| cPanel kullanıcı adı | cPanel ana ekranı → "Kullanıcı Adı" | `aypa8479` | `________` |
+| Alan adı | Yayına çıkacak adres (https ile) | ayparcasicicekci.com | `________` |
+| **SSH var mı?** | Terminal / SSH Access | **yok** | ☐ var ☐ yok |
+| **Composer var mı?** | SSH'de `composer -V` | **yok** → `vendor/` depoda | ☐ var ☐ yok |
+| **PHP sürümü** | MultiPHP Manager **ve** PHP Selector (ayrı ayrı) | ea-php83 | `____` |
+| **Kök dizin değiştirilebiliyor mu?** | Domains → kök dizin | **hayır** → `public_html/zeys_app` | ☐ evet ☐ hayır |
+| **Sembolik bağ takip ediliyor mu?** | Kurulumdan sonra görseller açılıyor mu | **hayır** → gerçek klasör | ☐ evet ☐ hayır |
+| Node / npm var mı? | Paylaşımlı pakette yok | yok → `public/build` depoda | ☐ var ☐ yok |
 
-- **SSH yok** → deploy key üretilemez, depo pratikte herkese açık olmak
-  zorunda; `artisan` işleri `.cpanel.yml` görevlerinden yürür.
-- **Composer yok** → `vendor/` klasörü depoya eklenir (~100 MB),
-  DEPLOY.md 3.5.
-- **PHP sürümü** → `composer.json` içindeki `config.platform.php`
-  sunucununkine eşit ya da ondan küçük olmalı. Şu an `8.3.33`.
-  Sunucu 8.2 ise indirilecek. Yanlışsa site **beyaz ekran** verir
-  (DEPLOY.md tuzak E).
-- **Kök dizin değiştirilebiliyor** → temiz kurulum, `.env` web'e hiç
-  açılmaz (DEPLOY.md 1). Değiştirilemiyorsa `public_html/zeys_app`
-  düzeni (DEPLOY.md 2).
-- **Node yok** → `public/build` yerelde derlenip depoya konur (yapıldı).
+Referans kısıtlara göre **zaten yapılanlar**:
+
+- `public/build` depoya konuldu (sunucuda Node yok).
+- `vendor/` depoya konuldu (sunucuda Composer yok); `composer install`
+  yine de varsa `.cpanel.yml` onu çalıştırıyor.
+- `public_html/zeys_app` düzeni ve klasörü web'e kapatan `.htaccess`
+  hazır (`deploy/cpanel/`).
+- Sembolik bağ takip edilmezse diye `FILESYSTEM_PUBLIC_ROOT` desteği
+  eklendi: değeri `public_html/storage` gösterirse dosyalar doğrudan
+  oraya yazılır.
+- `composer.json` PHP **8.3.33**'e kilitli — sunucu 8.2 ise indirilecek,
+  8.4 ise dokunulmayacak. Yanlışsa site **beyaz ekran** verir.
+
+**Hâlâ yalnız sizden gelebilecek olan:** cPanel kullanıcı adı ve alan adı.
+`.cpanel.yml` içindeki üç yol satırı (`/home/KULLANICI/...`) onsuz
+doldurulamıyor.
 
 ---
 
 ## 2. Depo
 
-cPanel → Git Version Control bir **klon adresi** ister.
+cPanel → Git Version Control bir **klon adresi** ister ve adres içinde
+parola kabul etmez; SSH olmadığı için deploy key de üretilemez. Referans
+projede bu yüzden depo **herkese açık**:
+`https://github.com/ahmeterhancy-cpu/ayparcasi`
 
 | Bilgi | Değer |
 |---|---|
-| Depo nerede duracak | ☐ GitHub (özel) ☐ GitHub (herkese açık) ☐ cPanel'de |
+| Depo nerede duracak | ☐ GitHub (herkese açık) ☐ GitHub (özel + deploy key, SSH varsa) |
 | Klon adresi | `________` |
-| Deploy key eklendi mi (özel depo + SSH) | ☐ evet ☐ gerekmedi |
+| Varsayılan dal | `main` |
 
-> Şu an yerel depoda **uzak sunucu tanımlı değil**. GitHub'da depo
-> açılması ayrıca onayınızı gerektiriyor; söylemeden açmıyorum.
+> Yerel depoda **uzak sunucu tanımlı değil** ve GitHub'da depo açmak
+> kodu dışarı yayımlamak demek — **onayınız olmadan açmıyorum.**
+> Depo açık olacaksa: `.env` hiç commit'lenmedi, parola/anahtar depoda
+> yok; bu böyle kalmalı.
 
 ---
 
@@ -136,17 +147,19 @@ Callback tanımlanmazsa ödeme alınır ama sipariş **"ödendi" olmaz**.
 
 ---
 
-## 9. Ben (Claude) neye bakmadan ilerleyemiyorum
+## 9. Sırada ne var
 
-Sırasıyla en kritik olanlar:
+Kod tarafı hazır: `public/build` ve `vendor/` depoda, `public_html/zeys_app`
+düzeni ve `.htaccess` koruması yerinde, sembolik bağ tutmazsa diye çıkış
+yolu eklendi.
 
-1. cPanel kullanıcı adı → `.cpanel.yml` içindeki üç yol satırı onsuz
-   doldurulamaz (şu an `KULLANICI` yazıyor).
-2. Kök dizin değiştirilebiliyor mu → kurulumun şeklini belirliyor.
-3. SSH ve Composer var mı → `vendor/` depoya girecek mi.
-4. PHP sürümü → `composer.json` platform kilidi.
-5. Depo nerede duracak → GitHub'da depo açılması onayınıza bağlı.
+Bekleyen iki şey:
 
-Bunlar gelince: yolları doldurur, gerekiyorsa `vendor/`'ı depoya ekler,
-`.env` için hazır bir taslak çıkarır ve adım adım hangi düğmeye
-basacağınızı yazarım.
+1. **cPanel kullanıcı adı ve alan adı** → `.cpanel.yml` içindeki üç yol
+   satırı doldurulacak (şu an `KULLANICI` yazıyor).
+2. **GitHub deposu onayı** → depo açılıp kod push'lanacak, cPanel oradan
+   klonlayacak.
+
+Bunlar gelince sıra: depo aç → push → cPanel Git Version Control → Create →
+Deploy HEAD Commit → `.env` oluştur → tekrar deploy → yönetici hesabı →
+yasal metinler → cron → PayTR callback. Ayrıntısı [DEPLOY.md](DEPLOY.md).

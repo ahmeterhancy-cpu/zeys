@@ -38,9 +38,19 @@ return [
             'report' => false,
         ],
 
+        /*
+         * TUZAK (referans proje Ay Parçası'nda canlıda yaşandı): bazı
+         * paylaşımlı sunucular public_html/storage sembolik bağını
+         * TAKİP ETMEZ — adres doğru olsa da görseller 404 döner.
+         *
+         * Çözüm: web kökünde gerçek bir klasör açılır ve
+         * FILESYSTEM_PUBLIC_ROOT ile dosyalar doğrudan oraya yazılır
+         * (ör. /home/KULLANICI/public_html/storage). Değer boşsa
+         * normal davranış: storage/app/public.
+         */
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            'root' => env('FILESYSTEM_PUBLIC_ROOT') ?: storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
