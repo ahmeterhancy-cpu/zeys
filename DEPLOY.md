@@ -83,8 +83,13 @@ public_html/
 
 cPanel → **Git Version Control** → Create.
 
-- Clone URL: deponun HTTPS adresi
-- Repository Path: `/home/KULLANICI/repositories/zeys`
+- Clone a Repository: **açık**
+- Clone URL: `https://github.com/ahmeterhancy-cpu/zeys.git`
+- Repository Path: `repositories/zeys`
+- Repository Name: `zeys`
+
+Hedef klasör **boş olmalı**; önceki denemeden kalan `repositories/zeys`
+varsa önce silin, cPanel dolu dizine klonlamaz.
 
 > cPanel klon adresinde parola kabul etmiyor. SSH yoksa deploy key de
 > üretilemez → **depo pratikte public olmak zorunda.** Bu yüzden `.env`

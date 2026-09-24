@@ -55,14 +55,19 @@ projede bu yüzden depo **herkese açık**:
 
 | Bilgi | Değer |
 |---|---|
-| Depo nerede duracak | ☐ GitHub (herkese açık) ☐ GitHub (özel + deploy key, SSH varsa) |
-| Klon adresi | `________` |
-| Varsayılan dal | `main` |
+| Depo | `https://github.com/ahmeterhancy-cpu/zeys` ✅ açıldı, push edildi |
+| Klon adresi | `https://github.com/ahmeterhancy-cpu/zeys.git` |
+| Varsayılan dal | `main` ✅ |
+| Görünürlük | **şu an ÖZEL** — cPanel klonlayabilmesi için herkese açık olmalı |
 
-> Yerel depoda **uzak sunucu tanımlı değil** ve GitHub'da depo açmak
-> kodu dışarı yayımlamak demek — **onayınız olmadan açmıyorum.**
-> Depo açık olacaksa: `.env` hiç commit'lenmedi, parola/anahtar depoda
-> yok; bu böyle kalmalı.
+> **Sıradaki iş:** GitHub → depo → Settings → General → en altta
+> *Change repository visibility* → **Public**. cPanel klon adresinde
+> parola kabul etmiyor, SSH yoksa deploy key de üretilemiyor; özel depo
+> klonlanamaz.
+>
+> Depo açılmadan önce doğrulandı: git geçmişinde **hiç `.env` yok**,
+> kodda ve geçmişte parola/anahtar yok. Bu böyle kalmalı — bir kez
+> commit'lenen parola yanmış sayılır.
 
 ---
 
