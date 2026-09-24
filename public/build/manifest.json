@@ -1,0 +1,75 @@
+{
+  "_cormorant-garamond-500-italic-DhNIfkTX.woff": {
+    "file": "assets/cormorant-garamond-500-italic-DhNIfkTX.woff",
+    "src": "_cormorant-garamond-500-italic-DhNIfkTX.woff"
+  },
+  "_cormorant-garamond-500-italic-Y14P-dkT.woff2": {
+    "file": "assets/cormorant-garamond-500-italic-Y14P-dkT.woff2",
+    "src": "_cormorant-garamond-500-italic-Y14P-dkT.woff2"
+  },
+  "_fonts-YZHxSqmG.css": {
+    "file": "assets/fonts-YZHxSqmG.css",
+    "src": "_fonts-YZHxSqmG.css"
+  },
+  "_poppins-300-normal-DCNuMXUj.woff": {
+    "file": "assets/poppins-300-normal-DCNuMXUj.woff",
+    "src": "_poppins-300-normal-DCNuMXUj.woff"
+  },
+  "_poppins-300-normal-Dku2WoCh.woff2": {
+    "file": "assets/poppins-300-normal-Dku2WoCh.woff2",
+    "src": "_poppins-300-normal-Dku2WoCh.woff2"
+  },
+  "_poppins-400-normal-BOb3E3N0.woff": {
+    "file": "assets/poppins-400-normal-BOb3E3N0.woff",
+    "src": "_poppins-400-normal-BOb3E3N0.woff"
+  },
+  "_poppins-400-normal-cpxAROuN.woff2": {
+    "file": "assets/poppins-400-normal-cpxAROuN.woff2",
+    "src": "_poppins-400-normal-cpxAROuN.woff2"
+  },
+  "_poppins-500-normal-C8OXljZJ.woff2": {
+    "file": "assets/poppins-500-normal-C8OXljZJ.woff2",
+    "src": "_poppins-500-normal-C8OXljZJ.woff2"
+  },
+  "_poppins-500-normal-DGXqpDMm.woff": {
+    "file": "assets/poppins-500-normal-DGXqpDMm.woff",
+    "src": "_poppins-500-normal-DGXqpDMm.woff"
+  },
+  "_poppins-600-normal-BJdTmd5m.woff": {
+    "file": "assets/poppins-600-normal-BJdTmd5m.woff",
+    "src": "_poppins-600-normal-BJdTmd5m.woff"
+  },
+  "_poppins-600-normal-zEkxB9Mr.woff2": {
+    "file": "assets/poppins-600-normal-zEkxB9Mr.woff2",
+    "src": "_poppins-600-normal-zEkxB9Mr.woff2"
+  },
+  "_poppins-700-normal-BVuQR_eA.woff": {
+    "file": "assets/poppins-700-normal-BVuQR_eA.woff",
+    "src": "_poppins-700-normal-BVuQR_eA.woff"
+  },
+  "_poppins-700-normal-Qrb0O0WB.woff2": {
+    "file": "assets/poppins-700-normal-Qrb0O0WB.woff2",
+    "src": "_poppins-700-normal-Qrb0O0WB.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DncyqZO1.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-l2Fd3YjO.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/urun.js": {
+    "file": "assets/urun-D7_2WsH4.js",
+    "name": "urun",
+    "src": "resources/js/urun.js",
+    "isEntry": true
+  }
+}

@@ -13,6 +13,11 @@ Referans: Ay Parçası (`ayparcasicicekci.com`) aynı yöntemle canlıda.
 
 ## 0. Önce şunları öğrenin
 
+> Toplanacak bütün bilgiler (sunucu, veritabanı, e-posta, firma, PayTR,
+> içerik) **doldurulabilir bir form hâlinde**
+> [ON-HAZIRLIK.md](ON-HAZIRLIK.md) dosyasında. Deploy'a başlamadan önce
+> orayı doldurun; aşağıdaki tablo o formun ilk bölümünün özetidir.
+
 İlk deploy'dan önce cPanel'de bu dört sorunun cevabını bulun. İlk ikisi
 kurulumun şeklini değiştiriyor:
 

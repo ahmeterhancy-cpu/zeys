@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-21 · **374 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-24 · **380 test** (1 atlanan, kasıtlı)
 
 > **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
 > aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
@@ -122,6 +122,9 @@ Zamanlanmış iş: `zeys:rezerv-temizle` — yarıda kalan ödemelerin rezervini
 ---
 
 ## Bekleyenler — sensiz ilerleyemez
+
+> Hepsi doldurulabilir form hâlinde: **[ON-HAZIRLIK.md](ON-HAZIRLIK.md)**.
+> Canlıya alma adımları: [DEPLOY.md](DEPLOY.md).
 
 1. **Ürün fotoğrafları.** Panelde galeri ve renk başına toplu yükleme
    hazır. Şimdilik `DemoSeeder` 8 demo ürüne Unsplash'tan seçilmiş
