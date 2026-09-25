@@ -86,6 +86,10 @@ deployment:
     # eski motor ayari) ve degisiklikleriniz yok sayilir.
     - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
+    # GECICI - yonetici parolasini sifirlar ve AYRI bir dosyaya yazar
+    # (deploy gunlugu her deploy'da bastan yaziliyor, parola kayboluyordu).
+    # Parolayi okuyup panelden degistirin, sonra dosyayi ve bu satiri silin.
+    - cd $APPPATH && $PHPBIN artisan zeys:yonetici --ad="Ahmet Erhan" --eposta="ahmeterhan.cy@gmail.com" > /home2/zeys9011/yonetici-parola.txt 2>&1 || true
     - cd $APPPATH && $PHPBIN artisan optimize >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN artisan filament:optimize >> $LOG 2>&1 || true
     - echo "=== DEPLOY BITTI ===" >> $LOG 2>&1
