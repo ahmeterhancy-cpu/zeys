@@ -459,3 +459,15 @@ Eski API2 çalışıyor:
 ```
 /cpsessXXX/json-api/cpanel?cpanel_jsonapi_module=Cron&cpanel_jsonapi_func=add_line&cpanel_jsonapi_apiversion=2&command=...&minute=*&hour=*&day=*&month=*&weekday=*
 ```
+
+### R. Deploy günlüğü her deploy'da BAŞTAN yazılır
+
+`.cpanel.yml` ilk görevde `date > $LOG` yapıyor. Yönetici parolası gibi
+**bir kez gösterilen** bir çıktıyı günlüğe yazdırırsanız, bir sonraki
+deploy onu siler. Böyle çıktıları ayrı bir dosyaya yazdırın:
+
+```
+artisan zeys:yonetici --ad="..." --eposta="..." > /home2/KULLANICI/yonetici-parola.txt 2>&1
+```
+
+Okuyup panelden değiştirdikten sonra dosyayı silin.
