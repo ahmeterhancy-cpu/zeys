@@ -83,8 +83,11 @@ deployment:
     - test -L $WEBROOT/storage || /bin/ln -s $APPPATH/storage/app/public $WEBROOT/storage >> $LOG 2>&1
     - /bin/ls -ld $WEBROOT/storage >> $LOG 2>&1 || true
     - echo "--- 7/7 gocler ve onbellek ---" >> $LOG 2>&1
-    - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
+    # TUZAK: onbellek temizligi GOCLERDEN ONCE. Yoksa migrate bir onceki
+    # deploy'un onbellege alinmis ayarlariyla calisir (eski veritabani adi,
+    # eski motor ayari) ve degisiklikleriniz yok sayilir.
     - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
+    - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan optimize >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN artisan filament:optimize >> $LOG 2>&1 || true
     - echo "=== DEPLOY BITTI ===" >> $LOG 2>&1
