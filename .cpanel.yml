@@ -57,20 +57,26 @@ deployment:
     - chmod -R 775 $APPPATH/storage $APPPATH/bootstrap/cache >> $LOG 2>&1
     - echo "--- 3/7 klasoru webe kapat ---" >> $LOG 2>&1
     - /bin/cp deploy/cpanel/app.htaccess $APPPATH/.htaccess >> $LOG 2>&1
-    - echo "--- 4/7 public icerigi web kokune ---" >> $LOG 2>&1
-    - /bin/cp -a public/img $WEBROOT/ >> $LOG 2>&1 || true
-    - /bin/cp -a public/css public/js public/fonts $WEBROOT/ >> $LOG 2>&1 || true
-    - /bin/cp -a public/favicon.ico public/robots.txt $WEBROOT/ >> $LOG 2>&1 || true
+    - echo "--- 4/7 composer ---" >> $LOG 2>&1
+    - cd $APPPATH && command -v composer >/dev/null 2>&1 && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader >> $LOG 2>&1 || echo "COMPOSER BULUNAMADI - vendor depodan gelmeli, bkz DEPLOY.md" >> $LOG 2>&1
+    # Filament'in kendi css/js/font dosyalari depoda YOK (.gitignore). Normalde
+    # composer'in post-autoload-dump adimi yayimlar; sunucuda composer olmadigi
+    # icin burada elle yayimlaniyor. Atlanirsa panel stilsiz acilir.
+    - echo "--- 5/7 filament varliklari ---" >> $LOG 2>&1
+    - cd $APPPATH && $PHPBIN artisan filament:assets >> $LOG 2>&1 || echo "FILAMENT VARLIKLARI ATLANDI - .env yok mu" >> $LOG 2>&1
+    - echo "--- 6/7 public icerigi web kokune ---" >> $LOG 2>&1
+    - /bin/cp -a $APPPATH/public/img $WEBROOT/ >> $LOG 2>&1 || true
+    - /bin/cp -a $APPPATH/public/css $APPPATH/public/js $APPPATH/public/fonts $WEBROOT/ >> $LOG 2>&1 || true
+    - /bin/cp -a $APPPATH/public/favicon.ico $WEBROOT/ >> $LOG 2>&1 || true
     - /bin/rm -rf $WEBROOT/build >> $LOG 2>&1
-    - /bin/cp -a public/build $WEBROOT/build >> $LOG 2>&1
+    - /bin/cp -a $APPPATH/public/build $WEBROOT/build >> $LOG 2>&1
     - /bin/cp deploy/cpanel/index.php $WEBROOT/index.php >> $LOG 2>&1
     - /bin/cp public/.htaccess $WEBROOT/.htaccess >> $LOG 2>&1
     - echo "WEBROOT icerigi=" >> $LOG 2>&1
     - /bin/ls -1 $WEBROOT >> $LOG 2>&1
-    - echo "--- 5/7 storage bagi ---" >> $LOG 2>&1
+    - echo "storage bagi=" >> $LOG 2>&1
     - test -L $WEBROOT/storage || /bin/ln -s $APPPATH/storage/app/public $WEBROOT/storage >> $LOG 2>&1
-    - echo "--- 6/7 composer ---" >> $LOG 2>&1
-    - cd $APPPATH && command -v composer >/dev/null 2>&1 && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader >> $LOG 2>&1 || echo "COMPOSER BULUNAMADI - vendor depodan gelmeli, bkz DEPLOY.md" >> $LOG 2>&1
+    - /bin/ls -ld $WEBROOT/storage >> $LOG 2>&1 || true
     - echo "--- 7/7 gocler ve onbellek ---" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
