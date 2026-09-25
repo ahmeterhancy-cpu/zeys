@@ -62,10 +62,8 @@ deployment:
     # Filament'in kendi css/js/font dosyalari depoda YOK (.gitignore). Normalde
     # composer'in post-autoload-dump adimi yayimlar; sunucuda composer olmadigi
     # icin burada elle yayimlaniyor. Atlanirsa panel stilsiz acilir.
-    - echo "--- TANI ---" >> $LOG 2>&1
+    - echo "--- SURUMLER ---" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN -v >> $LOG 2>&1 || echo "PHP CALISMADI" >> $LOG 2>&1
-    - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 -r "echo 'bellek='.ini_get('memory_limit').' kapali='.ini_get('disable_functions').PHP_EOL;" >> $LOG 2>&1 || echo "PHP -r CALISMADI" >> $LOG 2>&1
-    - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 -r "require 'vendor/autoload.php'; echo 'autoload tamam'.PHP_EOL;" >> $LOG 2>&1 || echo "AUTOLOAD DUSTU" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan --version >> $LOG 2>&1 || echo "ARTISAN DUSTU" >> $LOG 2>&1
     - echo "--- 5/7 filament varliklari ---" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan filament:assets >> $LOG 2>&1 || echo "FILAMENT VARLIKLARI ATLANDI - .env yok mu" >> $LOG 2>&1
@@ -88,11 +86,6 @@ deployment:
     # eski motor ayari) ve degisiklikleriniz yok sayilir.
     - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
-    # GECICI - ilk kurulum. Yonetici hesabini olusturur (parola gunluge yazilir,
-    # okuyup panelden degistirin) ve yasal metin sablonlarini yukler.
-    # ILK BASARILI DEPLOY'DAN SONRA BU IKI SATIR KALDIRILACAK.
-    - cd $APPPATH && $PHPBIN artisan zeys:yonetici --ad="Ahmet Erhan" --eposta="ahmeterhan.cy@gmail.com" >> $LOG 2>&1 || echo "YONETICI ATLANDI" >> $LOG 2>&1
-    - cd $APPPATH && $PHPBIN artisan db:seed --class=LegalDocumentSeeder --force >> $LOG 2>&1 || echo "YASAL METINLER ATLANDI" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan optimize >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN artisan filament:optimize >> $LOG 2>&1 || true
     - echo "=== DEPLOY BITTI ===" >> $LOG 2>&1
