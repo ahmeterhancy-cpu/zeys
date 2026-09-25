@@ -71,7 +71,7 @@ public_html/
 ```
 
 > ⚠️ `zeys_app/.htaccess` olmazsa `.env` tarayıcıdan **indirilebilir**.
-> Kurulumdan sonra `https://ALANADI/zeys_app/.env` adresini açın:
+> Kurulumdan sonra `https://zeysfashionhouse.com/zeys_app/.env` adresini açın:
 > **403 dönmeli.** 200 dönerse hemen durun ve tüm parolaları değiştirin
 > (veritabanı, PayTR, e-posta).
 
@@ -216,7 +216,7 @@ Sonra panelden **Yasal Metinler** bölümüne girip metinleri okuyun.
 PayTR mağaza panelinde bildirim (callback) adresini **elle** girin:
 
 ```
-https://ALANADI/paytr/callback
+https://zeysfashionhouse.com/paytr/callback
 ```
 
 Bu yapılmazsa ödemeler alınır ama sipariş "ödendi" olmaz.
@@ -242,15 +242,15 @@ sürekli sıfırdan büyükse cron çalışmıyordur.
 ## 4. Kurulum sonrası kontrol listesi
 
 **Güvenlik**
-- [ ] `https://ALANADI/zeys_app/.env` → **403**
+- [ ] `https://zeysfashionhouse.com/zeys_app/.env` → **403**
 - [ ] `APP_DEBUG=false`
-- [ ] `https://ALANADI/robots.txt` → gerçek kurallar (tam `Disallow: /` değil)
+- [ ] `https://zeysfashionhouse.com/robots.txt` → gerçek kurallar (tam `Disallow: /` değil)
 
 **Vitrin**
 - [ ] Ana sayfa açılıyor, logo görünüyor
 - [ ] Ürün sayfasında beden/renk seçici çalışıyor
 - [ ] Sepete ekleme ve kasa açılıyor
-- [ ] `https://ALANADI/sitemap.xml` geçerli XML
+- [ ] `https://zeysfashionhouse.com/sitemap.xml` geçerli XML
 
 **Panel**
 - [ ] `/admin/login` açılıyor ve giriş yapılabiliyor

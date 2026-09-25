@@ -18,11 +18,11 @@ göre hazırlandı. Farklı çıkarsa yalnız ilgili satır değişir.
 
 | Bilgi | Nerede bakılır | Referansta | Bu hesapta |
 |---|---|---|---|
-| cPanel kullanıcı adı | cPanel ana ekranı → "Kullanıcı Adı" | `aypa8479` | `________` |
-| Alan adı | Yayına çıkacak adres (https ile) | ayparcasicicekci.com | `________` |
-| **SSH var mı?** | Terminal / SSH Access | **yok** | ☐ var ☐ yok |
+| cPanel kullanıcı adı | — | `aypa8479` | **zeys9011** ✅ |
+| Alan adı | — | ayparcasicicekci.com | **zeysfashionhouse.com** ✅ |
+| **SSH var mı?** | Terminal / SSH Access | **yok** | **yok** (araç listesinde Terminal yok) |
 | **Composer var mı?** | SSH'de `composer -V` | **yok** → `vendor/` depoda | ☐ var ☐ yok |
-| **PHP sürümü** | MultiPHP Manager **ve** PHP Selector (ayrı ayrı) | ea-php83 | `____` |
+| **PHP sürümü** | PHP Selector | ea-php83 | **8.3** ✅ uyumlu |
 | **Kök dizin değiştirilebiliyor mu?** | Domains → kök dizin | **hayır** → `public_html/zeys_app` | ☐ evet ☐ hayır |
 | **Sembolik bağ takip ediliyor mu?** | Kurulumdan sonra görseller açılıyor mu | **hayır** → gerçek klasör | ☐ evet ☐ hayır |
 | Node / npm var mı? | Paylaşımlı pakette yok | yok → `public/build` depoda | ☐ var ☐ yok |
@@ -40,9 +40,16 @@ Referans kısıtlara göre **zaten yapılanlar**:
 - `composer.json` PHP **8.3.33**'e kilitli — sunucu 8.2 ise indirilecek,
   8.4 ise dokunulmayacak. Yanlışsa site **beyaz ekran** verir.
 
-**Hâlâ yalnız sizden gelebilecek olan:** cPanel kullanıcı adı ve alan adı.
-`.cpanel.yml` içindeki üç yol satırı (`/home/KULLANICI/...`) onsuz
-doldurulamıyor.
+**Hesap bilgileri (2026-09-25, panelden okundu):**
+
+| | |
+|---|---|
+| Sunucu | `srvc197.trwww.com` (Turhost), IP 94.199.205.198 |
+| cPanel adresi | `https://srvc197.trwww.com:2083` — alan adı üzerinden girmeyin, sertifika uyuşmuyor |
+| Kullanıcı | `zeys9011` |
+| Ana dizin | **`/home2/zeys9011`** — `/home` değil, `.cpanel.yml` buna göre dolduruldu |
+| PHP | 8.3 (PHP Selector) |
+| SSL | **self-signed** — AutoSSL çalıştırılmalı, yoksa tarayıcı "güvenli değil" der |
 
 ---
 
@@ -123,7 +130,7 @@ Boş kalırsa vitrindeki yasal metinlerde **`[GİRİLMEDİ]`** görünür.
 | Mağaza no (`PAYTR_MERCHANT_ID`) | `________` |
 | Anahtar / tuz | yalnız `.env` içine |
 | Test modu ile mi başlıyoruz | ☐ evet (`PAYTR_TEST_MODE=1`) |
-| Callback adresi PayTR panelinde tanımlandı mı | ☐ evet → `https://ALANADI/paytr/callback` |
+| Callback adresi PayTR panelinde tanımlandı mı | ☐ evet → `https://zeysfashionhouse.com/paytr/callback` |
 
 Callback tanımlanmazsa ödeme alınır ama sipariş **"ödendi" olmaz**.
 
@@ -147,7 +154,7 @@ Callback tanımlanmazsa ödeme alınır ama sipariş **"ödendi" olmaz**.
 - [ ] **Cron** (cPanel → Cron Jobs, her dakika) — yoksa takılı rezervler
       temizlenmez, stok vitrinde "tükendi" görünür ama rafta durur.
       Satır DEPLOY.md 3.11'de.
-- [ ] **`https://ALANADI/zeys_app/.env` → 403 dönüyor mu?** 200 dönerse
+- [ ] **`https://zeysfashionhouse.com/zeys_app/.env` → 403 dönüyor mu?** 200 dönerse
       hemen durun, bütün parolaları değiştirin.
 
 ---

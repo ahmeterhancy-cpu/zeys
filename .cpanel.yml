@@ -2,11 +2,8 @@
 # cPanel -> Git Version Control -> Manage -> "Deploy HEAD Commit" bunu calistirir.
 # Klonlamak dosyalari public_html'e KOYMAZ; tasiyan adim budur.
 #
-# ============================================================================
-# DOLDURULACAK: asagidaki iki satirdaki KULLANICI yerine cPanel kullanici
-# adinizi yazin (ornek: /home/zeys1234/public_html). Kullanici adi cPanel
-# ana ekraninda "Kullanici Adi" olarak gorunur.
-# ============================================================================
+# HESAP: cPanel kullanicisi zeys9011, ana dizin /home2/zeys9011
+# (DIKKAT: /home degil /home2 — Turhost srvc197.trwww.com).
 #
 # YERLESIM: alan adinin kok dizini DEGISTIRILEMIYORSA her sey public_html
 # icinde olmak zorunda. Uygulama public_html/zeys_app/ altina, Laravel'in
@@ -40,9 +37,9 @@
 # Ayrintili anlatim ve sorun giderme = DEPLOY.md
 deployment:
   tasks:
-    - export WEBROOT=/home/KULLANICI/public_html
-    - export APPPATH=/home/KULLANICI/public_html/zeys_app
-    - export LOG=/home/KULLANICI/deploy-son.log
+    - export WEBROOT=/home2/zeys9011/public_html
+    - export APPPATH=/home2/zeys9011/public_html/zeys_app
+    - export LOG=/home2/zeys9011/deploy-son.log
     - export PHPBIN=$(command -v php || echo /opt/cpanel/ea-php83/root/usr/bin/php)
     - date > $LOG 2>&1
     - echo "PHPBIN=$PHPBIN" >> $LOG 2>&1
