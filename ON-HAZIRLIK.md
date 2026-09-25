@@ -159,19 +159,31 @@ Callback tanımlanmazsa ödeme alınır ama sipariş **"ödendi" olmaz**.
 
 ---
 
-## 9. Sırada ne var
+## 9. Kurulum durumu (25 Eylül 2026)
 
-Kod tarafı hazır: `public/build` ve `vendor/` depoda, `public_html/zeys_app`
-düzeni ve `.htaccess` koruması yerinde, sembolik bağ tutmazsa diye çıkış
-yolu eklendi.
+**Site canlıda: https://zeysfashionhouse.com**
 
-Bekleyen iki şey:
+| Adım | Durum |
+|---|---|
+| GitHub deposu (herkese açık) | ✅ `ahmeterhancy-cpu/zeys`, dal `main` |
+| cPanel Git klonu + deploy | ✅ `repositories/zeys` → `public_html` |
+| Veritabanı | ✅ `zeys9011_zeysdb` (ilk denemedeki `zeys9011_zeys` boş kaldı, silinebilir) |
+| `.env` | ✅ sunucuda, parola girildi |
+| Göçler | ✅ tamamı kuruldu |
+| Yönetici hesabı | ✅ `ahmeterhan.cy@gmail.com` — parola `~/deploy-son.log` içinde, **panelden değiştirin** |
+| Yasal metin şablonları | ✅ yüklendi (hukukçu onayı hâlâ gerekli) |
+| SSL | ✅ Let's Encrypt, HTTP → HTTPS 301 |
+| Cron (`schedule:run`, dakikada bir) | ✅ kuruldu |
+| `zeys_app/.env` web'den | ✅ 403 |
 
-1. **cPanel kullanıcı adı ve alan adı** → `.cpanel.yml` içindeki üç yol
-   satırı doldurulacak (şu an `KULLANICI` yazıyor).
-2. **GitHub deposu onayı** → depo açılıp kod push'lanacak, cPanel oradan
-   klonlayacak.
+Bekleyenler:
 
-Bunlar gelince sıra: depo aç → push → cPanel Git Version Control → Create →
-Deploy HEAD Commit → `.env` oluştur → tekrar deploy → yönetici hesabı →
-yasal metinler → cron → PayTR callback. Ayrıntısı [DEPLOY.md](DEPLOY.md).
+- **E-posta hesabı** (cPanel → E-posta Hesapları) ve `.env` içindeki
+  `MAIL_*` satırları — doldurulmadan sipariş onayı, fatura ve parola
+  sıfırlama e-postaları gitmez.
+- **Firma bilgileri** — panel → Site Ayarları. Boşken yasal metinlerde
+  `[GİRİLMEDİ]` görünür.
+- **PayTR** mağaza no / anahtar / tuz + PayTR panelinde callback adresi
+  (`https://zeysfashionhouse.com/paytr/callback`).
+- **Ürünler ve fotoğraflar** — şu an katalog boş.
+- **Yasal metinlerin hukukçu onayı** ve **ETBİS kaydı**.

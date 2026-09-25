@@ -3,11 +3,10 @@
 Siteyi Turhost/cPanel üzerinde yayına alma tarifi.
 Referans: Ay Parçası (`ayparcasicicekci.com`) aynı yöntemle canlıda.
 
-> ⚠️ **Bu tarif henüz hiçbir sunucuda çalıştırılmadı.** Referans
-> kurulumdan uyarlandı ve `.cpanel.yml` kuralları teste bağlandı
-> (`php artisan test --filter=DeployYapilandirmaTest`), ama ilk deploy
-> gerçek sunucuda yapılacak. Beklenmedik bir şey çıkarsa 6. bölümdeki
-> tuzak listesine bakın.
+> ✅ **25 Eylül 2026'da çalıştırıldı, site canlıda.**
+> Sunucu `srvc197.trwww.com` (Turhost), kullanıcı `zeys9011`, ana dizin
+> **`/home2/zeys9011`** (`/home` değil). Kurulumda çıkan dört yeni tuzak
+> 6. bölümde L, M, N ve O olarak yazıldı.
 
 ---
 
@@ -393,3 +392,70 @@ Her adım oraya yazıyor (`--- 3/7 klasoru webe kapat ---` gibi), hangi
 adımda durduğu görünür. cPanel'in kendi günlüğünü aramaya gerek yok.
 
 Günlük **hiç oluşmadıysa** `.cpanel.yml` reddedilmiş demektir → **tuzak A**.
+
+---
+
+### L. Depoya giren `vendor` autoload dosyaları DEV sürümü olabilir
+
+En pahalı tuzak: `vendor/` ağacı `--no-dev` iken autoload dosyaları
+(`autoload_static.php`, `autoload_files.php`, `installed.php`…) dev
+sürümü kalmıştı. Sunucuda PHP `fakerphp/faker` ve `laravel/agent-detector`
+dosyalarını arayıp **ölümcül hatayla** düşüyordu.
+
+Belirti: `artisan` hiçbir çıktı vermeden düşer, `storage/logs` boş kalır,
+deploy günlüğünde yalnız "MIGRATE ATLANDI" görünür.
+
+Sebep: `skip-worktree` işaretleri commit'ten **önce** konulursa dev
+kurulumun ürettiği dosyalar depoda kalır. Doğru sıra:
+
+```bash
+git update-index --no-skip-worktree vendor/composer/*   # varsa kaldır
+composer install --no-dev --optimize-autoloader
+git add -f vendor && git commit
+composer install                                        # yerel dev geri
+git update-index --skip-worktree vendor/composer/installed.json ...
+```
+
+Doğrulama: `git show HEAD:vendor/composer/autoload_files.php | grep faker`
+**hiçbir şey dönmemeli.**
+
+### M. Sunucunun varsayılan motoru MyISAM olabilir
+
+İlk göç `1071 Specified key was too long; max key length is 1000 bytes`
+ile düştü. 1000 bayt sınırı MyISAM'in imzasıdır (InnoDB DYNAMIC'te 3072).
+
+Çözüm `config/database.php`:
+
+```php
+'engine' => env('DB_ENGINE', 'InnoDB ROW_FORMAT=DYNAMIC'),
+```
+
+### N. Önbellek temizliği göçlerden ÖNCE olmalı
+
+`artisan migrate` bir önceki deploy'un **önbelleğe alınmış ayarıyla**
+çalışır. `.env`'de veritabanı adını değiştirdik, migrate eski veritabanına
+bağlanmayı sürdürdü; motor ayarı da yok sayıldı. Görev sırası:
+`optimize:clear` → `migrate` → `optimize`.
+
+### O. Filament varlıkları depoda yok, sunucuda yayımlanmalı
+
+`public/css/filament`, `public/js/filament`, `public/fonts/filament`
+`.gitignore`'da. Normalde Composer'ın `post-autoload-dump` adımı
+(`filament:upgrade`) yayımlar — sunucuda Composer yoksa panel **stilsiz**
+açılır. Deploy'a eklendi:
+
+```
+artisan filament:assets
+```
+
+ve `public/` içeriği artık depo dizininden değil `$APPPATH/public`'ten
+kopyalanıyor (yayımlanan dosyalar oraya düşüyor).
+
+### P. cPanel'in UAPI'sinde `Cron` modülü olmayabilir
+
+`execute/Cron/add_line` "Can't locate Cpanel/API/Cron.pm" verdi.
+Eski API2 çalışıyor:
+
+```
+/cpsessXXX/json-api/cpanel?cpanel_jsonapi_module=Cron&cpanel_jsonapi_func=add_line&cpanel_jsonapi_apiversion=2&command=...&minute=*&hour=*&day=*&month=*&weekday=*
+```

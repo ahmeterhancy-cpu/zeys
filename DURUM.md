@@ -1,9 +1,10 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-24 · **380 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-25 · **380 test** (1 atlanan, kasıtlı)
 
-> **Özellikler tamam. Canlıya çıkmak için senden bilgi bekleniyor** —
-> aşağıdaki "Bekleyenler" bölümü. Kod hiçbir sunucuda çalıştırılmadı.
+> **CANLIDA: https://zeysfashionhouse.com** (25 Eylül 2026, Turhost/cPanel).
+> Kurulum durumu ve kalanlar: [ON-HAZIRLIK.md](ON-HAZIRLIK.md).
+> Katalog henüz boş; e-posta, PayTR ve firma bilgileri bekleniyor.
 
 ---
 
