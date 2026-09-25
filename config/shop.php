@@ -13,6 +13,14 @@ return [
 
     // Kimlik
     'ad' => env('SHOP_AD', 'Zeys Fashion House'),
+
+    /*
+     * Demo icerigin canliya yuklenmesine acik izin. DemoSeeder canlida
+     * kendini kilitler; vitrini gercek urunler gelmeden doldurmak icin
+     * .env'ye DEMO_SEED_IZIN=true yazilir ve is bitince KALDIRILIR.
+     * Deger config'ten okunur: onbellege alinmis ayarda env() null doner.
+     */
+    'demo_seed_izin' => (bool) env('DEMO_SEED_IZIN', false),
     'alan_adi' => env('SHOP_ALAN_ADI', ''),
 
     // Para birimi — satis bolgesi Turkiye

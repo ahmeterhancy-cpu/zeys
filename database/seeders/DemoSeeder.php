@@ -26,8 +26,8 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->environment('production')) {
-            $this->command?->error('DemoSeeder canlı ortamda çalıştırılamaz.');
+        if (app()->environment('production') && ! config('shop.demo_seed_izin')) {
+            $this->command?->error('DemoSeeder canlı ortamda çalıştırılamaz. Vitrini demo içerikle doldurmak istiyorsanız .env içine DEMO_SEED_IZIN=true yazın ve iş bitince kaldırın.');
 
             return;
         }
