@@ -58,7 +58,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
-            'engine' => null,
+            /*
+             * TUZAK (Turhost srvc197'de yasandi): sunucunun varsayilan tablo
+             * motoru MyISAM ve anahtar siniri 1000 bayt. utf8mb4 ile
+             * varchar(255) benzersiz anahtar 1020 bayt tutuyor ve ilk goc
+             * "1071 Specified key was too long" ile dusuyordu. InnoDB +
+             * DYNAMIC satir bicimi siniri 3072 bayta cikariyor.
+             */
+            'engine' => env('DB_ENGINE', 'InnoDB ROW_FORMAT=DYNAMIC'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
@@ -78,7 +85,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
-            'engine' => null,
+            /*
+             * TUZAK (Turhost srvc197'de yasandi): sunucunun varsayilan tablo
+             * motoru MyISAM ve anahtar siniri 1000 bayt. utf8mb4 ile
+             * varchar(255) benzersiz anahtar 1020 bayt tutuyor ve ilk goc
+             * "1071 Specified key was too long" ile dusuyordu. InnoDB +
+             * DYNAMIC satir bicimi siniri 3072 bayta cikariyor.
+             */
+            'engine' => env('DB_ENGINE', 'InnoDB ROW_FORMAT=DYNAMIC'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
