@@ -86,10 +86,6 @@ deployment:
     # eski motor ayari) ve degisiklikleriniz yok sayilir.
     - cd $APPPATH && $PHPBIN artisan optimize:clear >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN -d display_errors=1 -d error_reporting=-1 artisan migrate --force >> $LOG 2>&1 || echo "MIGRATE ATLANDI - .env ve vendor var mi?" >> $LOG 2>&1
-    # GECICI - vitrini demo urunlerle doldurur. Yalnizca .env icinde
-    # DEMO_SEED_IZIN=true varken calisir. Gercek urunler girilince hem bu
-    # satir hem o bayrak KALDIRILACAK (seeder panel duzenlemelerini ezer).
-    - cd $APPPATH && $PHPBIN artisan db:seed --class=DemoSeeder --force >> $LOG 2>&1 || echo "DEMO SEED ATLANDI" >> $LOG 2>&1
     - cd $APPPATH && $PHPBIN artisan optimize >> $LOG 2>&1 || true
     - cd $APPPATH && $PHPBIN artisan filament:optimize >> $LOG 2>&1 || true
     - echo "=== DEPLOY BITTI ===" >> $LOG 2>&1
