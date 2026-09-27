@@ -130,6 +130,32 @@ class PanelEklerTest extends TestCase
             ->assertSee('data-taban=', false);
     }
 
+    public function test_renge_bagli_galeri_kucuk_gorsel_seridini_doldurur(): void
+    {
+        /*
+         * GERILEME (canlida gorundu): magaza galeriyi renk basina yukleyince
+         * sayfa tek kapak gorseliyle aciliyor, kucuk gorsel seridi hic
+         * cizilmiyordu — o rengin diger fotograflarina ulasilamiyordu.
+         */
+        $this->urun->update(['hero_image' => 'urunler/kapak.jpg']);
+
+        foreach (['bej-1.jpg', 'bej-2.jpg', 'bej-3.jpg'] as $i => $ad) {
+            ProductMedia::create([
+                'product_id' => $this->urun->id,
+                'product_option_value_id' => $this->renk('Bej')->id,
+                'path' => 'urunler/galeri/'.$ad,
+                'position' => $i,
+            ]);
+        }
+
+        $cevap = $this->get('/urun/saten-midi-elbise')->assertOk();
+
+        // Serit JS'siz de dolu gelmeli: kapak + rengin 3 fotografi
+        $this->assertSame(4, substr_count($cevap->getContent(), 'galeri-kucuk-dugme'));
+        $cevap->assertSee('storage/urunler/galeri/bej-3.jpg', false)
+            ->assertSee('id="genel-galeri-verisi"', false);
+    }
+
     // --- Stok talepleri ---
 
     public function test_stok_talepleri_listesi_bekleyenleri_gosterir(): void

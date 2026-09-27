@@ -97,6 +97,17 @@ class ProductController extends Controller
             $genelYollar = $urun->variants->where('is_active', true)->pluck('image')->filter()->take(1)->values();
         }
 
+        /*
+         * Bütün fotoğraflar bir RENGE bağlıysa (mağaza panelde galeriyi renk
+         * başına yüklüyor) sayfa tek kapak görseliyle açılıyor, küçük resim
+         * şeridi hiç çizilmiyordu: o rengin diğer fotoğraflarına JS'siz
+         * ulaşılamıyordu. Açılışta ilk rengin galerisi de eklenir; renk
+         * değişince şeridi urun.js yeniden kurar.
+         */
+        if ($genelYollar->count() <= 1 && $renkGalerisi->isNotEmpty()) {
+            $genelYollar = $genelYollar->merge($renkGalerisi->first())->filter()->unique()->values();
+        }
+
         // Yalnız onaylı yorumlar; en yeni 20'si (ürün sayfası sonsuz uzamasın)
         $yorumlar = $urun->review_count > 0
             ? $urun->reviews()->yayinda()->latest('approved_at')->limit(20)->get()

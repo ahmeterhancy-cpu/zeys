@@ -17,11 +17,14 @@
 
     let varyantlar = [];
     let galeri = {};
+    let genelGaleri = [];
 
     try {
         varyantlar = JSON.parse(veriEtiketi.textContent) || [];
         const g = document.getElementById('galeri-verisi');
         galeri = g ? JSON.parse(g.textContent) || {} : {};
+        const gg = document.getElementById('genel-galeri-verisi');
+        genelGaleri = gg ? JSON.parse(gg.textContent) || [] : [];
     } catch (e) {
         // Veri bozuksa seçici devre dışı kalır ama sayfa okunur durumda kalmalı
         return;
@@ -211,6 +214,7 @@
             const yollar = galeri[deger];
             if (yollar && yollar.length) {
                 ana.src = ana.dataset.taban + yollar[0];
+                kucukleriKur(yollar, ana.dataset.taban);
                 return;
             }
         }
@@ -224,18 +228,58 @@
         }
 
         if (ana.dataset.ilk) ana.src = ana.dataset.ilk;
+        kucukleriKur(genelGaleri, ana.dataset.taban);
+    }
+
+    /*
+     * Kucuk gorsel seridi: magaza galeriyi renk basina yukledigi icin
+     * serit sabit kalamaz. Renk degisince o rengin fotograflariyla
+     * yeniden kurulur; tek fotograf varsa serit gizlenir.
+     */
+    function kucukleriKur(yollar, taban) {
+        const serit = document.getElementById('galeri-kucukler');
+        const kap = document.getElementById('galeri');
+        if (!serit || !kap) return;
+
+        const liste = (yollar || []).filter(Boolean);
+        serit.innerHTML = '';
+
+        liste.forEach((yol, i) => {
+            const dgm = document.createElement('button');
+            dgm.type = 'button';
+            dgm.className = 'galeri-kucuk-dugme';
+            dgm.dataset.gorsel = taban + yol;
+
+            const img = document.createElement('img');
+            img.src = taban + yol;
+            img.alt = 'Ürün görseli ' + (i + 1);
+            img.loading = 'lazy';
+
+            dgm.appendChild(img);
+            serit.appendChild(dgm);
+        });
+
+        serit.hidden = liste.length < 2;
+        kap.classList.toggle('urun-galeri-coklu', liste.length > 1);
     }
 
     girdiler.forEach((g) => g.addEventListener('change', tazele));
     tazele();
 
-    /* Küçük görsellerden ana görsele */
-    document.querySelectorAll('.galeri-kucuk-dugme').forEach((dgm) => {
-        dgm.addEventListener('click', () => {
+    /*
+     * Kucuk gorsellerden ana gorsele. Serit renk degisiminde yeniden
+     * olustugu icin dinleyici TEK TEK dugmelere degil, kabina baglanir —
+     * yoksa yeni dugmeler tiklanamaz kalirdi.
+     */
+    const kucukKap = document.getElementById('galeri-kucukler');
+    if (kucukKap) {
+        kucukKap.addEventListener('click', (e) => {
+            const dgm = e.target.closest('.galeri-kucuk-dugme');
+            if (!dgm) return;
             const ana = document.getElementById('galeri-ana');
             if (ana) ana.src = dgm.dataset.gorsel;
         });
-    });
+    }
 
     /* Beden tablosu */
     const tablo = document.getElementById('beden-tablosu');

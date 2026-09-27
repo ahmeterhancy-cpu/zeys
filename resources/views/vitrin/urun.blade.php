@@ -18,6 +18,7 @@
     // Değerler burada hazırlanıp aşağıda tek değişken olarak veriliyor.
     $varyantVerisi = $varyantlar->all();
     $galeriVerisi = $renkGalerisi->all();
+    $genelGaleri = $genelYollar->all();
     $ilkGorsel = $genelYollar->first();
 @endphp
 
@@ -65,17 +66,19 @@
                 </div>
             </div>
 
-            @if ($genelYollar->count() > 1)
-                <div class="urun-galeri-kucuk">
-                    @foreach ($genelYollar as $yol)
-                        <button type="button" class="galeri-kucuk-dugme"
-                                data-gorsel="{{ asset('storage/' . $yol) }}">
-                            <img src="{{ asset('storage/' . $yol) }}"
-                                 alt="{{ $urun->name }} görsel {{ $loop->iteration }}" loading="lazy">
-                        </button>
-                    @endforeach
-                </div>
-            @endif
+            {{--
+                Serit JS'siz de dolu gelir; renk secilince urun.js icerigini
+                o rengin fotograflariyla yeniden kurar (bos kalirsa gizlenir).
+            --}}
+            <div class="urun-galeri-kucuk" id="galeri-kucukler" @if ($genelYollar->count() < 2) hidden @endif>
+                @foreach ($genelYollar as $yol)
+                    <button type="button" class="galeri-kucuk-dugme"
+                            data-gorsel="{{ asset('storage/' . $yol) }}">
+                        <img src="{{ asset('storage/' . $yol) }}"
+                             alt="{{ $urun->name }} görsel {{ $loop->iteration }}" loading="lazy">
+                    </button>
+                @endforeach
+            </div>
         </div>
 
         {{-- Özet ve seçim --}}
@@ -343,4 +346,5 @@
 
 <script type="application/json" id="varyant-verisi">@json($varyantVerisi)</script>
 <script type="application/json" id="galeri-verisi">@json($galeriVerisi)</script>
+<script type="application/json" id="genel-galeri-verisi">@json($genelGaleri)</script>
 @endsection
