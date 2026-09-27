@@ -457,17 +457,43 @@
 
 .mobil-alt { display: none; }
 
-.yukari {
+/*
+ * Sabit sag alt kose. WhatsApp ve "yukari cik" ayri ayri fixed olsaydi
+ * ayni noktada ust uste binerdi; tek kapta alt alta diziliyorlar
+ * (column-reverse = WhatsApp altta kalir, yukari dugmesi ustunde).
+ */
+.sabit-kose {
     position: fixed;
     right: 24px;
     bottom: 24px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+}
+
+.wa-dugme {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #25D366;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s;
+}
+
+.wa-dugme:hover { transform: scale(1.06); }
+.wa-dugme svg { width: 30px; height: 30px; }
+
+.yukari {
     width: 46px;
     height: 46px;
     display: grid;
     place-items: center;
     background: var(--vurgu);
     color: #ffffff;
-    z-index: 60;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s;
@@ -540,7 +566,10 @@
     }
 
     .mobil-alt .ikon { width: 22px; height: 22px; }
-    .yukari { bottom: 76px; right: 14px; width: 40px; height: 40px; }
+    .sabit-kose { right: 14px; bottom: 74px; gap: 10px; }
+    .wa-dugme { width: 46px; height: 46px; }
+    .wa-dugme svg { width: 26px; height: 26px; }
+    .yukari { width: 40px; height: 40px; }
 
     .alt { margin-top: 50px; }
     .alt-bant-ic { flex-direction: column; align-items: flex-start; }

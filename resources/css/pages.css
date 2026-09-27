@@ -1140,16 +1140,6 @@
     margin-bottom: 30px;
 }
 
-.iletisim-blok {
-    padding: 26px;
-    border: 1px solid var(--line);
-    margin-bottom: 20px;
-}
-
-.iletisim-blok h2 { font-size: 16px; margin-bottom: 8px; }
-.iletisim-blok address { font-style: normal; }
-.iletisim-blok a { color: var(--vurgu); }
-
 .koleksiyon-ozet { max-width: var(--measure); margin: 0 0 24px; }
 
 @media (max-width: 860px) {
@@ -1208,3 +1198,133 @@
 
 .fatura-bag .ikon { width: 20px; height: 20px; color: var(--vurgu); }
 .fatura-bag a { color: var(--vurgu); font-weight: 600; }
+
+/* ------------------------------------------------------------------ */
+/* İletişim sayfası                                                    */
+/* ------------------------------------------------------------------ */
+
+.iletisim-sayfa { padding-bottom: 40px; }
+
+.iletisim-duzen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.iletisim-giris {
+    margin: 0 0 24px;
+    max-width: 46ch;
+    color: var(--ink-soft);
+}
+
+.iletisim-kart {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+}
+
+.iletisim-kart:last-child { border-bottom: 1px solid var(--line); }
+
+.iletisim-ikon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--paper-alt);
+    color: var(--gold-ink);
+}
+
+.iletisim-ikon .ikon { width: 20px; height: 20px; }
+
+.iletisim-kart h2 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.iletisim-kart p,
+.iletisim-kart address {
+    margin: 0;
+    font-style: normal;
+    line-height: 1.6;
+}
+
+.iletisim-not { color: var(--ink-soft); font-size: 14px; margin-top: 4px !important; }
+
+.iletisim-bag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-weight: 500;
+    color: var(--gold-ink);
+}
+
+.iletisim-bag .ikon { width: 16px; height: 16px; }
+
+/* Harita: gömülü iframe, çerçeve oranı sabit */
+.harita-cerceve {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--paper-alt);
+}
+
+.harita-cerceve iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.harita-yok { display: grid; place-items: center; color: var(--ink-soft); padding: 20px; text-align: center; }
+
+.iletisim-yonlendirme {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 44px;
+}
+
+.yonlendirme-kart {
+    display: grid;
+    gap: 4px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.yonlendirme-kart:hover { border-color: var(--vurgu); transform: translateY(-2px); }
+.yonlendirme-kart span { font-weight: 600; }
+.yonlendirme-kart small { color: var(--ink-soft); line-height: 1.5; }
+
+.iletisim-satici {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+}
+
+.iletisim-satici h2 {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+}
+
+@media (max-width: 900px) {
+    .iletisim-duzen { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .iletisim-yonlendirme { grid-template-columns: minmax(0, 1fr); }
+    .harita-cerceve { aspect-ratio: 3 / 2; }
+}

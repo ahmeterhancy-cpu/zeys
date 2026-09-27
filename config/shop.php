@@ -57,7 +57,14 @@ return [
     'iletisim' => [
         'whatsapp' => env('SHOP_WHATSAPP', '05551800206'),
         'whatsapp_mesaj' => env('SHOP_WHATSAPP_MESAJ', 'Merhaba, Zeys Fashion House hakkinda bilgi almak istiyorum.'),
+        /*
+         * Harita: once harita_embed (tam gomme adresi), sonra harita_sorgu.
+         * TUZAK: ham adres ("... Edirne Life 5 — Edirne/Merkez") Google'da
+         * cozulemeyip DUNYA haritasi aciyordu; magaza adiyla sorgu dogru
+         * igneyi getiriyor.
+         */
         'harita_embed' => env('SHOP_HARITA_EMBED', ''),
+        'harita_sorgu' => env('SHOP_HARITA_SORGU', 'Zeys Fashion House Edirne'),
         'calisma_saatleri' => env('SHOP_CALISMA_SAATLERI', 'Pazartesi - Cumartesi 10.00 - 20.00'),
     ],
 
