@@ -148,11 +148,20 @@ class PanelEklerTest extends TestCase
             ]);
         }
 
+        // Baska bir rengin fotografi: acilista O DA gorunmeli
+        ProductMedia::create([
+            'product_id' => $this->urun->id,
+            'product_option_value_id' => $this->renk('Siyah')->id,
+            'path' => 'urunler/galeri/siyah-1.jpg',
+            'position' => 9,
+        ]);
+
         $cevap = $this->get('/urun/saten-midi-elbise')->assertOk();
 
-        // Serit JS'siz de dolu gelmeli: kapak + rengin 3 fotografi
-        $this->assertSame(4, substr_count($cevap->getContent(), 'galeri-kucuk-dugme'));
+        // Acilista HEPSI= kapak + Bej'in 3 fotografi + Siyah'in 1 fotografi
+        $this->assertSame(5, substr_count($cevap->getContent(), 'galeri-kucuk-dugme'));
         $cevap->assertSee('storage/urunler/galeri/bej-3.jpg', false)
+            ->assertSee('storage/urunler/galeri/siyah-1.jpg', false)
             ->assertSee('id="genel-galeri-verisi"', false);
     }
 
