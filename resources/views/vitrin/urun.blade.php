@@ -70,14 +70,30 @@
                 Serit JS'siz de dolu gelir; renk secilince urun.js icerigini
                 o rengin fotograflariyla yeniden kurar (bos kalirsa gizlenir).
             --}}
-            <div class="urun-galeri-kucuk" id="galeri-kucukler" @if ($genelYollar->count() < 2) hidden @endif>
-                @foreach ($genelYollar as $yol)
-                    <button type="button" class="galeri-kucuk-dugme"
-                            data-gorsel="{{ asset('storage/' . $yol) }}">
-                        <img src="{{ asset('storage/' . $yol) }}"
-                             alt="{{ $urun->name }} görsel {{ $loop->iteration }}" loading="lazy">
-                    </button>
-                @endforeach
+            {{--
+                Serit ana gorselin yuksekligini ASMAZ: tasan kisim kaydirilir,
+                oklar urun.js tarafindan gerektiginde gosterilir.
+            --}}
+            <div class="galeri-serit" id="galeri-serit" @if ($genelYollar->count() < 2) hidden @endif>
+                <button type="button" class="serit-ok serit-ok-geri" data-yon="-1"
+                        aria-label="Önceki görseller" hidden>
+                    @include('vitrin.parca.ikon', ['ad' => 'ok-yukari'])
+                </button>
+
+                <div class="urun-galeri-kucuk" id="galeri-kucukler">
+                    @foreach ($genelYollar as $yol)
+                        <button type="button" class="galeri-kucuk-dugme"
+                                data-gorsel="{{ asset('storage/' . $yol) }}">
+                            <img src="{{ asset('storage/' . $yol) }}"
+                                 alt="{{ $urun->name }} görsel {{ $loop->iteration }}" loading="lazy">
+                        </button>
+                    @endforeach
+                </div>
+
+                <button type="button" class="serit-ok serit-ok-ileri" data-yon="1"
+                        aria-label="Sonraki görseller" hidden>
+                    @include('vitrin.parca.ikon', ['ad' => 'ok-asagi'])
+                </button>
             </div>
         </div>
 

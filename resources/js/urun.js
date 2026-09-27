@@ -259,8 +259,25 @@
             serit.appendChild(dgm);
         });
 
-        serit.hidden = liste.length < 2;
+        const seritKap = document.getElementById('galeri-serit');
+        if (seritKap) seritKap.hidden = liste.length < 2;
         kap.classList.toggle('urun-galeri-coklu', liste.length > 1);
+        okGuncelle();
+    }
+
+    /*
+     * Serit kapak gorselinden uzunsa oklar acilir. Masaustunde dikey,
+     * dar ekranda yatay kayar — hangi eksende tasma varsa o kullanilir.
+     */
+    function okGuncelle() {
+        const serit = document.getElementById('galeri-kucukler');
+        const oklar = document.querySelectorAll('.serit-ok');
+        if (!serit || !oklar.length) return;
+
+        const tasma = serit.scrollHeight > serit.clientHeight + 2
+            || serit.scrollWidth > serit.clientWidth + 2;
+
+        oklar.forEach((o) => { o.hidden = !tasma; });
     }
 
     girdiler.forEach((g) => g.addEventListener('change', tazele));
@@ -280,6 +297,27 @@
             if (ana) ana.src = dgm.dataset.gorsel;
         });
     }
+
+    /* Serit oklari: bir ekran boyu kaydirir */
+    document.querySelectorAll('.serit-ok').forEach((ok) => {
+        ok.addEventListener('click', () => {
+            const serit = document.getElementById('galeri-kucukler');
+            if (!serit) return;
+
+            const yon = Number(ok.dataset.yon) || 1;
+            const yatay = serit.scrollWidth > serit.clientWidth + 2;
+            const adim = (yatay ? serit.clientWidth : serit.clientHeight) * 0.8;
+
+            serit.scrollBy({
+                left: yatay ? yon * adim : 0,
+                top: yatay ? 0 : yon * adim,
+                behavior: 'smooth',
+            });
+        });
+    });
+
+    okGuncelle();
+    window.addEventListener('resize', okGuncelle);
 
     /* Beden tablosu */
     const tablo = document.getElementById('beden-tablosu');

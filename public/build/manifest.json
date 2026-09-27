@@ -52,7 +52,7 @@
     "src": "_poppins-700-normal-Qrb0O0WB.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dw3gflQ1.css",
+    "file": "assets/app-OrSntvGi.css",
     "name": "app",
     "names": [
       "app.css"
@@ -67,7 +67,7 @@
     "isEntry": true
   },
   "resources/js/urun.js": {
-    "file": "assets/urun-BQ-L6o-Y.js",
+    "file": "assets/urun-CdJHLNos.js",
     "name": "urun",
     "src": "resources/js/urun.js",
     "isEntry": true

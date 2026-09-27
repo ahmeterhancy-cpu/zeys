@@ -176,7 +176,7 @@
 }
 
 .urun-galeri-coklu .urun-galeri-ana { grid-area: ana; }
-.urun-galeri-coklu .urun-galeri-kucuk { grid-area: kucuk; }
+.urun-galeri-coklu .galeri-serit { grid-area: kucuk; }
 
 /*
  * TUZAK (canlida Chrome'da cikti): aspect-ratio + icindeki gorselin
@@ -203,11 +203,48 @@
 .urun-galeri-ana img { width: 100%; height: 100%; object-fit: cover; }
 .urun-galeri-ana .urun-harf { font-size: 120px; }
 
+/*
+ * Serit ana gorselin yuksekligini ASMAZ (7 fotografta kapagin iki katina
+ * cikiyordu): tasan kisim kaydiriliyor, oklar urun.js ile aciliyor.
+ * min-height:0 sart — izgara ogesi varsayilan olarak icerigi kadar buyur.
+ */
+.galeri-serit {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    max-height: 100%;
+}
+
 .urun-galeri-kucuk {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
 }
+
+.urun-galeri-kucuk::-webkit-scrollbar { display: none; }
+
+.serit-ok {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    height: 26px;
+    padding: 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-kucuk);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.serit-ok:hover { border-color: var(--vurgu); color: var(--vurgu); }
+.serit-ok .ikon { width: 16px; height: 16px; }
+.serit-ok[hidden] { display: none; }
 
 .galeri-kucuk-dugme {
     width: 100%;
@@ -519,7 +556,10 @@
 
 @media (max-width: 560px) {
     .urun-galeri-coklu { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'ana' 'kucuk'; }
+    .galeri-serit { flex-direction: row; align-items: stretch; max-height: none; }
     .urun-galeri-coklu .urun-galeri-kucuk { flex-direction: row; overflow-x: auto; }
+    .serit-ok { height: auto; width: 26px; }
+    .serit-ok .ikon { transform: rotate(-90deg); }
     .urun-galeri-coklu .galeri-kucuk-dugme { flex: 0 0 70px; }
     .urun-panel h1 { font-size: 22px; }
     .urun-detay th { width: 120px; }

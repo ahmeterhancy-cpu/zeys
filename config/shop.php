@@ -49,6 +49,18 @@ return [
     // 6502 sayili kanun / Mesafeli Sozlesmeler Yonetmeligi
     'cayma_hakki_gun' => 14,
 
+    /*
+     * Iletisim kanallari. WhatsApp numarasi yerel bicimde yazilabilir
+     * (05551800206); App\Support\Iletisim uluslararasi bicime cevirir.
+     * Harita gommesi bos birakilirsa adresten uretilir.
+     */
+    'iletisim' => [
+        'whatsapp' => env('SHOP_WHATSAPP', '05551800206'),
+        'whatsapp_mesaj' => env('SHOP_WHATSAPP_MESAJ', 'Merhaba, Zeys Fashion House hakkinda bilgi almak istiyorum.'),
+        'harita_embed' => env('SHOP_HARITA_EMBED', ''),
+        'calisma_saatleri' => env('SHOP_CALISMA_SAATLERI', 'Pazartesi - Cumartesi 10.00 - 20.00'),
+    ],
+
     // Sosyal
     'sosyal' => [
         'instagram' => env('SHOP_INSTAGRAM', 'zeysfashionhouse'),
