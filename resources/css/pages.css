@@ -178,8 +178,20 @@
 .urun-galeri-coklu .urun-galeri-ana { grid-area: ana; }
 .urun-galeri-coklu .urun-galeri-kucuk { grid-area: kucuk; }
 
+/*
+ * TUZAK (canlida Chrome'da cikti): aspect-ratio + icindeki gorselin
+ * height:100% birlesince kutu, sutununa sigmak yerine gorselin DOGAL
+ * boyutuna gore sisiyor (1200x1600 bir foto 605 px'lik sutunda 691 px
+ * genislik uretti) ve sagdaki bilgi sutununun ustune tasip basligi,
+ * fiyati, beden secicisini kapatiyordu. Izgara ogelerinin ortulu
+ * min-width/min-height "auto" degeri sifirlanmali.
+ */
+.urun-galeri { min-width: 0; }
+
 .urun-galeri-ana {
     position: relative;
+    width: 100%;
+    min-width: 0;
     aspect-ratio: 430 / 502;
     background: var(--paper-alt);
     overflow: clip;
@@ -187,6 +199,7 @@
     place-items: center;
 }
 
+.urun-galeri-ana > * { min-width: 0; min-height: 0; }
 .urun-galeri-ana img { width: 100%; height: 100%; object-fit: cover; }
 .urun-galeri-ana .urun-harf { font-size: 120px; }
 
