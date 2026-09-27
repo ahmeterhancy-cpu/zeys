@@ -176,7 +176,17 @@
 }
 
 .urun-galeri-coklu .urun-galeri-ana { grid-area: ana; }
-.urun-galeri-coklu .galeri-serit { grid-area: kucuk; }
+/*
+ * TUZAK: serit satir yuksekligini KENDISI belirledigi icin "max-height:100%"
+ * hicbir sey yapmiyordu (dongusel). height:0 ile seridin satira katkisi
+ * sifirlanir — satiri kapak gorseli belirler — sonra min-height:100% onu
+ * tam o yukseklige cekerken tasan kisim kaydirilabilir kalir.
+ */
+.urun-galeri-coklu .galeri-serit {
+    grid-area: kucuk;
+    height: 0;
+    min-height: 100%;
+}
 
 /*
  * TUZAK (canlida Chrome'da cikti): aspect-ratio + icindeki gorselin
@@ -556,6 +566,7 @@
 
 @media (max-width: 560px) {
     .urun-galeri-coklu { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'ana' 'kucuk'; }
+    .urun-galeri-coklu .galeri-serit { height: auto; min-height: 0; }
     .galeri-serit { flex-direction: row; align-items: stretch; max-height: none; }
     .urun-galeri-coklu .urun-galeri-kucuk { flex-direction: row; overflow-x: auto; }
     .serit-ok { height: auto; width: 26px; }
