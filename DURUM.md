@@ -1,6 +1,6 @@
 # Zeys Fashion House — Durum
 
-Son güncelleme: 2026-09-25 · **380 test** (1 atlanan, kasıtlı)
+Son güncelleme: 2026-09-27 · **380 test** (1 atlanan, kasıtlı)
 
 > **CANLIDA: https://zeysfashionhouse.com** (25 Eylül 2026, Turhost/cPanel).
 > Kurulum durumu ve kalanlar: [ON-HAZIRLIK.md](ON-HAZIRLIK.md).
@@ -29,6 +29,7 @@ Son güncelleme: 2026-09-25 · **380 test** (1 atlanan, kasıtlı)
 | Müşteri hesabı | ✅ Kayıt, giriş, **parola sıfırlama**, sipariş geçmişi, adres defteri |
 | KVKK | ✅ Verilerimi indir (JSON), hesabımı sil (siparişler yasal saklama için ayrılır) |
 | Ürün yorumları | ✅ Yalnız teslim edilmiş siparişten, onaydan sonra yayında |
+| İletişim + harita + WhatsApp | ✅ Gömülü harita (ayardan değiştirilebilir), sağ altta sabit WhatsApp düğmesi |
 | Bakım perdesi | ✅ Panelden aç/kapa; yönetici siteyi görür, PayTR etkilenmez |
 | Yasal metinler | ⚠️ Sürümlü altyapı hazır, **hukukçu onayından geçmedi** |
 
