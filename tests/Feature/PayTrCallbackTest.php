@@ -224,6 +224,27 @@ class PayTrCallbackTest extends TestCase
             ->assertDontSee('Siparişiniz alındı', false);
     }
 
+    public function test_donus_sayfasi_siparisi_gercekten_yukler(): void
+    {
+        /*
+         * GERILEME (canlida gorundu): PayTR rotalari "middleware([])" ile
+         * kayitliydi; SubstituteBindings da dusunce {order:number} HIC
+         * cozulmuyor, denetleyiciye BOS bir Order geliyordu. Sayfa 200
+         * donuyordu (eski testler bu yuzden gecti) ama numara boştu ve
+         * odeme onaylansa bile sonsuza kadar "isleniyor" yaziyordu.
+         */
+        $order = $this->siparis();
+        $order->update(['payment_status' => 'paid', 'status' => 'processing']);
+
+        $imzali = URL::signedRoute('payment.return', ['order' => $order->number]);
+
+        $this->get($imzali)
+            ->assertOk()
+            ->assertSee($order->number)
+            ->assertSee('Siparişiniz alındı', false)
+            ->assertDontSee('işleniyor', false);
+    }
+
     public function test_token_imzasi_paytr_formuluyle_uyusur(): void
     {
         $order = $this->siparis();

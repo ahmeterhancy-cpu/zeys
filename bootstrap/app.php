@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,7 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
              * iFrame içinden gelen POST'ta müşterinin oturum çerezini boş bir
              * oturumla eziyor. Ayrıntı: routes/paytr.php
              */
-            Route::middleware([])->group(base_path('routes/paytr.php'));
+            /*
+             * TUZAK (canlida gorundu): bos middleware listesi
+             * SubstituteBindings'i de dusuruyordu; {order:number} HIC
+             * cozulmuyor, denetleyiciye BOS bir Order geliyordu. Musteri
+             * odeme sonrasi donus sayfasinda numarasiz "odemeniz isleniyor"
+             * goruyordu — odeme basarili olsa bile, kalici olarak.
+             */
+            Route::middleware([SubstituteBindings::class])->group(base_path('routes/paytr.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
