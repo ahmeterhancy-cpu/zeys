@@ -15,13 +15,18 @@
 
     {{--
         PayTR iFrame. Kart verisi yalnizca PayTR'nin sayfasina girilir.
-        Yukseklik otomatik ayarlanamiyor (capraz kaynak), o yuzden bol
-        tutuldu; icerik kisaysa bos alan kalir ama form kesilmez.
+
+        TUZAK (canlida gorundu): sabit yukseklik + scrolling="no" ile
+        PayTR'nin icerigi uzadiginda (test modu uyarisi, 3D adimi, taksit
+        tablosu) "Ode" dugmesi KESILIYOR ve kaydirilamiyor.
+
+        Cozum PayTR'nin kendi boy ayarlayicisi — belgelerinde onerilen
+        yontem bu. Betik yuklenemezse scrolling varsayilanda kalir ve
+        cerceve kendi icinde kaydirilabilir; dugme yine erisilebilir.
     --}}
     <iframe src="{{ $iframeUrl }}"
             id="paytrIframe"
             frameborder="0"
-            scrolling="no"
             title="Güvenli ödeme"
             class="odeme-cerceve"></iframe>
 
@@ -31,3 +36,13 @@
     </p>
 </div>
 @endsection
+
+@push('betik')
+    <script src="https://www.paytr.com/js/iframeResizer.min.js"></script>
+    <script>
+        // PayTR'nin kendi betigi; cerceveyi icerik boyuna gore buyutur.
+        if (window.iFrameResize) {
+            iFrameResize({ checkOrigin: false }, '#paytrIframe');
+        }
+    </script>
+@endpush

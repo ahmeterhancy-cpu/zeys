@@ -826,7 +826,8 @@
 
 .odeme-cerceve {
     width: 100%;
-    min-height: 760px;
+    /* Boy ayarlayici yuklenene kadarki ilk cizim; sonra icerige gore buyur */
+    min-height: 900px;
     border: 1px solid var(--line);
     background: var(--paper);
 }
